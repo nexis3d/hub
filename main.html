@@ -152,24 +152,53 @@
             <stop offset="100%" stopColor="#be185d"/>
           </linearGradient>
           <filter id="pGlow">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feGaussianBlur stdDeviation="3" result="blur"/>
             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
         <rect width="200" height="200" rx="40" fill="url(#pGrad)" />
-        <circle cx="100" cy="100" r="80" fill="#ffffff" opacity="0.05"/>
-        <g stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity="0.25">
-          <path d="M100 15 L100 35 M185 100 L165 100 M100 185 L100 165 M15 100 L35 100 M40 40 L55 55 M160 40 L145 55" />
+        
+        {/* Dynamic Action Background */}
+        <circle cx="100" cy="100" r="85" fill="#ffffff" opacity="0.05"/>
+        <g stroke="#ffffff" strokeWidth="3" opacity="0.2" strokeLinecap="round">
+           <path d="M100 10 L100 30 M190 100 L170 100 M100 190 L100 170 M10 100 L30 100" />
+           <path d="M35 35 L50 50 M165 35 L150 50 M35 165 L50 150 M165 165 L150 150" />
         </g>
-        <g transform="translate(30, 25)">
-           <path d="M50 135 C 20 85, 60 45, 100 45 C 135 45, 155 65, 140 110 C 125 155, 80 160, 50 135 Z" fill="#94a3b8" stroke="#334155" strokeWidth="6" strokeLinejoin="round"/>
-           <path d="M50 135 C 65 105, 85 85, 100 95 C 110 105, 115 125, 140 110 C 125 155, 80 160, 50 135 Z" fill="#64748b"/>
-           <path d="M135 85 L 180 90 L 140 115 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="5" strokeLinejoin="round"/>
-           <path d="M135 85 L 180 90 L 138 100 Z" fill="#fcd34d"/>
-           <path d="M90 60 L 140 78 L 125 95 L 80 82 Z" fill="#1e293b" strokeLinejoin="round"/>
-           <circle cx="115" cy="80" r="5" fill="#ef4444" filter="url(#pGlow)"/>
-           <circle cx="115" cy="80" r="2" fill="#ffffff" />
-           <path d="M65 65 L 50 90 M 55 60 L 45 75" stroke="#f43f5e" strokeWidth="3" strokeLinecap="round" opacity="0.8"/>
+
+        {/* Pigeon Body */}
+        <g transform="translate(100, 115)">
+          <path d="M-45 0 C -45 30, -25 50, 0 50 C 25 50, 45 30, 45 0 C 45 -40, 25 -50, 0 -50 C -25 -50, -45 -40, -45 0 Z" fill="#94a3b8" stroke="#334155" strokeWidth="4"/>
+          <path d="M-30 5 C -30 25, -15 40, 0 40 C 15 40, 30 25, 30 5 Z" fill="#cbd5e1" />
+          {/* Iridescent Neck Feathers */}
+          <path d="M-35 -20 Q 0 0 35 -20 Q 20 -40 0 -30 Q -20 -40 -35 -20 Z" fill="#818cf8"/>
+          <path d="M-25 -15 Q 0 5 25 -15 Q 15 -30 0 -20 Q -15 -30 -25 -15 Z" fill="#34d399" opacity="0.6"/>
+        </g>
+
+        {/* Pigeon Head */}
+        <g transform="translate(100, 60)">
+          <circle cx="0" cy="0" r="35" fill="#94a3b8" stroke="#334155" strokeWidth="4"/>
+          {/* Beak */}
+          <path d="M-12 8 L 12 8 L 0 28 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="3" strokeLinejoin="round"/>
+          {/* Angry Eyes */}
+          <path d="M-28 -8 L -5 0 L -15 12 Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
+          <path d="M28 -8 L 5 0 L 15 12 Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
+          {/* Glowing Pupils */}
+          <circle cx="-12" cy="2" r="3.5" fill="#ef4444" filter="url(#pGlow)"/>
+          <circle cx="12" cy="2" r="3.5" fill="#ef4444" filter="url(#pGlow)"/>
+          {/* V-shaped Unibrow/Eyebrows */}
+          <path d="M-32 -16 L -5 -4 L 5 -4 L 32 -16 L 22 -22 L 0 -12 L -22 -22 Z" fill="#1e293b" strokeLinejoin="round"/>
+        </g>
+
+        {/* Big Red Boxing Gloves (Rumble!) */}
+        <g transform="translate(50, 130)" filter="url(#pGlow)">
+          <circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" />
+          <path d="M-12 -15 Q 8 -22 18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/>
+          <rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/>
+        </g>
+        <g transform="translate(150, 130)" filter="url(#pGlow)">
+          <circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" />
+          <path d="M12 -15 Q -8 -22 -18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/>
+          <rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/>
         </g>
       </svg>
     );
