@@ -53,6 +53,7 @@
     const Maximize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
     const Minimize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
     const XIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+    const MenuIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
 
     // --- FIREBASE CONFIG --- //
     const firebaseConfig = {
@@ -247,6 +248,7 @@
       const [iframeLoading, setIframeLoading] = useState(true);
       const [adCountdown, setAdCountdown] = useState(0);
       const [isCssFullscreen, setIsCssFullscreen] = useState(false);
+      const [isSidebarOpen, setIsSidebarOpen] = useState(true);
       const playerContainerRef = useRef(null);
 
       // Auth State
@@ -330,12 +332,10 @@
           try {
             if (playerContainerRef.current) {
               await playerContainerRef.current.requestFullscreen();
-              setAdCountdown(5); // Start the 5-second mock ad
             }
           } catch (err) {
             console.warn("Native fullscreen blocked, using fallback 'maximized' mode.", err.message);
             setIsCssFullscreen(true);
-            setAdCountdown(5); // Still show the ad!
           }
         } else {
           // Exit fullscreen
@@ -359,6 +359,7 @@
         setActiveGame(game);
         setIframeLoading(true);
         setIsCssFullscreen(false);
+        setAdCountdown(5); // Launch a mock sponsor break every time a game is opened
       };
 
       const handleCloseGame = () => {
@@ -374,9 +375,9 @@
         <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden">
           
           {/* SIDEBAR NAVIGATION */}
-          <aside className={`w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 z-20 ${activeGame ? '-ml-64' : 'ml-0'}`}>
+          <aside className={`${isSidebarOpen ? 'w-64' : 'w-0 opacity-0'} bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 z-20 flex-shrink-0 overflow-hidden whitespace-nowrap`}>
             <div className="p-6 flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
                 <MonitorPlay size={24} className="text-white" />
               </div>
               <h1 className="text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
@@ -386,7 +387,7 @@
 
             <nav className="flex-1 px-4 py-6 space-y-2">
               <button className="w-full flex items-center space-x-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-xl transition-colors">
-                <Home size={20} />
+                <Home size={20} className="flex-shrink-0" />
                 <span className="font-semibold">Discover</span>
               </button>
             </nav>
@@ -396,7 +397,7 @@
                 onClick={() => setShowSettingsModal(true)}
                 className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 rounded-xl transition-colors"
               >
-                <SettingsIcon size={20} />
+                <SettingsIcon size={20} className="flex-shrink-0" />
                 <span className="font-semibold">Settings</span>
               </button>
             </div>
@@ -409,34 +410,43 @@
             <div className={`absolute inset-0 flex flex-col transition-opacity duration-300 ${activeGame ? 'opacity-0 pointer-events-none' : 'opacity-100 overflow-y-auto'}`}>
               
               {/* Header */}
-              <header className="px-10 py-8 flex justify-between items-center sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md">
-                <div className="relative w-96">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <SearchIcon size={18} className="text-slate-500" />
+              <header className="px-6 md:px-10 py-6 md:py-8 flex justify-between items-center sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md">
+                <div className="flex items-center flex-1">
+                  <button 
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                    className="mr-4 md:mr-6 p-2.5 bg-slate-900 rounded-xl text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 transition-all flex-shrink-0"
+                    title="Toggle Menu"
+                  >
+                    <MenuIcon size={20} />
+                  </button>
+                  <div className="relative w-full max-w-md">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <SearchIcon size={18} className="text-slate-500" />
+                    </div>
+                    <input 
+                      type="text" 
+                      className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                      placeholder="Search your library..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                   </div>
-                  <input 
-                    type="text" 
-                    className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-                    placeholder="Search your library..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 ml-4">
                   {user ? (
                     <div className="flex items-center space-x-3">
-                      <div className="flex flex-col items-end">
+                      <div className="flex flex-col items-end hidden sm:flex">
                         <span className="text-sm font-bold text-white">{user.displayName || 'Gamer'}</span>
                         <button onClick={handleLogout} className="text-xs text-rose-400 hover:text-rose-300 font-semibold transition-colors">Sign Out</button>
                       </div>
-                      <div className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-400 flex items-center justify-center shadow-lg">
+                      <div className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-400 flex items-center justify-center shadow-lg cursor-pointer sm:cursor-default" onClick={() => window.innerWidth < 640 && handleLogout()} title="Click to Sign Out">
                         <span className="font-bold text-lg text-white">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
                       </div>
                     </div>
                   ) : (
                     <button 
                       onClick={() => setShowAuthModal(true)}
-                      className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition-all shadow-lg shadow-indigo-500/20"
+                      className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap"
                     >
                       Sign In
                     </button>
@@ -446,7 +456,7 @@
 
               {/* Hero Banner */}
               {!searchQuery && (
-                <div className="px-10 pb-8">
+                <div className="px-6 md:px-10 pb-8">
                   <div className="relative w-full h-80 rounded-3xl overflow-hidden group cursor-pointer" onClick={() => handleLaunchGame(FeaturedGame)}>
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
                       <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-slate-900 to-slate-900"></div>
@@ -457,10 +467,10 @@
                     
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
                     
-                    <div className="absolute bottom-0 left-0 p-10 w-full md:w-2/3">
+                    <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full md:w-2/3">
                       <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-indigo-500 rounded-full mb-4 inline-block">Featured Launch</span>
-                      <h2 className="text-5xl font-black text-white mb-3 tracking-tight">{FeaturedGame.title}</h2>
-                      <p className="text-slate-300 text-lg mb-6 line-clamp-2">{FeaturedGame.description}</p>
+                      <h2 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">{FeaturedGame.title}</h2>
+                      <p className="text-slate-300 text-sm md:text-lg mb-6 line-clamp-2">{FeaturedGame.description}</p>
                       <button className="flex items-center space-x-2 bg-white text-slate-950 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors transform active:scale-95">
                         <PlayIcon size={20} fill="currentColor" />
                         <span>Play Now</span>
@@ -471,13 +481,13 @@
               )}
 
               {/* Game Grid */}
-              <div className="px-10 pb-20 flex-1">
+              <div className="px-6 md:px-10 pb-20 flex-1">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-bold text-white">All Games</h3>
                   <span className="text-slate-500 font-medium">{filteredGames.length} available</span>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredGames.map((game) => {
                     const GameIcon = game.icon;
                     return (
@@ -542,10 +552,10 @@
                       </button>
                       <div className="h-6 w-px bg-slate-700"></div>
                       <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-800">
+                      <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-800 hidden sm:block">
                         <ActiveIcon />
                       </div>
-                      <span className="font-bold text-white tracking-wide">{activeGame.title}</span>
+                      <span className="font-bold text-white tracking-wide truncate max-w-[150px] sm:max-w-xs">{activeGame.title}</span>
                     </div>
                   </div>
                   
@@ -589,7 +599,7 @@
                       </div>
                     )}
 
-                  {iframeLoading && (
+                  {iframeLoading && adCountdown === 0 && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
                       <div className="w-24 h-24 mb-6 animate-pulse text-indigo-500">
                         <ActiveIcon />
@@ -602,7 +612,7 @@
                     src={activeGame.src} 
                       title={activeGame.title}
                       onLoad={() => setIframeLoading(false)}
-                      className={`w-full h-full border-0 relative z-10 transition-opacity duration-500 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`}
+                      className={`w-full h-full border-0 relative z-10 transition-opacity duration-500 ${iframeLoading || adCountdown > 0 ? 'opacity-0' : 'opacity-100 bg-slate-950'}`}
                       allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"
                     ></iframe>
                   </div>
