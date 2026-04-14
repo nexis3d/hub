@@ -1,716 +1,709 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Gamepad2, 
-  Search, 
-  Home, 
-  Library, 
-  Trophy, 
-  Settings, 
-  ChevronLeft, 
-  Play,
-  MonitorPlay,
-  Maximize2,
-  Minimize2,
-  X
-} from 'lucide-react';
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged, 
-  updateProfile 
-} from 'firebase/auth';
-
-// Initialize Firebase with your custom configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBngyP0Niftjfu-4CYY_DrOEncZx0KX_us",
-  authDomain: "huib-46d18.firebaseapp.com",
-  projectId: "huib-46d18",
-  storageBucket: "huib-46d18.firebasestorage.app",
-  messagingSenderId: "277855179848",
-  appId: "1:277855179848:web:a48f9686414856afa4f47d",
-  measurementId: "G-K9E2J5FKFG"
-};
-
-let auth;
-try {
-  const app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-} catch (e) {
-  console.warn("Firebase not initialized:", e);
-}
-
-// --- CUSTOM GAME ICONS (MASTER ARTIST EDITION) --- //
-
-const ThreeDIcon = () => (
-  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="tBg" x1="0" y1="0" x2="200" y2="200">
-        <stop offset="0%" stopColor="#0f172a"/>
-        <stop offset="100%" stopColor="#1e3a8a"/>
-      </linearGradient>
-      <filter id="tGlow">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <rect width="200" height="200" rx="40" fill="url(#tBg)" />
-    
-    {/* Isometric Voxel Terrain */}
-    <g transform="translate(100, 135) scale(1.2)">
-      {/* Main Dirt Block */}
-      <path d="M0 0 L40 -20 L0 -40 L-40 -20 Z" fill="#65a30d" stroke="#4d7c0f" strokeWidth="1" strokeLinejoin="round"/>
-      <path d="M-40 -20 L0 0 L0 30 L-40 10 Z" fill="#78350f" stroke="#451a03" strokeWidth="1" strokeLinejoin="round"/>
-      <path d="M40 -20 L0 0 L0 30 L40 10 Z" fill="#92400e" stroke="#78350f" strokeWidth="1" strokeLinejoin="round"/>
-      
-      {/* Stone / Dirt Details */}
-      <path d="M-20 -10 L-20 10 M20 -10 L20 10 M0 10 L0 25 M-10 -5 L-10 15" stroke="#451a03" strokeWidth="2" opacity="0.4" strokeLinecap="round"/>
-
-      {/* Voxel Tree Trunk */}
-      <path d="M0 -30 L10 -35 L0 -40 L-10 -35 Z" fill="#b45309" strokeLinejoin="round"/>
-      <path d="M-10 -35 L0 -30 L0 -15 L-10 -20 Z" fill="#78350f" strokeLinejoin="round"/>
-      <path d="M10 -35 L0 -30 L0 -15 L10 -20 Z" fill="#92400e" strokeLinejoin="round"/>
-      
-      {/* Voxel Tree Leaves */}
-      <path d="M0 -45 L25 -57.5 L0 -70 L-25 -57.5 Z" fill="#22c55e" stroke="#16a34a" strokeWidth="1" strokeLinejoin="round"/>
-      <path d="M-25 -57.5 L0 -45 L0 -25 L-25 -37.5 Z" fill="#16a34a" stroke="#15803d" strokeWidth="1" strokeLinejoin="round"/>
-      <path d="M25 -57.5 L0 -45 L0 -25 L25 -37.5 Z" fill="#15803d" stroke="#16a34a" strokeWidth="1" strokeLinejoin="round"/>
-    </g>
-
-    {/* Floating Companion/Magic Cubes to emphasize "3D" depth */}
-    <g transform="translate(45, 60) scale(0.4)" filter="url(#tGlow)">
-      <path d="M0 0 L15 -7.5 L0 -15 L-15 -7.5 Z" fill="#38bdf8" strokeLinejoin="round"/>
-      <path d="M-15 -7.5 L0 0 L0 15 L-15 7.5 Z" fill="#0284c7" strokeLinejoin="round"/>
-      <path d="M15 -7.5 L0 0 L0 15 L15 7.5 Z" fill="#0ea5e9" strokeLinejoin="round"/>
-    </g>
-    <g transform="translate(150, 80) scale(0.35)" filter="url(#tGlow)">
-      <path d="M0 0 L15 -7.5 L0 -15 L-15 -7.5 Z" fill="#a855f7" strokeLinejoin="round"/>
-      <path d="M-15 -7.5 L0 0 L0 15 L-15 7.5 Z" fill="#7e22ce" strokeLinejoin="round"/>
-      <path d="M15 -7.5 L0 0 L0 15 L15 7.5 Z" fill="#9333ea" strokeLinejoin="round"/>
-    </g>
-  </svg>
-);
-
-const VBrawlIcon = () => (
-  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200">
-        <stop offset="0%" stopColor="#1e1b4b"/>
-        <stop offset="100%" stopColor="#0f172a"/>
-      </linearGradient>
-      <filter id="brawlGlow">
-        <feGaussianBlur stdDeviation="3.5" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <rect width="200" height="200" rx="40" fill="url(#bBg)" />
-    
-    {/* Epic Isometric Fighting Platform */}
-    <g transform="translate(100, 135)">
-      <path d="M0 0 L75 -37.5 L0 -75 L-75 -37.5 Z" fill="#334155" stroke="#475569" strokeWidth="3" strokeLinejoin="round"/>
-      <path d="M-75 -37.5 L0 0 L0 25 L-75 -12.5 Z" fill="#0f172a" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M75 -37.5 L0 0 L0 25 L75 -12.5 Z" fill="#1e293b" stroke="#334155" strokeWidth="2" strokeLinejoin="round"/>
-      {/* Arena Grid Lines */}
-      <path d="M-37.5 -56.25 L37.5 -18.75 M-37.5 -18.75 L37.5 -56.25" stroke="#475569" strokeWidth="2" opacity="0.5"/>
-    </g>
-
-    {/* Explosive Smash Center & 4 Player Spheres Colliding */}
-    <g filter="url(#brawlGlow)">
-      {/* Energy Burst */}
-      <path d="M100 60 L110 85 L135 85 L115 100 L122 125 L100 110 L78 125 L85 100 L65 85 L90 85 Z" fill="#f59e0b" stroke="#fbbf24" strokeWidth="2" strokeLinejoin="round"/>
-      {/* Player Orbs */}
-      <circle cx="65" cy="85" r="12" fill="#ef4444" />
-      <circle cx="135" cy="85" r="12" fill="#3b82f6" />
-      <circle cx="100" cy="50" r="12" fill="#22c55e" />
-      <circle cx="100" cy="125" r="12" fill="#a855f7" />
-    </g>
-    
-    {/* Action Lines for intensity */}
-    <g opacity="0.6">
-      <path d="M35 55 L55 75 M165 55 L145 75 M35 145 L60 120 M165 145 L140 120" stroke="#cbd5e1" strokeWidth="4" strokeLinecap="round" />
-    </g>
-  </svg>
-);
-
-const PigeonIcon = () => (
-  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200">
-        <stop offset="0%" stopColor="#4c1d95"/>
-        <stop offset="100%" stopColor="#be185d"/>
-      </linearGradient>
-      <filter id="pGlow">
-        <feGaussianBlur stdDeviation="2" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <rect width="200" height="200" rx="40" fill="url(#pGrad)" />
-    
-    {/* Dynamic Anime-style Speedlines */}
-    <circle cx="100" cy="100" r="80" fill="#ffffff" opacity="0.05"/>
-    <g stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity="0.25">
-      <path d="M100 15 L100 35 M185 100 L165 100 M100 185 L100 165 M15 100 L35 100 M40 40 L55 55 M160 40 L145 55" />
-    </g>
-
-    {/* Aggressive Pigeon Head */}
-    <g transform="translate(30, 25)">
-       {/* Neck and Body */}
-       <path d="M50 135 C 20 85, 60 45, 100 45 C 135 45, 155 65, 140 110 C 125 155, 80 160, 50 135 Z" fill="#94a3b8" stroke="#334155" strokeWidth="6" strokeLinejoin="round"/>
-       {/* Shadow Plumage */}
-       <path d="M50 135 C 65 105, 85 85, 100 95 C 110 105, 115 125, 140 110 C 125 155, 80 160, 50 135 Z" fill="#64748b"/>
-       {/* Sharp Angry Beak */}
-       <path d="M135 85 L 180 90 L 140 115 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="5" strokeLinejoin="round"/>
-       <path d="M135 85 L 180 90 L 138 100 Z" fill="#fcd34d"/>
-       {/* Mask / Angry Eyebrow */}
-       <path d="M90 60 L 140 78 L 125 95 L 80 82 Z" fill="#1e293b" strokeLinejoin="round"/>
-       {/* Glowing Eye */}
-       <circle cx="115" cy="80" r="5" fill="#ef4444" filter="url(#pGlow)"/>
-       <circle cx="115" cy="80" r="2" fill="#ffffff" />
-       {/* Battle Scar */}
-       <path d="M65 65 L 50 90 M 55 60 L 45 75" stroke="#f43f5e" strokeWidth="3" strokeLinecap="round" opacity="0.8"/>
-    </g>
-  </svg>
-);
-
-// --- GAME DATA --- //
-
-const GAMES = [
-  {
-    id: 'vbrawl',
-    title: 'VBrawl Ultimate',
-    developer: 'Mofawo',
-    description: 'Battle friends in VBrawl Ultimate, an epic 4-player platform brawler! Customize your 3D fighter, master dynamic maps, and unleash chaotic power-ups.',
-    src: 'https://vbrawl.edgeone.app/',
-    icon: VBrawlIcon,
-    theme: 'from-orange-500 to-rose-600',
-    tags: ['3D', 'Brawler', 'Multiplayer'],
-    isLocal: false,
-  },
-  {
-    id: 'pigeon-rumble',
-    title: 'Super Pigeon Rumble',
-    developer: 'RiftExcel',
-    description: 'Take to the skies and battle it out in Super Pigeon Rumble! Flap, peck, and outmaneuver your foes in this epic feathery frenzy.',
-    src: 'https://pigeron.edgeone.app',
-    icon: PigeonIcon,
-    theme: 'from-fuchsia-500 to-indigo-600',
-    tags: ['Action', 'Brawler', 'Web'],
-    isLocal: false,
-  },
-  {
-    id: '3dgame',
-    title: '3D Game',
-    developer: 'shaddo24mc',
-    description: 'Explore a custom 3D web experience! Jump into this immersive world directly from your browser.',
-    src: 'https://shaddo24mc.github.io/3d/',
-    icon: ThreeDIcon,
-    theme: 'from-blue-500 to-indigo-600',
-    tags: ['3D', 'Adventure', 'Web'],
-    isLocal: false,
-  }
-];
-
-// --- MAIN APPLICATION --- //
-
-export default function App() {
-  const [activeGame, setActiveGame] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [iframeLoading, setIframeLoading] = useState(true);
-  const [adCountdown, setAdCountdown] = useState(0);
-  const [isCssFullscreen, setIsCssFullscreen] = useState(false);
-  const playerContainerRef = useRef(null);
-
-  // Auth State
-  const [user, setUser] = useState(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [authError, setAuthError] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
-
-  // Settings State
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [masterVolume, setMasterVolume] = useState(100);
-  const [musicVolume, setMusicVolume] = useState(80);
-  const [sfxVolume, setSfxVolume] = useState(100);
-
-  useEffect(() => {
-    if (!auth) return;
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
-
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setAuthError('');
-    setAuthLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: username });
-      setUser({ ...userCredential.user, displayName: username }); 
-      setShowAuthModal(false);
-    } catch (err) {
-      setAuthError(err.message.replace('Firebase: ', ''));
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setAuthError('');
-    setAuthLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      setShowAuthModal(false);
-    } catch (err) {
-      setAuthError(err.message.replace('Firebase: ', ''));
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    if (auth) await signOut(auth);
-  };
-
-  // Handle the mock Ad countdown
-  useEffect(() => {
-    let timer;
-    if (adCountdown > 0) {
-      timer = setTimeout(() => setAdCountdown(prev => prev - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [adCountdown]);
-
-  // Handle Escape key to exit fallback fullscreen mode
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape' && isCssFullscreen) {
-        setIsCssFullscreen(false);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusGames Hub</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel (to compile JSX in the browser) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Firebase Import Maps for ES Modules -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"
       }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans m-0 overflow-hidden">
+  
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module">
+    import { initializeApp } from 'firebase/app';
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged, 
+      updateProfile 
+    } from 'firebase/auth';
+
+    const { useState, useEffect, useRef } = React;
+
+    // --- SVG ICONS (Replaced Lucide-React imports) --- //
+    const MonitorPlay = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m10 10 5 3-5 3v-6z"/></svg>;
+    const Home = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+    const SettingsIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+    const SearchIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
+    const PlayIcon = ({ size = 24, className = "", fill = "none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+    const Gamepad2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>;
+    const ChevronLeftIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>;
+    const Maximize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
+    const Minimize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
+    const XIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+
+    // --- FIREBASE CONFIG --- //
+    const firebaseConfig = {
+      apiKey: "AIzaSyBngyP0Niftjfu-4CYY_DrOEncZx0KX_us",
+      authDomain: "huib-46d18.firebaseapp.com",
+      projectId: "huib-46d18",
+      storageBucket: "huib-46d18.firebasestorage.app",
+      messagingSenderId: "277855179848",
+      appId: "1:277855179848:web:a48f9686414856afa4f47d",
+      measurementId: "G-K9E2J5FKFG"
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [isCssFullscreen]);
 
-  const toggleFullscreen = async () => {
-    if (!document.fullscreenElement && !isCssFullscreen) {
-      try {
-        if (playerContainerRef.current) {
-          // Attempt native fullscreen first
-          await playerContainerRef.current.requestFullscreen();
-          setAdCountdown(5); // Start the 5-second mock ad
-        }
-      } catch (err) {
-        // If the browser permissions block native fullscreen (common in iframes/Canvas),
-        // we catch the error gracefully and fall back to our CSS "maximized" mode!
-        console.warn("Native fullscreen blocked, using fallback 'maximized' mode.", err.message);
-        setIsCssFullscreen(true);
-        setAdCountdown(5); // Still show the ad!
-      }
-    } else {
-      // Exit fullscreen
-      if (document.fullscreenElement && document.exitFullscreen) {
-        try {
-          await document.exitFullscreen();
-        } catch (err) {
-          console.error(err);
-        }
-      }
-      setIsCssFullscreen(false);
+    let auth;
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    } catch (e) {
+      console.warn("Firebase not initialized:", e);
     }
-  };
 
-  const filteredGames = GAMES.filter(g => 
-    g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    g.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+    // --- CUSTOM GAME ICONS (MASTER ARTIST EDITION) --- //
+    const ThreeDIcon = () => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="tBg" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#0f172a"/>
+            <stop offset="100%" stopColor="#1e3a8a"/>
+          </linearGradient>
+          <filter id="tGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#tBg)" />
+        <g transform="translate(100, 135) scale(1.2)">
+          <path d="M0 0 L40 -20 L0 -40 L-40 -20 Z" fill="#65a30d" stroke="#4d7c0f" strokeWidth="1" strokeLinejoin="round"/>
+          <path d="M-40 -20 L0 0 L0 30 L-40 10 Z" fill="#78350f" stroke="#451a03" strokeWidth="1" strokeLinejoin="round"/>
+          <path d="M40 -20 L0 0 L0 30 L40 10 Z" fill="#92400e" stroke="#78350f" strokeWidth="1" strokeLinejoin="round"/>
+          <path d="M-20 -10 L-20 10 M20 -10 L20 10 M0 10 L0 25 M-10 -5 L-10 15" stroke="#451a03" strokeWidth="2" opacity="0.4" strokeLinecap="round"/>
+          <path d="M0 -30 L10 -35 L0 -40 L-10 -35 Z" fill="#b45309" strokeLinejoin="round"/>
+          <path d="M-10 -35 L0 -30 L0 -15 L-10 -20 Z" fill="#78350f" strokeLinejoin="round"/>
+          <path d="M10 -35 L0 -30 L0 -15 L10 -20 Z" fill="#92400e" strokeLinejoin="round"/>
+          <path d="M0 -45 L25 -57.5 L0 -70 L-25 -57.5 Z" fill="#22c55e" stroke="#16a34a" strokeWidth="1" strokeLinejoin="round"/>
+          <path d="M-25 -57.5 L0 -45 L0 -25 L-25 -37.5 Z" fill="#16a34a" stroke="#15803d" strokeWidth="1" strokeLinejoin="round"/>
+          <path d="M25 -57.5 L0 -45 L0 -25 L25 -37.5 Z" fill="#15803d" stroke="#16a34a" strokeWidth="1" strokeLinejoin="round"/>
+        </g>
+        <g transform="translate(45, 60) scale(0.4)" filter="url(#tGlow)">
+          <path d="M0 0 L15 -7.5 L0 -15 L-15 -7.5 Z" fill="#38bdf8" strokeLinejoin="round"/>
+          <path d="M-15 -7.5 L0 0 L0 15 L-15 7.5 Z" fill="#0284c7" strokeLinejoin="round"/>
+          <path d="M15 -7.5 L0 0 L0 15 L15 7.5 Z" fill="#0ea5e9" strokeLinejoin="round"/>
+        </g>
+        <g transform="translate(150, 80) scale(0.35)" filter="url(#tGlow)">
+          <path d="M0 0 L15 -7.5 L0 -15 L-15 -7.5 Z" fill="#a855f7" strokeLinejoin="round"/>
+          <path d="M-15 -7.5 L0 0 L0 15 L-15 7.5 Z" fill="#7e22ce" strokeLinejoin="round"/>
+          <path d="M15 -7.5 L0 0 L0 15 L15 7.5 Z" fill="#9333ea" strokeLinejoin="round"/>
+        </g>
+      </svg>
+    );
 
-  const handleLaunchGame = (game) => {
-    setActiveGame(game);
-    setIframeLoading(true);
-    setIsCssFullscreen(false);
-  };
+    const VBrawlIcon = () => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#1e1b4b"/>
+            <stop offset="100%" stopColor="#0f172a"/>
+          </linearGradient>
+          <filter id="brawlGlow">
+            <feGaussianBlur stdDeviation="3.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#bBg)" />
+        <g transform="translate(100, 135)">
+          <path d="M0 0 L75 -37.5 L0 -75 L-75 -37.5 Z" fill="#334155" stroke="#475569" strokeWidth="3" strokeLinejoin="round"/>
+          <path d="M-75 -37.5 L0 0 L0 25 L-75 -12.5 Z" fill="#0f172a" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
+          <path d="M75 -37.5 L0 0 L0 25 L75 -12.5 Z" fill="#1e293b" stroke="#334155" strokeWidth="2" strokeLinejoin="round"/>
+          <path d="M-37.5 -56.25 L37.5 -18.75 M-37.5 -18.75 L37.5 -56.25" stroke="#475569" strokeWidth="2" opacity="0.5"/>
+        </g>
+        <g filter="url(#brawlGlow)">
+          <path d="M100 60 L110 85 L135 85 L115 100 L122 125 L100 110 L78 125 L85 100 L65 85 L90 85 Z" fill="#f59e0b" stroke="#fbbf24" strokeWidth="2" strokeLinejoin="round"/>
+          <circle cx="65" cy="85" r="12" fill="#ef4444" />
+          <circle cx="135" cy="85" r="12" fill="#3b82f6" />
+          <circle cx="100" cy="50" r="12" fill="#22c55e" />
+          <circle cx="100" cy="125" r="12" fill="#a855f7" />
+        </g>
+        <g opacity="0.6">
+          <path d="M35 55 L55 75 M165 55 L145 75 M35 145 L60 120 M165 145 L140 120" stroke="#cbd5e1" strokeWidth="4" strokeLinecap="round" />
+        </g>
+      </svg>
+    );
 
-  const handleCloseGame = () => {
-    setActiveGame(null);
-    setIsCssFullscreen(false);
-  };
+    const PigeonIcon = () => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#4c1d95"/>
+            <stop offset="100%" stopColor="#be185d"/>
+          </linearGradient>
+          <filter id="pGlow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#pGrad)" />
+        <circle cx="100" cy="100" r="80" fill="#ffffff" opacity="0.05"/>
+        <g stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity="0.25">
+          <path d="M100 15 L100 35 M185 100 L165 100 M100 185 L100 165 M15 100 L35 100 M40 40 L55 55 M160 40 L145 55" />
+        </g>
+        <g transform="translate(30, 25)">
+           <path d="M50 135 C 20 85, 60 45, 100 45 C 135 45, 155 65, 140 110 C 125 155, 80 160, 50 135 Z" fill="#94a3b8" stroke="#334155" strokeWidth="6" strokeLinejoin="round"/>
+           <path d="M50 135 C 65 105, 85 85, 100 95 C 110 105, 115 125, 140 110 C 125 155, 80 160, 50 135 Z" fill="#64748b"/>
+           <path d="M135 85 L 180 90 L 140 115 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="5" strokeLinejoin="round"/>
+           <path d="M135 85 L 180 90 L 138 100 Z" fill="#fcd34d"/>
+           <path d="M90 60 L 140 78 L 125 95 L 80 82 Z" fill="#1e293b" strokeLinejoin="round"/>
+           <circle cx="115" cy="80" r="5" fill="#ef4444" filter="url(#pGlow)"/>
+           <circle cx="115" cy="80" r="2" fill="#ffffff" />
+           <path d="M65 65 L 50 90 M 55 60 L 45 75" stroke="#f43f5e" strokeWidth="3" strokeLinecap="round" opacity="0.8"/>
+        </g>
+      </svg>
+    );
 
-  // Safe component assignments to avoid JSX parsing errors with array indexing
-  const FeaturedGame = GAMES[0];
-  const FeaturedIcon = FeaturedGame.icon;
-  const ActiveIcon = activeGame ? activeGame.icon : null;
+    // --- GAME DATA --- //
+    const GAMES = [
+      {
+        id: 'vbrawl',
+        title: 'VBrawl Ultimate',
+        developer: 'Mofawo',
+        description: 'Battle friends in VBrawl Ultimate, an epic 4-player platform brawler! Customize your 3D fighter, master dynamic maps, and unleash chaotic power-ups.',
+        src: 'https://vbrawl.edgeone.app/',
+        icon: VBrawlIcon,
+        theme: 'from-orange-500 to-rose-600',
+        tags: ['3D', 'Brawler', 'Multiplayer'],
+        isLocal: false,
+      },
+      {
+        id: 'pigeon-rumble',
+        title: 'Super Pigeon Rumble',
+        developer: 'RiftExcel',
+        description: 'Take to the skies and battle it out in Super Pigeon Rumble! Flap, peck, and outmaneuver your foes in this epic feathery frenzy.',
+        src: 'https://pigeron.edgeone.app',
+        icon: PigeonIcon,
+        theme: 'from-fuchsia-500 to-indigo-600',
+        tags: ['Action', 'Brawler', 'Web'],
+        isLocal: false,
+      },
+      {
+        id: '3dgame',
+        title: '3D Game',
+        developer: 'shaddo24mc',
+        description: 'Explore a custom 3D web experience! Jump into this immersive world directly from your browser.',
+        src: 'https://shaddo24mc.github.io/3d/',
+        icon: ThreeDIcon,
+        theme: 'from-blue-500 to-indigo-600',
+        tags: ['3D', 'Adventure', 'Web'],
+        isLocal: false,
+      }
+    ];
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden">
-      
-      {/* SIDEBAR NAVIGATION */}
-      <aside className={`w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 z-20 ${activeGame ? '-ml-64' : 'ml-0'}`}>
-        <div className="p-6 flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <MonitorPlay size={24} className="text-white" />
-          </div>
-          <h1 className="text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-            NEXUS<span className="text-indigo-400">GAMES</span>
-          </h1>
-        </div>
+    // --- MAIN APPLICATION --- //
+    function App() {
+      const [activeGame, setActiveGame] = useState(null);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [iframeLoading, setIframeLoading] = useState(true);
+      const [adCountdown, setAdCountdown] = useState(0);
+      const [isCssFullscreen, setIsCssFullscreen] = useState(false);
+      const playerContainerRef = useRef(null);
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          <button className="w-full flex items-center space-x-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-xl transition-colors">
-            <Home size={20} />
-            <span className="font-semibold">Discover</span>
-          </button>
-        </nav>
+      // Auth State
+      const [user, setUser] = useState(null);
+      const [showAuthModal, setShowAuthModal] = useState(false);
+      const [authMode, setAuthMode] = useState('login');
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [username, setUsername] = useState('');
+      const [authError, setAuthError] = useState('');
+      const [authLoading, setAuthLoading] = useState(false);
 
-        <div className="p-4 border-t border-slate-800">
-          <button 
-            onClick={() => setShowSettingsModal(true)}
-            className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 rounded-xl transition-colors"
-          >
-            <Settings size={20} />
-            <span className="font-semibold">Settings</span>
-          </button>
-        </div>
-      </aside>
+      // Settings State
+      const [showSettingsModal, setShowSettingsModal] = useState(false);
+      const [masterVolume, setMasterVolume] = useState(100);
+      const [musicVolume, setMusicVolume] = useState(80);
+      const [sfxVolume, setSfxVolume] = useState(100);
 
-      {/* MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        
-        {/* Hub View */}
-        <div className={`absolute inset-0 flex flex-col transition-opacity duration-300 ${activeGame ? 'opacity-0 pointer-events-none' : 'opacity-100 overflow-y-auto'}`}>
+      useEffect(() => {
+        if (!auth) return;
+        const unsubscribe = onAuthStateChanged(auth, setUser);
+        return () => unsubscribe();
+      }, []);
+
+      const handleSignup = async (e) => {
+        e.preventDefault();
+        setAuthError('');
+        setAuthLoading(true);
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          await updateProfile(userCredential.user, { displayName: username });
+          setUser({ ...userCredential.user, displayName: username }); 
+          setShowAuthModal(false);
+        } catch (err) {
+          setAuthError(err.message.replace('Firebase: ', ''));
+        } finally {
+          setAuthLoading(false);
+        }
+      };
+
+      const handleLogin = async (e) => {
+        e.preventDefault();
+        setAuthError('');
+        setAuthLoading(true);
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          setShowAuthModal(false);
+        } catch (err) {
+          setAuthError(err.message.replace('Firebase: ', ''));
+        } finally {
+          setAuthLoading(false);
+        }
+      };
+
+      const handleLogout = async () => {
+        if (auth) await signOut(auth);
+      };
+
+      // Handle the mock Ad countdown
+      useEffect(() => {
+        let timer;
+        if (adCountdown > 0) {
+          timer = setTimeout(() => setAdCountdown(prev => prev - 1), 1000);
+        }
+        return () => clearTimeout(timer);
+      }, [adCountdown]);
+
+      // Handle Escape key to exit fallback fullscreen mode
+      useEffect(() => {
+        const handleEsc = (e) => {
+          if (e.key === 'Escape' && isCssFullscreen) {
+            setIsCssFullscreen(false);
+          }
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+      }, [isCssFullscreen]);
+
+      const toggleFullscreen = async () => {
+        if (!document.fullscreenElement && !isCssFullscreen) {
+          try {
+            if (playerContainerRef.current) {
+              await playerContainerRef.current.requestFullscreen();
+              setAdCountdown(5); // Start the 5-second mock ad
+            }
+          } catch (err) {
+            console.warn("Native fullscreen blocked, using fallback 'maximized' mode.", err.message);
+            setIsCssFullscreen(true);
+            setAdCountdown(5); // Still show the ad!
+          }
+        } else {
+          // Exit fullscreen
+          if (document.fullscreenElement && document.exitFullscreen) {
+            try {
+              await document.exitFullscreen();
+            } catch (err) {
+              console.error(err);
+            }
+          }
+          setIsCssFullscreen(false);
+        }
+      };
+
+      const filteredGames = GAMES.filter(g => 
+        g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        g.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+
+      const handleLaunchGame = (game) => {
+        setActiveGame(game);
+        setIframeLoading(true);
+        setIsCssFullscreen(false);
+      };
+
+      const handleCloseGame = () => {
+        setActiveGame(null);
+        setIsCssFullscreen(false);
+      };
+
+      const FeaturedGame = GAMES[0];
+      const FeaturedIcon = FeaturedGame.icon;
+      const ActiveIcon = activeGame ? activeGame.icon : null;
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden">
           
-          {/* Header */}
-          <header className="px-10 py-8 flex justify-between items-center sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md">
-            <div className="relative w-96">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search size={18} className="text-slate-500" />
+          {/* SIDEBAR NAVIGATION */}
+          <aside className={`w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 z-20 ${activeGame ? '-ml-64' : 'ml-0'}`}>
+            <div className="p-6 flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <MonitorPlay size={24} className="text-white" />
               </div>
-              <input 
-                type="text" 
-                className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-                placeholder="Search your library..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <h1 className="text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                NEXUS<span className="text-indigo-400">GAMES</span>
+              </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              {user ? (
-                <div className="flex items-center space-x-3">
-                  <div className="flex flex-col items-end">
-                    <span className="text-sm font-bold text-white">{user.displayName || 'Gamer'}</span>
-                    <button onClick={handleLogout} className="text-xs text-rose-400 hover:text-rose-300 font-semibold transition-colors">Sign Out</button>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-400 flex items-center justify-center shadow-lg">
-                    <span className="font-bold text-lg text-white">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
-                  </div>
-                </div>
-              ) : (
-                <button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition-all shadow-lg shadow-indigo-500/20"
-                >
-                  Sign In
-                </button>
-              )}
-            </div>
-          </header>
 
-          {/* Hero Banner */}
-          {!searchQuery && (
-            <div className="px-10 pb-8">
-              <div className="relative w-full h-80 rounded-3xl overflow-hidden group cursor-pointer" onClick={() => handleLaunchGame(FeaturedGame)}>
-                {/* Abstract Background for Hero */}
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
-                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-slate-900 to-slate-900"></div>
-                  <div className="absolute right-0 top-0 w-1/2 h-full opacity-30 transform translate-x-20 -translate-y-10 group-hover:scale-105 transition-transform duration-700">
-                    <FeaturedIcon />
-                  </div>
-                </div>
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                
-                <div className="absolute bottom-0 left-0 p-10 w-full md:w-2/3">
-                  <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-indigo-500 rounded-full mb-4 inline-block">Featured Launch</span>
-                  <h2 className="text-5xl font-black text-white mb-3 tracking-tight">{FeaturedGame.title}</h2>
-                  <p className="text-slate-300 text-lg mb-6 line-clamp-2">{FeaturedGame.description}</p>
-                  <button className="flex items-center space-x-2 bg-white text-slate-950 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors transform active:scale-95">
-                    <Play size={20} fill="currentColor" />
-                    <span>Play Now</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+            <nav className="flex-1 px-4 py-6 space-y-2">
+              <button className="w-full flex items-center space-x-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-xl transition-colors">
+                <Home size={20} />
+                <span className="font-semibold">Discover</span>
+              </button>
+            </nav>
 
-          {/* Game Grid */}
-          <div className="px-10 pb-20 flex-1">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-white">All Games</h3>
-              <span className="text-slate-500 font-medium">{filteredGames.length} available</span>
+            <div className="p-4 border-t border-slate-800">
+              <button 
+                onClick={() => setShowSettingsModal(true)}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 rounded-xl transition-colors"
+              >
+                <SettingsIcon size={20} />
+                <span className="font-semibold">Settings</span>
+              </button>
             </div>
+          </aside>
+
+          {/* MAIN CONTENT AREA */}
+          <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredGames.map((game) => {
-                const GameIcon = game.icon; // Standardize variable for rendering
-                return (
-                  <div 
-                    key={game.id} 
-                    className="group bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col h-full"
-                    onClick={() => handleLaunchGame(game)}
-                  >
-                    <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center overflow-hidden`}>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
-                      <div className="w-32 h-32 transform group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl">
-                        <GameIcon />
+            {/* Hub View */}
+            <div className={`absolute inset-0 flex flex-col transition-opacity duration-300 ${activeGame ? 'opacity-0 pointer-events-none' : 'opacity-100 overflow-y-auto'}`}>
+              
+              {/* Header */}
+              <header className="px-10 py-8 flex justify-between items-center sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md">
+                <div className="relative w-96">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <SearchIcon size={18} className="text-slate-500" />
+                  </div>
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                    placeholder="Search your library..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-4">
+                  {user ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-bold text-white">{user.displayName || 'Gamer'}</span>
+                        <button onClick={handleLogout} className="text-xs text-rose-400 hover:text-rose-300 font-semibold transition-colors">Sign Out</button>
                       </div>
-                      
-                      {/* Hover Play Button */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-sm">
-                        <div className="w-16 h-16 bg-white/20 border border-white/40 rounded-full flex items-center justify-center backdrop-blur-md">
-                          <Play size={32} className="text-white ml-1" fill="currentColor" />
-                        </div>
+                      <div className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-400 flex items-center justify-center shadow-lg">
+                        <span className="font-bold text-lg text-white">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => setShowAuthModal(true)}
+                      className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition-all shadow-lg shadow-indigo-500/20"
+                    >
+                      Sign In
+                    </button>
+                  )}
+                </div>
+              </header>
+
+              {/* Hero Banner */}
+              {!searchQuery && (
+                <div className="px-10 pb-8">
+                  <div className="relative w-full h-80 rounded-3xl overflow-hidden group cursor-pointer" onClick={() => handleLaunchGame(FeaturedGame)}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-slate-900 to-slate-900"></div>
+                      <div className="absolute right-0 top-0 w-1/2 h-full opacity-30 transform translate-x-20 -translate-y-10 group-hover:scale-105 transition-transform duration-700">
+                        <FeaturedIcon />
                       </div>
                     </div>
                     
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-bold text-slate-100 line-clamp-1">{game.title}</h4>
-                      </div>
-                      <p className="text-xs text-slate-400 mb-4">{game.developer}</p>
-                      
-                      <div className="mt-auto flex flex-wrap gap-2">
-                        {game.tags.map(tag => (
-                          <span key={tag} className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 rounded-md">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                    
+                    <div className="absolute bottom-0 left-0 p-10 w-full md:w-2/3">
+                      <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-indigo-500 rounded-full mb-4 inline-block">Featured Launch</span>
+                      <h2 className="text-5xl font-black text-white mb-3 tracking-tight">{FeaturedGame.title}</h2>
+                      <p className="text-slate-300 text-lg mb-6 line-clamp-2">{FeaturedGame.description}</p>
+                      <button className="flex items-center space-x-2 bg-white text-slate-950 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors transform active:scale-95">
+                        <PlayIcon size={20} fill="currentColor" />
+                        <span>Play Now</span>
+                      </button>
                     </div>
                   </div>
-                )
-              })}
-              
-              {filteredGames.length === 0 && (
-                <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-500">
-                  <Gamepad2 size={48} className="mb-4 opacity-50" />
-                  <p className="text-xl">No games found matching "{searchQuery}"</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Game Player View */}
-        <div className={`absolute inset-0 flex flex-col bg-black transition-opacity duration-300 z-30 ${activeGame ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-          {activeGame && (
-            <>
-              {/* Top Navigation Bar for Player (Hidden if strictly fullscreen via CSS fallback) */}
-              <div className={`h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 flex-shrink-0 transition-all ${isCssFullscreen ? 'hidden' : 'flex'}`}>
-                <div className="flex items-center space-x-4">
-                  <button 
-                    onClick={handleCloseGame}
-                    className="flex items-center space-x-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    <ChevronLeft size={18} />
-                    <span className="font-semibold text-sm">Hub</span>
-                  </button>
-                  <div className="h-6 w-px bg-slate-700"></div>
-                  <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-800">
-                    <ActiveIcon />
-                  </div>
-                  <span className="font-bold text-white tracking-wide">{activeGame.title}</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <button 
-                  onClick={toggleFullscreen}
-                  className="flex items-center space-x-2 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors tooltip group relative"
-                  title="Full Screen"
-                >
-                  <Maximize2 size={18} />
-                </button>
-              </div>
-            </div>
-            
-            <div 
-              className={`flex-1 w-full bg-slate-950 relative ${isCssFullscreen ? 'fixed inset-0 z-[100]' : ''}`} 
-                ref={playerContainerRef}
-              >
-                {/* Floating Exit Fullscreen Button (Only shows in CSS Fallback mode) */}
-                {/* Note: opacity-25 (75% transparent) normally, opacity-100 on hover! */}
-                {isCssFullscreen && (
-                  <button 
-                    onClick={toggleFullscreen}
-                    className="absolute top-4 right-4 z-[60] opacity-25 hover:opacity-100 bg-slate-900/80 hover:bg-slate-700 text-slate-300 hover:text-white p-2.5 rounded-lg border border-slate-700 backdrop-blur-sm transition-all shadow-xl"
-                    title="Exit Full Screen (Esc)"
-                  >
-                    <Minimize2 size={20} />
-                  </button>
-                )}
-
-                {/* Simulated Ad Overlay */}
-                {adCountdown > 0 && (
-                  <div className="absolute inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center px-4 text-center">
-                    <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700 shadow-2xl max-w-lg w-full">
-                      <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-wider">Quick Sponsor Break</h2>
-                      <div className="w-full h-px bg-slate-700 mb-6"></div>
-                      <div className="text-6xl mb-6 animate-bounce">💧</div>
-                      <p className="text-xl text-indigo-400 font-bold mb-8">Remember to drink a glass of water and sit up straight!</p>
-                      <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin mb-4"></div>
-                        <p className="text-slate-400 font-medium">Your game will resume in <span className="text-white font-bold">{adCountdown}</span> seconds...</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Loading State / Fallback UI shown while iframe loads or if it fails */}
-              {iframeLoading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
-                  <div className="w-24 h-24 mb-6 animate-pulse text-indigo-500">
-                    <ActiveIcon />
-                  </div>
-                  <p className="text-slate-400 font-medium animate-pulse">Connecting to {activeGame.title}...</p>
                 </div>
               )}
 
-              <iframe 
-                src={activeGame.src} 
-                  title={activeGame.title}
-                  onLoad={() => setIframeLoading(false)}
-                  className={`w-full h-full border-0 relative z-10 transition-opacity duration-500 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`}
-                  allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"
-                ></iframe>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* AUTH MODAL */}
-        {showAuthModal && (
-          <div className="absolute inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-md shadow-2xl relative">
-                <button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
-                  <X size={24} />
-                </button>
-                <h2 className="text-3xl font-black text-white mb-6">
-                  {authMode === 'login' ? 'Welcome Back' : 'Join NexusGames'}
-                </h2>
+              {/* Game Grid */}
+              <div className="px-10 pb-20 flex-1">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-2xl font-bold text-white">All Games</h3>
+                  <span className="text-slate-500 font-medium">{filteredGames.length} available</span>
+                </div>
                 
-                {authError && <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/50 text-rose-400 rounded-lg text-sm">{authError}</div>}
-
-                <form onSubmit={authMode === 'login' ? handleLogin : handleSignup} className="space-y-4">
-                  {authMode === 'signup' && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
-                      <input type="text" required value={username} onChange={e => setUsername(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="ProGamer123" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredGames.map((game) => {
+                    const GameIcon = game.icon;
+                    return (
+                      <div 
+                        key={game.id} 
+                        className="group bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col h-full"
+                        onClick={() => handleLaunchGame(game)}
+                      >
+                        <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center overflow-hidden`}>
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                          <div className="w-32 h-32 transform group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl">
+                            <GameIcon />
+                          </div>
+                          
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-sm">
+                            <div className="w-16 h-16 bg-white/20 border border-white/40 rounded-full flex items-center justify-center backdrop-blur-md">
+                              <PlayIcon size={32} className="text-white ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-5 flex flex-col flex-1">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-lg font-bold text-slate-100 line-clamp-1">{game.title}</h4>
+                          </div>
+                          <p className="text-xs text-slate-400 mb-4">{game.developer}</p>
+                          
+                          <div className="mt-auto flex flex-wrap gap-2">
+                            {game.tags.map(tag => (
+                              <span key={tag} className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 rounded-md">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                  
+                  {filteredGames.length === 0 && (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-500">
+                      <Gamepad2Icon size={48} className="mb-4 opacity-50" />
+                      <p className="text-xl">No games found matching "{searchQuery}"</p>
                     </div>
                   )}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
-                    <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="player@example.com" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1">Password</label>
-                    <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="••••••••" />
-                  </div>
-                  
-                  <button disabled={authLoading} type="submit" className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all mt-6 disabled:opacity-50 flex justify-center">
-                    {authLoading ? (
-                       <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                       authMode === 'login' ? 'Sign In' : 'Create Account'
-                    )}
-                  </button>
-                </form>
-                
-                <div className="mt-6 text-center">
-                  <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="text-slate-400 hover:text-white text-sm transition-colors font-medium">
-                    {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-                  </button>
                 </div>
-             </div>
-          </div>
-        )}
+              </div>
+            </div>
 
-        {/* SETTINGS MODAL */}
-        {showSettingsModal && (
-          <div className="absolute inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-md shadow-2xl relative">
-                <button onClick={() => setShowSettingsModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
-                  <X size={24} />
-                </button>
-                <h2 className="text-3xl font-black text-white mb-6">Settings</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-200 mb-4">Audio</h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-slate-400 font-medium">Master Volume</span>
-                          <span className="text-white font-bold">{masterVolume}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="0" max="100" 
-                          value={masterVolume} 
-                          onChange={(e) => setMasterVolume(e.target.value)}
-                          className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-                        />
+            {/* Game Player View */}
+            <div className={`absolute inset-0 flex flex-col bg-black transition-opacity duration-300 z-30 ${activeGame ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+              {activeGame && (
+                <>
+                  <div className={`h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 flex-shrink-0 transition-all ${isCssFullscreen ? 'hidden' : 'flex'}`}>
+                    <div className="flex items-center space-x-4">
+                      <button 
+                        onClick={handleCloseGame}
+                        className="flex items-center space-x-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        <ChevronLeftIcon size={18} />
+                        <span className="font-semibold text-sm">Hub</span>
+                      </button>
+                      <div className="h-6 w-px bg-slate-700"></div>
+                      <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-800">
+                        <ActiveIcon />
                       </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-slate-400 font-medium">Music Volume</span>
-                          <span className="text-white font-bold">{musicVolume}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="0" max="100" 
-                          value={musicVolume} 
-                          onChange={(e) => setMusicVolume(e.target.value)}
-                          className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-slate-400 font-medium">Sound Effects</span>
-                          <span className="text-white font-bold">{sfxVolume}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="0" max="100" 
-                          value={sfxVolume} 
-                          onChange={(e) => setSfxVolume(e.target.value)}
-                          className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-                        />
-                      </div>
+                      <span className="font-bold text-white tracking-wide">{activeGame.title}</span>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <button 
+                      onClick={toggleFullscreen}
+                      className="flex items-center space-x-2 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors tooltip group relative"
+                      title="Full Screen"
+                    >
+                      <Maximize2Icon size={18} />
+                    </button>
+                  </div>
                 </div>
                 
-                <button 
-                  onClick={() => setShowSettingsModal(false)} 
-                  className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all mt-8"
-                >
-                  Done
-                </button>
-             </div>
-          </div>
-        )}
+                <div 
+                  className={`flex-1 w-full bg-slate-950 relative ${isCssFullscreen ? 'fixed inset-0 z-[100]' : ''}`} 
+                    ref={playerContainerRef}
+                  >
+                    {isCssFullscreen && (
+                      <button 
+                        onClick={toggleFullscreen}
+                        className="absolute top-4 right-4 z-[60] opacity-25 hover:opacity-100 bg-slate-900/80 hover:bg-slate-700 text-slate-300 hover:text-white p-2.5 rounded-lg border border-slate-700 backdrop-blur-sm transition-all shadow-xl"
+                        title="Exit Full Screen (Esc)"
+                      >
+                        <Minimize2Icon size={20} />
+                      </button>
+                    )}
 
-      </main>
-    </div>
-  );
-}
+                    {adCountdown > 0 && (
+                      <div className="absolute inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center px-4 text-center">
+                        <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700 shadow-2xl max-w-lg w-full">
+                          <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-wider">Quick Sponsor Break</h2>
+                          <div className="w-full h-px bg-slate-700 mb-6"></div>
+                          <div className="text-6xl mb-6 animate-bounce">💧</div>
+                          <p className="text-xl text-indigo-400 font-bold mb-8">Remember to drink a glass of water and sit up straight!</p>
+                          <div className="flex flex-col items-center">
+                            <div className="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin mb-4"></div>
+                            <p className="text-slate-400 font-medium">Your game will resume in <span className="text-white font-bold">{adCountdown}</span> seconds...</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                  {iframeLoading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
+                      <div className="w-24 h-24 mb-6 animate-pulse text-indigo-500">
+                        <ActiveIcon />
+                      </div>
+                      <p className="text-slate-400 font-medium animate-pulse">Connecting to {activeGame.title}...</p>
+                    </div>
+                  )}
+
+                  <iframe 
+                    src={activeGame.src} 
+                      title={activeGame.title}
+                      onLoad={() => setIframeLoading(false)}
+                      className={`w-full h-full border-0 relative z-10 transition-opacity duration-500 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`}
+                      allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"
+                    ></iframe>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* AUTH MODAL */}
+            {showAuthModal && (
+              <div className="absolute inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+                 <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-md shadow-2xl relative">
+                    <button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
+                      <XIcon size={24} />
+                    </button>
+                    <h2 className="text-3xl font-black text-white mb-6">
+                      {authMode === 'login' ? 'Welcome Back' : 'Join NexusGames'}
+                    </h2>
+                    
+                    {authError && <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/50 text-rose-400 rounded-lg text-sm">{authError}</div>}
+
+                    <form onSubmit={authMode === 'login' ? handleLogin : handleSignup} className="space-y-4">
+                      {authMode === 'signup' && (
+                        <div>
+                          <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
+                          <input type="text" required value={username} onChange={e => setUsername(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="ProGamer123" />
+                        </div>
+                      )}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
+                        <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="player@example.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Password</label>
+                        <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="••••••••" />
+                      </div>
+                      
+                      <button disabled={authLoading} type="submit" className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all mt-6 disabled:opacity-50 flex justify-center">
+                        {authLoading ? (
+                           <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                           authMode === 'login' ? 'Sign In' : 'Create Account'
+                        )}
+                      </button>
+                    </form>
+                    
+                    <div className="mt-6 text-center">
+                      <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="text-slate-400 hover:text-white text-sm transition-colors font-medium">
+                        {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                      </button>
+                    </div>
+                 </div>
+              </div>
+            )}
+
+            {/* SETTINGS MODAL */}
+            {showSettingsModal && (
+              <div className="absolute inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+                 <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-md shadow-2xl relative">
+                    <button onClick={() => setShowSettingsModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
+                      <XIcon size={24} />
+                    </button>
+                    <h2 className="text-3xl font-black text-white mb-6">Settings</h2>
+                    
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-200 mb-4">Audio</h3>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-2">
+                              <span className="text-slate-400 font-medium">Master Volume</span>
+                              <span className="text-white font-bold">{masterVolume}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" max="100" 
+                              value={masterVolume} 
+                              onChange={(e) => setMasterVolume(e.target.value)}
+                              className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+                            />
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-sm mb-2">
+                              <span className="text-slate-400 font-medium">Music Volume</span>
+                              <span className="text-white font-bold">{musicVolume}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" max="100" 
+                              value={musicVolume} 
+                              onChange={(e) => setMusicVolume(e.target.value)}
+                              className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+                            />
+                          </div>
+
+                          <div>
+                            <div className="flex justify-between text-sm mb-2">
+                              <span className="text-slate-400 font-medium">Sound Effects</span>
+                              <span className="text-white font-bold">{sfxVolume}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" max="100" 
+                              value={sfxVolume} 
+                              onChange={(e) => setSfxVolume(e.target.value)}
+                              className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => setShowSettingsModal(false)} 
+                      className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all mt-8"
+                    >
+                      Done
+                    </button>
+                 </div>
+              </div>
+            )}
+
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
