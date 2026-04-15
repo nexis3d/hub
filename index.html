@@ -25,6 +25,34 @@
     tailwind.config = {
       theme: {
         extend: {
+          colors: {
+            white: 'rgb(var(--color-white) / <alpha-value>)',
+            black: 'rgb(var(--color-black) / <alpha-value>)',
+            slate: {
+              50: 'rgb(var(--color-slate-50) / <alpha-value>)',
+              100: 'rgb(var(--color-slate-100) / <alpha-value>)',
+              200: 'rgb(var(--color-slate-200) / <alpha-value>)',
+              300: 'rgb(var(--color-slate-300) / <alpha-value>)',
+              400: 'rgb(var(--color-slate-400) / <alpha-value>)',
+              500: 'rgb(var(--color-slate-500) / <alpha-value>)',
+              600: 'rgb(var(--color-slate-600) / <alpha-value>)',
+              700: 'rgb(var(--color-slate-700) / <alpha-value>)',
+              800: 'rgb(var(--color-slate-800) / <alpha-value>)',
+              900: 'rgb(var(--color-slate-900) / <alpha-value>)',
+              950: 'rgb(var(--color-slate-950) / <alpha-value>)',
+            },
+            indigo: {
+              300: 'rgb(var(--color-indigo-300) / <alpha-value>)',
+              400: 'rgb(var(--color-indigo-400) / <alpha-value>)',
+              500: 'rgb(var(--color-indigo-500) / <alpha-value>)',
+              600: 'rgb(var(--color-indigo-600) / <alpha-value>)',
+              900: 'rgb(var(--color-indigo-900) / <alpha-value>)',
+            },
+            fuchsia: {
+              600: 'rgb(var(--color-fuchsia-600) / <alpha-value>)',
+              900: 'rgb(var(--color-fuchsia-900) / <alpha-value>)',
+            }
+          },
           fontFamily: {
             sans: ['Fira Sans', 'sans-serif'],
             heading: ['Fira Sans', 'sans-serif'],
@@ -68,11 +96,87 @@
   </script>
   
   <style>
+    :root {
+      --color-white: 255 255 255;
+      --color-black: 0 0 0;
+      --color-slate-50: 248 250 252;
+      --color-slate-100: 241 245 249;
+      --color-slate-200: 226 232 240;
+      --color-slate-300: 203 213 225;
+      --color-slate-400: 148 163 184;
+      --color-slate-500: 100 116 139;
+      --color-slate-600: 71 85 105;
+      --color-slate-700: 51 65 85;
+      --color-slate-800: 30 41 59;
+      --color-slate-900: 15 23 42;
+      --color-slate-950: 2 6 23;
+      --color-indigo-300: 165 180 252;
+      --color-indigo-400: 129 140 248;
+      --color-indigo-500: 99 102 241;
+      --color-indigo-600: 79 70 229;
+      --color-indigo-900: 49 46 129;
+      --color-fuchsia-600: 192 38 211;
+      --color-fuchsia-900: 112 26 117;
+    }
+    
+    .light-mode {
+      --color-white: 0 0 0; /* Pure Black for highest contrast */
+      --color-black: 255 255 255;
+      --color-slate-50: 0 0 0;
+      --color-slate-100: 0 0 0; /* Forced to Pure Black */
+      --color-slate-200: 2 6 23; /* Slate 950 */
+      --color-slate-300: 15 23 42; /* Very dark slate for primary text */
+      --color-slate-400: 15 23 42; /* Extremely dark slate for descriptions */
+      --color-slate-500: 30 41 59; /* Bold dark slate for tags and placeholders */
+      --color-slate-600: 148 163 184;
+      --color-slate-700: 203 213 225;
+      --color-slate-800: 226 232 240;
+      --color-slate-900: 241 245 249;
+      --color-slate-950: 248 250 252;
+      --color-indigo-300: 30 27 75; /* Indigo 950 - Practically black for active menu items */
+      --color-indigo-400: 49 46 129; /* Indigo 900 for high-contrast accents */
+      --color-indigo-500: 67 56 202; /* Indigo 700 */
+      --color-indigo-600: 129 140 248;
+      --color-indigo-900: 224 231 255;
+      --color-fuchsia-600: 217 70 239;
+      --color-fuchsia-900: 250 232 255;
+    }
+
+    .light-mode .mix-blend-screen {
+      mix-blend-mode: multiply !important;
+      opacity: 0.6 !important;
+    }
+
+    /* MAKE GAME BACKGROUNDS DIFFERENT IN LIGHT MODE */
+    .light-mode .aspect-video.bg-gradient-to-br,
+    .light-mode .animate-gradient-x {
+      background: #e2e8f0 !important;
+      background-image: none !important;
+    }
+
+    /* MAKE ALL BUTTONS GREY IN LIGHT MODE */
+    .light-mode button.bg-gradient-to-r,
+    .light-mode button.bg-indigo-600,
+    .light-mode button.bg-rose-600,
+    .light-mode button.bg-slate-800,
+    .light-mode button.bg-white {
+      background: #cbd5e1 !important;
+      background-image: none !important; 
+      color: #000000 !important; /* Force true black text on buttons */
+      box-shadow: none !important;
+    }
+
+    /* Target animated hover span inside Play Now button */
+    .light-mode button.bg-white span.bg-gradient-to-r {
+      background-image: none !important;
+      background-color: #94a3b8 !important;
+    }
+
     /* Custom Scrollbar for sleekness */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    ::-webkit-scrollbar-thumb { background: rgb(var(--color-slate-700)); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-slate-600)); }
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -454,6 +558,15 @@
       const [masterVolume, setMasterVolume] = useState(100);
       const [musicVolume, setMusicVolume] = useState(80);
       const [sfxVolume, setSfxVolume] = useState(100);
+      const [isLightMode, setIsLightMode] = useState(false);
+
+      useEffect(() => {
+        if (isLightMode) {
+          document.documentElement.classList.add('light-mode');
+        } else {
+          document.documentElement.classList.remove('light-mode');
+        }
+      }, [isLightMode]);
 
       // Derived UI variables
       const userLevel = 1 + Math.floor(currentUserStreak / 2);
@@ -887,7 +1000,7 @@
           >
             <div className="p-6 flex items-center justify-start h-24 border-b border-slate-800/30">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-600 flex items-center justify-center shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] flex-shrink-0 border border-white/10">
-                <NexisLogo size={20} className="text-white" />
+                <NexisLogo size={20} className="text-[#ffffff]" />
               </div>
               <h1 className={`text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-heading drop-shadow-md transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>
                 NEXIS GAMES
@@ -988,7 +1101,7 @@
                         {user.photoURL ? (
                            <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
-                           <span className="font-bold text-xl text-white font-heading">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                           <span className="font-bold text-xl text-[#ffffff] font-heading">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
                         )}
                       </div>
                     </div>
@@ -997,7 +1110,7 @@
                       {/* Logged Out Header Prompt! */}
                       <div className="hidden sm:flex items-center bg-slate-900/50 border border-slate-800/80 px-3 py-1.5 rounded-lg shadow-inner opacity-70" title="Sign in to track your daily streak!">
                          <span className="text-slate-500 text-sm mr-1.5">🔥</span>
-                         <span className="text-sm font-bold text-slate-400 font-ui tracking-widest">Sign In to Save Streak</span>
+                         <span className="text-sm font-bold text-slate-400 font-ui tracking-widest">Sign In to Track</span>
                       </div>
                       <button 
                         onClick={() => setShowAuthModal(true)}
@@ -1028,7 +1141,7 @@
                         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent"></div>
                         
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 transform group-hover:-translate-y-2 transition-transform duration-500 ease-out">
-                          <span className="px-4 py-1.5 text-xs md:text-sm font-bold font-ui uppercase tracking-widest text-indigo-200 bg-indigo-500/20 border border-indigo-500/30 rounded-xl mb-4 inline-block backdrop-blur-md shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)]">Featured</span>
+                          <span className="px-4 py-1.5 text-xs md:text-sm font-bold font-ui uppercase tracking-widest text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 rounded-xl mb-4 inline-block backdrop-blur-md shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)]">Featured</span>
                           <h2 className="text-4xl md:text-6xl font-black font-heading text-white mb-4 tracking-tight drop-shadow-lg">{FeaturedGame.title}</h2>
                           <p className="text-slate-300 text-base md:text-xl mb-8 line-clamp-2 max-w-xl font-medium">{FeaturedGame.description}</p>
                           <button className="relative flex items-center space-x-3 bg-white text-slate-950 px-8 py-4 rounded-2xl font-bold font-ui text-xl md:text-2xl tracking-wide overflow-hidden group/btn shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all active:scale-95">
@@ -1090,7 +1203,7 @@
                               
                               <div className="mt-auto flex flex-wrap gap-2">
                                 {game.tags.map(tag => (
-                                  <span key={tag} className="px-3 py-1 text-xs font-bold font-ui uppercase tracking-wider bg-slate-950/80 text-slate-300 rounded-lg border border-slate-700/50 group-hover:border-indigo-500/30 group-hover:text-indigo-200 transition-colors">
+                                  <span key={tag} className="px-3 py-1 text-xs font-bold font-ui uppercase tracking-wider bg-slate-950/80 text-slate-300 rounded-lg border border-slate-700/50 group-hover:border-indigo-500/30 group-hover:text-indigo-300 transition-colors">
                                     {tag}
                                   </span>
                                 ))}
@@ -1239,12 +1352,12 @@
                              {profilePhotoUrl ? (
                                 <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
                              ) : (
-                                <span className="font-bold text-6xl text-white font-heading">{(profileUsername || 'U').charAt(0).toUpperCase()}</span>
+                                <span className="font-bold text-6xl text-[#ffffff] font-heading">{(profileUsername || 'U').charAt(0).toUpperCase()}</span>
                              )}
                              
                              <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                                <UploadIcon size={32} className="text-white mb-2" />
-                                <span className="text-sm font-bold text-white font-ui uppercase tracking-widest">Change</span>
+                                <UploadIcon size={32} className="text-[#ffffff] mb-2" />
+                                <span className="text-sm font-bold text-[#ffffff] font-ui uppercase tracking-widest">Change</span>
                              </div>
                              
                              <input 
@@ -1437,8 +1550,8 @@
                     </button>
                     
                     <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-fuchsia-600 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg border border-white/10">
-                      <UserIcon size={24} className="text-white sm:hidden" />
-                      <UserIcon size={32} className="text-white hidden sm:block" />
+                      <UserIcon size={24} className="text-[#ffffff] sm:hidden" />
+                      <UserIcon size={32} className="text-[#ffffff] hidden sm:block" />
                     </div>
 
                     <h2 className="text-3xl sm:text-4xl font-black font-heading text-white mb-6 sm:mb-8 tracking-wide">
@@ -1547,6 +1660,22 @@
                     
                     <div className="space-y-6 sm:space-y-8">
                       <div>
+                        <h3 className="text-xl sm:text-2xl font-bold font-heading text-indigo-300 mb-4 sm:mb-6 flex items-center gap-3">
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                          Appearance
+                        </h3>
+                        <div className="flex justify-between items-center text-sm mb-2 sm:mb-3 font-ui text-lg sm:text-xl">
+                          <span className="text-slate-300 font-bold">Theme</span>
+                          <button 
+                            onClick={() => setIsLightMode(!isLightMode)}
+                            className="px-5 py-2.5 bg-indigo-500/20 text-indigo-300 rounded-xl border border-indigo-500/30 transition-all hover:bg-indigo-500/30 active:scale-95 font-bold font-ui tracking-widest text-sm uppercase shadow-inner"
+                          >
+                            {isLightMode ? 'Switch to Dark' : 'Switch to Light'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-slate-800/60 pt-6 sm:pt-8">
                         <h3 className="text-xl sm:text-2xl font-bold font-heading text-indigo-300 mb-4 sm:mb-6 flex items-center gap-3">
                           <SettingsIcon size={24} /> Audio
                         </h3>
