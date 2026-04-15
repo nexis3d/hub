@@ -159,7 +159,9 @@
 
     let auth;
     let db;
-    const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'nexus-games'; 
+    // CRITICAL FIX: Hardcode APP_ID so it NEVER changes on reload.
+    // Previously, the environment was dynamically generating a new DB path on every refresh!
+    const APP_ID = 'nexis-games-production'; 
 
     try {
       const app = initializeApp(firebaseConfig);
@@ -504,10 +506,17 @@
             const today = getGMT7DateString(now);
             let newStreak = 1;
             let currentTag = user.uid.substring(0, 4).toUpperCase();
+            let currentUsername = user.displayName;
+            let currentPhoto = user.photoURL;
             
             if (snap.exists()) {
                const data = snap.data();
                if (data.userTag) currentTag = data.userTag;
+               
+               // Prevent username from wiping out on a fast reload
+               if (!currentUsername && data.username) currentUsername = data.username;
+               if (!currentPhoto && data.photoURL) currentPhoto = data.photoURL;
+               
                if (data.lastPlayedDate === today) {
                   newStreak = data.currentStreak || 1; 
                } else {
@@ -528,9 +537,9 @@
             // Firmly save the Tag, Streak, and Level into Firebase at GMT-7
             await setDoc(userRef, {
                uid: user.uid,
-               username: user.displayName || 'Gamer',
+               username: currentUsername || 'Gamer',
                userTag: currentTag,
-               photoURL: user.photoURL || '',
+               photoURL: currentPhoto || '',
                currentStreak: newStreak,
                currentLevel: newLevel,
                lastPlayedDate: today
@@ -988,7 +997,7 @@
                       {/* Logged Out Header Prompt! */}
                       <div className="hidden sm:flex items-center bg-slate-900/50 border border-slate-800/80 px-3 py-1.5 rounded-lg shadow-inner opacity-70" title="Sign in to track your daily streak!">
                          <span className="text-slate-500 text-sm mr-1.5">🔥</span>
-                         <span className="text-sm font-bold text-slate-400 font-ui tracking-widest">Sign In to Track</span>
+                         <span className="text-sm font-bold text-slate-400 font-ui tracking-widest">Sign In to Save Streak</span>
                       </div>
                       <button 
                         onClick={() => setShowAuthModal(true)}
@@ -1371,7 +1380,7 @@
 
                           <h2 className="text-3xl font-black font-heading text-white mb-6 uppercase tracking-widest drop-shadow-md">Sponsor Break</h2>
                           <div className="text-7xl mb-8 animate-bounce drop-shadow-2xl">💧</div>
-                          <p className="text-2xl text-indigo-300 font-bold font-ui mb-10">Drink Some Water and straighten you back before your game starts!</p>
+                          <p className="text-2xl text-indigo-300 font-bold font-ui mb-10">Hydrate and sit up straight before your game starts!</p>
                           <div className="flex flex-col items-center">
                             <div className="relative w-20 h-20 mb-6">
                               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
