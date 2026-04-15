@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexusGames Hub</title>
+  <title>Nexis Games Hub</title>
   
   <!-- SEO and Social Meta Tags -->
-  <meta name="description" content="NexusGames Hub - Discover and play 100 epic web games offline or online!">
-  <meta name="keywords" content="gaming, web games, html5 games, offline games, arcade, multiplayer, nexis games">
-  <meta name="author" content="NexusGames">
+  <meta name="description" content="Nexis Games Hub - Discover and play epic web games offline or online!">
+  <meta name="keywords" content="gaming, web games, html5 games, offline games, arcade, multiplayer">
+  <meta name="author" content="Nexis Games">
   <meta name="theme-color" content="#0f172a">
-  <meta property="og:title" content="NexusGames Hub">
+  <meta property="og:title" content="Nexis Games Hub">
   <meta property="og:description" content="Discover and play 100 epic web games offline or online!">
   <meta property="og:type" content="website">
 
-  <!-- Google Fonts: Anta -->
+  <!-- Google Fonts: Anta, Orbitron (Headings), Rajdhani (UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anta&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anta&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,6 +27,8 @@
         extend: {
           fontFamily: {
             sans: ['Anta', 'sans-serif'],
+            heading: ['Orbitron', 'sans-serif'],
+            ui: ['Rajdhani', 'sans-serif'],
           }
         }
       }
@@ -37,7 +39,7 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
-  <!-- Babel (to compile JSX in the browser) -->
+  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
   <!-- Firebase Import Maps for ES Modules -->
@@ -63,22 +65,27 @@
       signInWithEmailAndPassword, 
       signOut, 
       onAuthStateChanged, 
-      updateProfile 
+      updateProfile,
+      signInAnonymously,
+      signInWithCustomToken
     } from 'firebase/auth';
     import { 
       getFirestore, 
       doc, 
       getDoc, 
-      setDoc 
+      setDoc,
+      collection,
+      onSnapshot
     } from 'firebase/firestore';
 
     const { useState, useEffect, useRef } = React;
 
     // --- SVG ICONS --- //
-    const NexusLogo = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M2 2 L 18 2 L 2 18 Z" /><path d="M22 6 L 22 22 L 6 22 Z" /></svg>;
+    const NexisLogo = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M2 2 L 18 2 L 2 18 Z" /><path d="M22 6 L 22 22 L 6 22 Z" /></svg>;
     const Home = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
     const UserIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
     const SettingsIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+    const TrophyIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0z"/></svg>;
     const SearchIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
     const PlayIcon = ({ size = 24, className = "", fill = "none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
     const Gamepad2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>;
@@ -87,21 +94,25 @@
     const Minimize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
     const XIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
     const MenuIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+    const UploadIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
+    const EyeIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
+    const EyeOffIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>;
 
     // --- FIREBASE CONFIG --- //
     const firebaseConfig = {
-      apiKey: "AIzaSyBngyP0Niftjfu-4CYY_DrOEncZx0KX_us",
-      authDomain: "huib-46d18.firebaseapp.com",
-      projectId: "huib-46d18",
-      storageBucket: "huib-46d18.firebasestorage.app",
-      messagingSenderId: "277855179848",
-      appId: "1:277855179848:web:a48f9686414856afa4f47d",
-      measurementId: "G-K9E2J5FKFG"
+      apiKey: "AIzaSyDszlBnQzpSf05Gobk_a_-zUuhK-6kjymE",
+      authDomain: "huba-f511f.firebaseapp.com",
+      projectId: "huba-f511f",
+      storageBucket: "huba-f511f.firebasestorage.app",
+      messagingSenderId: "21130607836",
+      appId: "1:21130607836:web:1425505ac51f8c8c2d0819",
+      measurementId: "G-KTEV75ST5G"
     };
 
     let auth;
     let db;
-    const APP_ID = 'nexus-games';
+    // Uses the global app ID if running inside Canvas environment to prevent mismatches
+    const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'nexus-games'; 
 
     try {
       const app = initializeApp(firebaseConfig);
@@ -115,7 +126,7 @@
     const ShaddoCraftIcon = () => (
       <div style={{ width: '100%', height: '100%', borderRadius: '20%', overflow: 'hidden', backgroundColor: '#0f172a' }}>
         <img 
-          src="./374d37146f8e631a2adb03fd6818b497.png" 
+          src="./shado.png" 
           alt="Shaddo Craft" 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           onError={(e) => {
@@ -129,7 +140,10 @@
     const VBrawlIcon = () => (
       <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#1e1b4b"/><stop offset="100%" stopColor="#0f172a"/></linearGradient>
+          <linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#1e1b4b"/>
+            <stop offset="100%" stopColor="#0f172a"/>
+          </linearGradient>
         </defs>
         <rect width="200" height="200" rx="40" fill="url(#bBg)" />
         <g transform="translate(100, 135)">
@@ -149,7 +163,10 @@
     const PigeonIcon = () => (
       <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#4c1d95"/><stop offset="100%" stopColor="#be185d"/></linearGradient>
+          <linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#4c1d95"/>
+            <stop offset="100%" stopColor="#be185d"/>
+          </linearGradient>
         </defs>
         <rect width="200" height="200" rx="40" fill="url(#pGrad)" />
         <g transform="translate(100, 115)">
@@ -174,6 +191,30 @@
           <circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" />
           <path d="M12 -15 Q -8 -22 -18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/>
           <rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/>
+        </g>
+      </svg>
+    );
+
+    const VoidStalkerIcon = () => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hBg" x1="0" y1="0" x2="200" y2="200">
+             <stop offset="0%" stopColor="#2e1065"/>
+             <stop offset="100%" stopColor="#000000"/>
+          </linearGradient>
+          <filter id="hGlow">
+             <feGaussianBlur stdDeviation="3" result="blur"/>
+             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#hBg)" />
+        <circle cx="150" cy="50" r="25" fill="#fef08a" opacity="0.8" />
+        <circle cx="140" cy="45" r="25" fill="url(#hBg)" />
+        <g transform="translate(100, 110)" filter="url(#hGlow)">
+          <path d="M-30 40 C -30 -20, 30 -20, 30 40 C 30 50, 20 40, 10 50 C 0 40, -10 50, -20 40 C -30 50, -30 40, -30 40 Z" fill="#f8fafc" />
+          <circle cx="-10" cy="-5" r="4" fill="#0f172a" />
+          <circle cx="10" cy="-5" r="4" fill="#0f172a" />
+          <ellipse cx="0" cy="10" rx="5" ry="8" fill="#0f172a" />
         </g>
       </svg>
     );
@@ -286,6 +327,17 @@
         isLocal: false,
       },
       {
+        id: 'horrow',
+        title: 'Void Stalker',
+        developer: 'EdgeOne',
+        description: 'A spooky, thrilling adventure! Navigate the dark corridors and solve the mystery in this eerie web game.',
+        src: 'https://horrow.edgeone.app',
+        icon: VoidStalkerIcon,
+        theme: 'from-violet-900 to-black',
+        tags: ['Spooky', 'Adventure', 'Web'],
+        isLocal: false,
+      },
+      {
         id: 'pigeon-rumble',
         title: 'Super Pigeon Rumble',
         developer: 'RiftExcel',
@@ -311,17 +363,18 @@
 
     // --- MAIN APPLICATION --- //
     function App() {
-      const [activeView, setActiveView] = useState('discover'); // 'discover' | 'profile'
+      const [activeView, setActiveView] = useState('discover'); // 'discover' | 'profile' | 'leaderboard'
       const [activeGame, setActiveGame] = useState(null);
       const [searchQuery, setSearchQuery] = useState('');
       const [iframeLoading, setIframeLoading] = useState(true);
       const [adCountdown, setAdCountdown] = useState(0);
       const [isCssFullscreen, setIsCssFullscreen] = useState(false);
-      const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default collapsed
+      const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
       const playerContainerRef = useRef(null);
 
-      // Auth State
+      // Auth & User State
       const [user, setUser] = useState(null);
+      const isRegistered = user && !user.isAnonymous;
       const [showAuthModal, setShowAuthModal] = useState(false);
       const [authMode, setAuthMode] = useState('login');
       const [email, setEmail] = useState('');
@@ -329,12 +382,19 @@
       const [username, setUsername] = useState('');
       const [authError, setAuthError] = useState('');
       const [authLoading, setAuthLoading] = useState(false);
+      const [showPassword, setShowPassword] = useState(false);
 
       // Profile State
       const [profileUsername, setProfileUsername] = useState('');
+      const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
       const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
       const [profileUpdateSuccess, setProfileUpdateSuccess] = useState(false);
       const [profileUpdateError, setProfileUpdateError] = useState('');
+      
+      // Leaderboard State
+      const [currentUserStreak, setCurrentUserStreak] = useState(0);
+      const [leaderboard, setLeaderboard] = useState([]);
+      const [leaderboardError, setLeaderboardError] = useState('');
 
       // Settings State
       const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -342,28 +402,120 @@
       const [musicVolume, setMusicVolume] = useState(80);
       const [sfxVolume, setSfxVolume] = useState(100);
 
+      // Handle Anonymous fallback requirement for database writes
       useEffect(() => {
-        if (!auth) return;
+        const initAuth = async () => {
+          try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+              try {
+                await signInWithCustomToken(auth, __initial_auth_token);
+                return; 
+              } catch (tokenError) {
+                console.warn("Custom token failed. Trying anonymous sign-in...");
+              }
+            }
+            
+            try {
+              await signInAnonymously(auth);
+            } catch (anonError) {
+              console.info("Anonymous sign-in is disabled. The app will start signed-out.");
+            }
+          } catch (e) {
+            console.warn("Auth initialization note:", e.message);
+          }
+        };
+        initAuth();
+
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
           setUser(currentUser);
-          if (currentUser) {
+          if (currentUser && !currentUser.isAnonymous) {
             setProfileUsername(currentUser.displayName || '');
+            setProfilePhotoUrl(currentUser.photoURL || '');
           }
         });
         return () => unsubscribe();
       }, []);
 
+      // Handle Daily Game Streak logic
+      useEffect(() => {
+        const updateStreak = async () => {
+          if (!user || user.isAnonymous || !db) return;
+
+          const userRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', user.uid);
+          try {
+            const snap = await getDoc(userRef);
+            const today = new Date().toISOString().split('T')[0];
+            let newStreak = 1;
+            
+            if (snap.exists()) {
+               const data = snap.data();
+               if (data.lastPlayedDate === today) {
+                  newStreak = data.currentStreak || 1; 
+               } else {
+                  const yesterday = new Date();
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  const yesterdayStr = yesterday.toISOString().split('T')[0];
+                  
+                  if (data.lastPlayedDate === yesterdayStr) {
+                     newStreak = (data.currentStreak || 0) + 1;
+                  } else {
+                     newStreak = 1; 
+                  }
+               }
+            }
+            
+            await setDoc(userRef, {
+               uid: user.uid,
+               username: user.displayName || 'Gamer',
+               photoURL: user.photoURL || '',
+               currentStreak: newStreak,
+               lastPlayedDate: today
+            }, { merge: true });
+            
+            setCurrentUserStreak(newStreak);
+          } catch (e) {
+            console.error("Streak tracking error:", e);
+            // Failing silently here so the game experience continues even if their DB rules block tracking
+          }
+        };
+
+        updateStreak();
+      }, [user]);
+
+      // Fetch Leaderboard
+      useEffect(() => {
+        if (activeView === 'leaderboard' && db && user && !user.isAnonymous) {
+          const usersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'users');
+          const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+            const usersData = [];
+            snapshot.forEach(document => {
+              if (document.data().username) usersData.push(document.data());
+            });
+            usersData.sort((a, b) => (b.currentStreak || 0) - (a.currentStreak || 0));
+            setLeaderboard(usersData);
+            setLeaderboardError('');
+          }, (err) => {
+            console.error("Leaderboard fetch error:", err);
+            if (err.message && (err.message.includes("permission") || err.message.includes("Missing or insufficient"))) {
+                setLeaderboardError("Leaderboard access blocked. Please enable Test Mode in your Firebase Firestore Rules.");
+            }
+          });
+          return () => unsubscribe();
+        }
+      }, [activeView, db, user]);
+
+      // Improved Error Handling Check
       const checkUsernameAvailability = async (desiredUsername) => {
         if (!db) throw new Error("Database not connected.");
         const lowerUsername = desiredUsername.toLowerCase();
-        // Uses the universally compliant collection path architecture
         const usernameDocRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'usernames', lowerUsername);
         try {
           const snapshot = await getDoc(usernameDocRef);
           return { available: !snapshot.exists(), ref: usernameDocRef, doc: snapshot };
         } catch (e) {
-          // If read fails (e.g. firestore rules require auth), we assume unavailable to be safe 
-          // or handle it gracefully. We will attempt creation regardless if it fails here.
+          if (e.message && (e.message.includes("permission") || e.message.includes("Missing or insufficient"))) {
+              throw new Error("Firebase Error: Update Firestore Rules to Test Mode in your Console to allow database access.");
+          }
           console.warn("Could not pre-verify username, attempting write...", e);
           return { available: true, ref: usernameDocRef, doc: null };
         }
@@ -379,28 +531,39 @@
             throw new Error("Username must be at least 3 characters.");
           }
 
-          // 1. Pre-check if Username is available in DB
+          // Fail cleanly here if rules are not set up
           const { available, ref: usernameDocRef } = await checkUsernameAvailability(username.trim());
           if (!available) {
              throw new Error("That username is already taken. Please choose another.");
           }
 
-          // 2. Create the user 
+          // Register in Auth
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           await updateProfile(userCredential.user, { displayName: username.trim() });
           
-          // 3. Claim the Username in Firestore Database
           try {
+             // Reserve username in DB
              await setDoc(usernameDocRef, { 
                uid: userCredential.user.uid, 
                username: username.trim() 
              });
+             // Initialize public profile for leaderboard
+             await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', userCredential.user.uid), {
+               uid: userCredential.user.uid,
+               username: username.trim(),
+               photoURL: '',
+               currentStreak: 1,
+               lastPlayedDate: new Date().toISOString().split('T')[0]
+             });
           } catch(e) {
-             console.error("Failed to reserve username in DB. Make sure Firestore is enabled.", e);
+             console.error("Failed to reserve username in DB.", e);
+             // If DB write fails but auth passes, let them log in anyway
           }
 
           setUser({ ...userCredential.user, displayName: username.trim() }); 
           setProfileUsername(username.trim());
+          setProfilePhotoUrl('');
+          setCurrentUserStreak(1);
           setShowAuthModal(false);
         } catch (err) {
           setAuthError(err.message.replace('Firebase: ', ''));
@@ -430,6 +593,22 @@
         }
       };
 
+      const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          if (file.size > 750000) { 
+             setProfileUpdateError("Image is too large. Please choose an image under 750KB.");
+             return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setProfilePhotoUrl(reader.result);
+            setProfileUpdateError(''); 
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+
       const handleUpdateProfile = async (e) => {
         e.preventDefault();
         if (!user || !auth.currentUser) return;
@@ -443,29 +622,43 @@
             throw new Error("Username must be at least 3 characters.");
           }
 
-          // Check if new username is available
           const { available, ref: usernameDocRef, doc: snapshot } = await checkUsernameAvailability(profileUsername.trim());
           
-          // If it exists but belongs to someone else
           if (!available && snapshot && snapshot.data()?.uid !== auth.currentUser.uid) {
              throw new Error("That username is already taken.");
           }
 
-          // Update Auth Profile
-          await updateProfile(auth.currentUser, { displayName: profileUsername.trim() });
+          // Update actual Auth profile
+          await updateProfile(auth.currentUser, { 
+            displayName: profileUsername.trim(),
+            photoURL: profilePhotoUrl
+          });
           
-          // Claim New Username in Firestore Database
           try {
+             // Reserve username in global list
              await setDoc(usernameDocRef, { 
                uid: auth.currentUser.uid, 
                username: profileUsername.trim() 
              });
-             // Note: In a full app, we would also delete the old username document here to free it up!
+             // Update public user profile for leaderboard syncing
+             await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', auth.currentUser.uid), {
+               uid: auth.currentUser.uid,
+               username: profileUsername.trim(),
+               photoURL: profilePhotoUrl
+             }, { merge: true });
           } catch(e) {
-             console.error("Failed to reserve username in DB. Make sure Firestore is enabled.", e);
+             console.error("Failed to update public DB.", e);
+             if (e.message && (e.message.includes("permission") || e.message.includes("Missing or insufficient"))) {
+                throw new Error("Profile changed visually, but Firestore permission denied writing public update. Set your rules to Test Mode.");
+             }
           }
 
-          setUser({ ...auth.currentUser, displayName: profileUsername.trim() });
+          setUser({ 
+            ...auth.currentUser, 
+            displayName: profileUsername.trim(),
+            photoURL: profilePhotoUrl
+          });
+          
           setProfileUpdateSuccess(true);
           setTimeout(() => setProfileUpdateSuccess(false), 3000);
         } catch (err) {
@@ -475,16 +668,30 @@
         }
       };
 
-      // Handle the mock Ad countdown
+      // Robust Countdown Logic completely decoupled from blocking rendering issues
       useEffect(() => {
-        let timer;
-        if (adCountdown > 0) {
-          timer = setTimeout(() => setAdCountdown(prev => prev - 1), 1000);
+        if (!activeGame) {
+          setAdCountdown(0);
+          return;
         }
-        return () => clearTimeout(timer);
-      }, [adCountdown]);
 
-      // Handle Escape key to exit fallback fullscreen mode
+        // When a game is clicked, immediately start the countdown
+        setAdCountdown(5);
+        
+        const timerId = setInterval(() => {
+          setAdCountdown(currentCount => {
+            if (currentCount <= 1) {
+              clearInterval(timerId);
+              return 0; // Trigger iframe render
+            }
+            return currentCount - 1;
+          });
+        }, 1000);
+
+        return () => clearInterval(timerId);
+      }, [activeGame]);
+
+      // Fullscreen and specific window handlers
       useEffect(() => {
         const handleEsc = (e) => {
           if (e.key === 'Escape' && isCssFullscreen) {
@@ -498,20 +705,14 @@
       const toggleFullscreen = async () => {
         if (!document.fullscreenElement && !isCssFullscreen) {
           try {
-            if (playerContainerRef.current) {
-              await playerContainerRef.current.requestFullscreen();
-            }
+            if (playerContainerRef.current) await playerContainerRef.current.requestFullscreen();
           } catch (err) {
             console.warn("Native fullscreen blocked, using fallback 'maximized' mode.", err.message);
             setIsCssFullscreen(true);
           }
         } else {
           if (document.fullscreenElement && document.exitFullscreen) {
-            try {
-              await document.exitFullscreen();
-            } catch (err) {
-              console.error(err);
-            }
+            try { await document.exitFullscreen(); } catch (err) { console.error(err); }
           }
           setIsCssFullscreen(false);
         }
@@ -526,7 +727,6 @@
         setActiveGame(game);
         setIframeLoading(true);
         setIsCssFullscreen(false);
-        setAdCountdown(5); // Launch a mock sponsor break every time a game is opened
       };
 
       const handleCloseGame = () => {
@@ -538,12 +738,10 @@
       const FeaturedIcon = FeaturedGame.icon;
       const ActiveIcon = activeGame ? activeGame.icon : null;
 
-      // Note the h-screen and w-screen classes below which lock the app to the exact viewport size
       return (
         <div className="h-screen w-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden">
           
           {/* SIDEBAR NAVIGATION */}
-          {/* The h-full constraint on the aside makes it span entirely top to bottom */}
           <aside 
             onMouseEnter={() => setIsSidebarOpen(true)}
             onMouseLeave={() => setIsSidebarOpen(false)}
@@ -551,10 +749,10 @@
           >
             <div className={`p-6 flex items-center ${isSidebarOpen ? 'space-x-3' : 'justify-center px-0'}`}>
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
-                <NexusLogo size={20} className="text-white" />
+                <NexisLogo size={20} className="text-white" />
               </div>
-              <h1 className={`text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
-                NEXUS<span className="text-indigo-400">GAMES</span>
+              <h1 className={`text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 transition-opacity duration-300 font-heading ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
+                NEXIS<span className="text-indigo-400">GAMES</span>
               </h1>
             </div>
 
@@ -565,7 +763,16 @@
                 title="Discover"
               >
                 <Home size={20} className="flex-shrink-0" />
-                <span className={`font-semibold transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>Discover</span>
+                <span className={`font-semibold font-ui text-lg transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>Discover</span>
+              </button>
+
+              <button 
+                onClick={() => { setActiveView('leaderboard'); setActiveGame(null); }} 
+                className={`w-full flex items-center ${isSidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'} py-3 ${activeView === 'leaderboard' ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'} rounded-xl transition-colors`} 
+                title="Leaderboard"
+              >
+                <TrophyIcon size={20} className="flex-shrink-0" />
+                <span className={`font-semibold font-ui text-lg transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>Leaderboard</span>
               </button>
 
               <button 
@@ -574,7 +781,7 @@
                 title="Profile"
               >
                 <UserIcon size={20} className="flex-shrink-0" />
-                <span className={`font-semibold transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>My Profile</span>
+                <span className={`font-semibold font-ui text-lg transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>My Profile</span>
               </button>
             </nav>
 
@@ -585,7 +792,7 @@
                 title="Settings"
               >
                 <SettingsIcon size={20} className="flex-shrink-0" />
-                <span className={`font-semibold transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>Settings</span>
+                <span className={`font-semibold font-ui text-lg transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>Settings</span>
               </button>
             </div>
           </aside>
@@ -599,11 +806,9 @@
               {/* Header */}
               <header className="px-6 md:px-10 py-6 md:py-8 flex justify-between items-center sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md">
                 <div className="flex items-center flex-1">
-                  {/* Mobile toggle button (hidden on desktop) */}
                   <button 
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
                     className="mr-4 md:hidden p-2.5 bg-slate-900 rounded-xl text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 transition-all flex-shrink-0"
-                    title="Toggle Menu"
                   >
                     <MenuIcon size={20} />
                   </button>
@@ -613,7 +818,7 @@
                     </div>
                     <input 
                       type="text" 
-                      className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                      className="w-full bg-slate-900 border border-slate-800 text-slate-200 font-ui text-lg rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
                       placeholder="Search your library..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -621,20 +826,37 @@
                   </div>
                 </div>
                 <div className="flex items-center space-x-4 ml-4">
-                  {user ? (
+                  {isRegistered ? (
                     <div className="flex items-center space-x-3">
-                      <div className="flex flex-col items-end hidden sm:flex">
-                        <span className="text-sm font-bold text-white">{user.displayName || 'Gamer'}</span>
-                        <button onClick={handleLogout} className="text-xs text-rose-400 hover:text-rose-300 font-semibold transition-colors">Sign Out</button>
+                      <div className="hidden sm:flex flex-col items-end">
+                        <div className="flex items-center gap-2">
+                           <span className="text-sm font-bold text-white">{user.displayName || 'Gamer'}</span>
+                           {currentUserStreak > 0 && (
+                              <div className="flex items-center bg-slate-900 border border-slate-700 px-2 py-0.5 rounded-md" title="Game Streak">
+                                 <span className="text-orange-500 text-xs mr-1">🔥</span>
+                                 <span className="text-xs font-bold text-white font-ui">{currentUserStreak}</span>
+                              </div>
+                           )}
+                        </div>
+                        <button onClick={handleLogout} className="text-xs text-rose-400 hover:text-rose-300 font-semibold transition-colors mt-0.5 font-ui">Sign Out</button>
                       </div>
-                      <div className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-400 flex items-center justify-center shadow-lg cursor-pointer sm:cursor-default" onClick={() => window.innerWidth < 640 && handleLogout()} title="Click to Sign Out">
-                        <span className="font-bold text-lg text-white">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                      
+                      <div 
+                        className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-400 flex items-center justify-center shadow-lg cursor-pointer sm:cursor-default overflow-hidden flex-shrink-0" 
+                        onClick={() => window.innerWidth < 640 && handleLogout()} 
+                        title="Click to Sign Out"
+                      >
+                        {user.photoURL ? (
+                           <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                           <span className="font-bold text-lg text-white font-heading">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                        )}
                       </div>
                     </div>
                   ) : (
                     <button 
                       onClick={() => setShowAuthModal(true)}
-                      className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap"
+                      className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-ui text-lg tracking-wide rounded-full transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap"
                     >
                       Sign In
                     </button>
@@ -659,10 +881,10 @@
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
                         
                         <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full md:w-2/3">
-                          <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-indigo-500 rounded-full mb-4 inline-block">Featured Launch</span>
-                          <h2 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">{FeaturedGame.title}</h2>
+                          <span className="px-3 py-1 text-xs font-bold font-ui uppercase tracking-wider text-white bg-indigo-500 rounded-full mb-4 inline-block">Featured Launch</span>
+                          <h2 className="text-4xl md:text-5xl font-black font-heading text-white mb-3 tracking-tight">{FeaturedGame.title}</h2>
                           <p className="text-slate-300 text-sm md:text-lg mb-6 line-clamp-2">{FeaturedGame.description}</p>
-                          <button className="flex items-center space-x-2 bg-white text-slate-950 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors transform active:scale-95">
+                          <button className="flex items-center space-x-2 bg-white text-slate-950 px-8 py-3 rounded-xl font-bold font-ui text-lg tracking-wide hover:bg-slate-200 transition-colors transform active:scale-95">
                             <PlayIcon size={20} fill="currentColor" />
                             <span>Play Now</span>
                           </button>
@@ -674,8 +896,8 @@
                   {/* Game Grid */}
                   <div className="px-6 md:px-10 pb-20 flex-1">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-2xl font-bold text-white">All Games</h3>
-                      <span className="text-slate-500 font-medium">{filteredGames.length} available</span>
+                      <h3 className="text-2xl font-bold font-heading text-white">All Games</h3>
+                      <span className="text-slate-500 font-medium font-ui text-lg">{filteredGames.length} available</span>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -702,13 +924,13 @@
                             
                             <div className="p-5 flex flex-col flex-1">
                               <div className="flex justify-between items-start mb-2">
-                                <h4 className="text-lg font-bold text-slate-100 line-clamp-1">{game.title}</h4>
+                                <h4 className="text-lg font-bold font-heading text-slate-100 line-clamp-1">{game.title}</h4>
                               </div>
                               <p className="text-xs text-slate-400 mb-4">{game.developer}</p>
                               
                               <div className="mt-auto flex flex-wrap gap-2">
                                 {game.tags.map(tag => (
-                                  <span key={tag} className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 rounded-md">
+                                  <span key={tag} className="px-2.5 py-1 text-[10px] font-bold font-ui uppercase tracking-wider bg-slate-800 text-slate-300 rounded-md">
                                     {tag}
                                   </span>
                                 ))}
@@ -729,54 +951,145 @@
                 </>
               )}
 
+              {/* View: LEADERBOARD */}
+              {activeView === 'leaderboard' && (
+                <div className="px-6 md:px-10 pb-20 flex-1 flex justify-center">
+                  <div className="w-full max-w-4xl">
+                    <div className="flex items-center justify-between mb-8">
+                       <h2 className="text-3xl font-black font-heading text-white flex items-center gap-3">
+                          <TrophyIcon size={32} className="text-yellow-400" />
+                          Game Streak Leaderboard
+                       </h2>
+                    </div>
+                    
+                    {!isRegistered ? (
+                       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center shadow-xl">
+                         <h3 className="text-xl font-bold font-heading text-white mb-2">Sign in to view the leaderboard</h3>
+                         <p className="text-slate-400 mb-6">Create an account to track your daily streak and compete globally!</p>
+                         <button onClick={() => setShowAuthModal(true)} className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-ui tracking-wide rounded-xl transition-all">
+                           Sign In
+                         </button>
+                       </div>
+                    ) : (
+                       <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                          {leaderboardError ? (
+                             <div className="p-10 text-center flex flex-col items-center justify-center">
+                                <p className="text-rose-400 font-bold font-ui text-lg mb-2">Database Access Denied</p>
+                                <p className="text-slate-400 font-ui text-md">{leaderboardError}</p>
+                             </div>
+                          ) : leaderboard.length === 0 ? (
+                             <div className="p-10 text-center flex flex-col items-center justify-center">
+                                <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                                <p className="text-slate-400 font-bold font-ui text-lg">Loading Top Players...</p>
+                             </div>
+                          ) : (
+                             <div className="divide-y divide-slate-800/50">
+                                {leaderboard.map((player, idx) => (
+                                   <div key={player.uid} className={`flex items-center justify-between p-4 sm:p-6 hover:bg-slate-800/50 transition-colors ${player.uid === user?.uid ? 'bg-indigo-500/5' : ''}`}>
+                                      <div className="flex items-center gap-4 sm:gap-6">
+                                         <span className={`text-xl sm:text-2xl font-black font-heading w-8 text-center ${idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-600'}`}>
+                                            #{idx + 1}
+                                         </span>
+                                         
+                                         <div className="w-12 h-12 rounded-xl bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-slate-700">
+                                            {player.photoURL ? (
+                                               <img src={player.photoURL} alt="PFP" className="w-full h-full object-cover"/>
+                                            ) : (
+                                               <span className="font-bold text-slate-400 font-heading">{(player.username || 'U').charAt(0).toUpperCase()}</span>
+                                            )}
+                                         </div>
+                                         
+                                         <div className="flex flex-col">
+                                           <span className="font-bold font-heading text-lg text-white truncate max-w-[120px] sm:max-w-[200px]">{player.username}</span>
+                                           {player.uid === user?.uid && <span className="text-[10px] uppercase tracking-wider text-indigo-400 font-bold font-ui">You</span>}
+                                         </div>
+                                      </div>
+                                      
+                                      <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 shadow-inner">
+                                         <span className="text-orange-500 animate-pulse drop-shadow-md">🔥</span>
+                                         <span className="font-black font-ui text-white text-xl">{player.currentStreak || 1}</span>
+                                         <span className="text-slate-500 text-sm font-bold font-ui hidden sm:inline">Days</span>
+                                      </div>
+                                   </div>
+                                ))}
+                             </div>
+                          )}
+                       </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* View: PROFILE */}
               {activeView === 'profile' && (
                 <div className="px-6 md:px-10 pb-20 flex-1 flex justify-center">
                   <div className="w-full max-w-2xl">
-                    <h2 className="text-3xl font-black text-white mb-8">My Profile</h2>
-                    {!user ? (
+                    <h2 className="text-3xl font-black font-heading text-white mb-8">My Profile</h2>
+                    {!isRegistered ? (
                        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center shadow-xl mt-8">
                          <UserIcon size={64} className="mx-auto text-slate-700 mb-6" />
-                         <h3 className="text-2xl font-bold text-white mb-3">Sign in to view your profile</h3>
-                         <p className="text-slate-400 mb-8 max-w-sm mx-auto">Create an account or sign in to customize your profile identity across NexusGames.</p>
-                         <button onClick={() => setShowAuthModal(true)} className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                         <h3 className="text-2xl font-bold font-heading text-white mb-3">Sign in to view your profile</h3>
+                         <p className="text-slate-400 mb-8 max-w-sm mx-auto">Create an account or sign in to customize your profile identity across Nexis Games.</p>
+                         <button onClick={() => setShowAuthModal(true)} className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-ui tracking-wide rounded-xl transition-all shadow-lg shadow-indigo-500/20">
                            Sign In to Continue
                          </button>
                        </div>
                     ) : (
                        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl mt-8">
                          <div className="flex items-center space-x-6 mb-8 pb-8 border-b border-slate-800">
-                           <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                             <span className="font-bold text-4xl text-white">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                           
+                           {/* Hover-to-Upload Profile Picture Component */}
+                           <div className="relative group w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden flex-shrink-0 cursor-pointer border border-transparent hover:border-indigo-400 transition-all">
+                             {profilePhotoUrl ? (
+                                <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+                             ) : (
+                                <span className="font-bold text-4xl text-white font-heading">{(profileUsername || 'U').charAt(0).toUpperCase()}</span>
+                             )}
+                             
+                             {/* Overlay overlay shows on hover */}
+                             <div className="absolute inset-0 bg-slate-950/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                <UploadIcon size={24} className="text-white mb-1" />
+                                <span className="text-[10px] font-bold text-white font-ui uppercase tracking-wider">Upload</span>
+                             </div>
+                             
+                             <input 
+                               type="file" 
+                               accept="image/*"
+                               onChange={handlePhotoChange}
+                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                               title="Upload a custom profile picture"
+                             />
                            </div>
-                           <div>
-                             <h3 className="text-2xl font-black text-white tracking-wide">{user.displayName || 'Gamer'}</h3>
-                             <p className="text-slate-400 mt-1 font-medium">{user.email}</p>
+                           
+                           <div className="overflow-hidden">
+                             <h3 className="text-2xl font-black font-heading text-white tracking-wide truncate">{user.displayName || 'Gamer'}</h3>
+                             <p className="text-slate-400 mt-1 font-medium truncate font-ui text-lg">{user.email}</p>
                            </div>
                          </div>
                          
                          <form onSubmit={handleUpdateProfile} className="space-y-6">
                            <div>
-                             <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-wider">Display Username</label>
+                             <label className="block text-sm font-bold font-ui text-slate-400 mb-2 uppercase tracking-wider">Display Username</label>
                              <input 
                                type="text" 
                                value={profileUsername} 
                                onChange={e => setProfileUsername(e.target.value)} 
-                               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner text-lg" 
+                               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 font-ui text-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner" 
                                placeholder="Enter your username" 
                              />
                            </div>
+                           
                            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                              <div className="text-sm font-medium w-full sm:w-auto text-center sm:text-left">
                                {profileUpdateSuccess && (
-                                 <span className="text-emerald-400 flex items-center justify-center sm:justify-start">
+                                 <span className="text-emerald-400 font-ui font-bold text-lg flex items-center justify-center sm:justify-start">
                                    <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> 
                                    Profile updated successfully
                                  </span>
                                )}
-                               {profileUpdateError && <span className="text-rose-400">{profileUpdateError}</span>}
+                               {profileUpdateError && <span className="text-rose-400 font-ui font-bold text-lg">{profileUpdateError}</span>}
                              </div>
-                             <button type="submit" disabled={isUpdatingProfile} className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 shadow-lg shadow-indigo-500/20">
+                             <button type="submit" disabled={isUpdatingProfile} className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-ui tracking-wide text-lg rounded-xl transition-all disabled:opacity-50 shadow-lg shadow-indigo-500/20">
                                {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
                              </button>
                            </div>
@@ -799,14 +1112,14 @@
                         className="flex items-center space-x-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors"
                       >
                         <ChevronLeftIcon size={18} />
-                        <span className="font-semibold text-sm">Hub</span>
+                        <span className="font-semibold text-sm font-ui">Hub</span>
                       </button>
                       <div className="h-6 w-px bg-slate-700"></div>
                       <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-800 hidden sm:block">
                         <ActiveIcon />
                       </div>
-                      <span className="font-bold text-white tracking-wide truncate max-w-[150px] sm:max-w-xs">{activeGame.title}</span>
+                      <span className="font-bold font-heading text-white tracking-wide truncate max-w-[150px] sm:max-w-xs">{activeGame.title}</span>
                     </div>
                   </div>
                   
@@ -838,13 +1151,13 @@
                     {adCountdown > 0 && (
                       <div className="absolute inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center px-4 text-center">
                         <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700 shadow-2xl max-w-lg w-full">
-                          <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-wider">Quick Sponsor Break</h2>
+                          <h2 className="text-2xl font-black font-heading text-white mb-2 uppercase tracking-wider">Quick Sponsor Break</h2>
                           <div className="w-full h-px bg-slate-700 mb-6"></div>
                           <div className="text-6xl mb-6 animate-bounce">💧</div>
                           <p className="text-xl text-indigo-400 font-bold mb-8">Remember to drink a glass of water and sit up straight!</p>
                           <div className="flex flex-col items-center">
                             <div className="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin mb-4"></div>
-                            <p className="text-slate-400 font-medium">Your game will resume in <span className="text-white font-bold">{adCountdown}</span> seconds...</p>
+                            <p className="text-slate-400 font-medium font-ui text-lg">Your game will resume in <span className="text-white font-bold">{adCountdown}</span> seconds...</p>
                           </div>
                         </div>
                       </div>
@@ -855,17 +1168,19 @@
                       <div className="w-24 h-24 mb-6 animate-pulse text-indigo-500">
                         <ActiveIcon />
                       </div>
-                      <p className="text-slate-400 font-medium animate-pulse">Connecting to {activeGame.title}...</p>
+                      <p className="text-slate-400 font-medium font-ui text-lg animate-pulse">Connecting to {activeGame.title}...</p>
                     </div>
                   )}
 
-                  <iframe 
-                    src={activeGame.src} 
+                  {adCountdown === 0 && (
+                    <iframe 
+                      src={activeGame.src} 
                       title={activeGame.title}
                       onLoad={() => setIframeLoading(false)}
-                      className={`w-full h-full border-0 relative z-10 transition-opacity duration-500 ${iframeLoading || adCountdown > 0 ? 'opacity-0' : 'opacity-100 bg-slate-950'}`}
+                      className={`w-full h-full border-0 relative z-10 transition-opacity duration-500 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`}
                       allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"
                     ></iframe>
+                  )}
                   </div>
                 </>
               )}
@@ -878,29 +1193,34 @@
                     <button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
                       <XIcon size={24} />
                     </button>
-                    <h2 className="text-3xl font-black text-white mb-6">
-                      {authMode === 'login' ? 'Welcome Back' : 'Join NexusGames'}
+                    <h2 className="text-3xl font-black font-heading text-white mb-6">
+                      {authMode === 'login' ? 'Welcome Back' : 'Join Nexis Games'}
                     </h2>
                     
-                    {authError && <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/50 text-rose-400 rounded-lg text-sm">{authError}</div>}
+                    {authError && <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/50 text-rose-400 font-ui font-bold rounded-lg text-sm">{authError}</div>}
 
                     <form onSubmit={authMode === 'login' ? handleLogin : handleSignup} className="space-y-4">
                       {authMode === 'signup' && (
                         <div>
-                          <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
-                          <input type="text" required value={username} onChange={e => setUsername(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="ProGamer123" />
+                          <label className="block text-sm font-bold font-ui tracking-wide text-slate-400 mb-1">Username</label>
+                          <input type="text" required value={username} onChange={e => setUsername(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 font-ui text-lg text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="ProGamer123" />
                         </div>
                       )}
                       <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
-                        <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="player@example.com" />
+                        <label className="block text-sm font-bold font-ui tracking-wide text-slate-400 mb-1">Email Address</label>
+                        <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 font-ui text-lg text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="player@example.com" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1">Password</label>
-                        <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="••••••••" />
+                        <label className="block text-sm font-bold font-ui tracking-wide text-slate-400 mb-1">Password</label>
+                        <div className="relative">
+                          <input type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 pr-12 font-ui text-lg text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="••••••••" />
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors">
+                            {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
+                          </button>
+                        </div>
                       </div>
                       
-                      <button disabled={authLoading} type="submit" className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all mt-6 disabled:opacity-50 flex justify-center">
+                      <button disabled={authLoading} type="submit" className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-ui text-lg tracking-wide rounded-xl transition-all mt-6 disabled:opacity-50 flex justify-center">
                         {authLoading ? (
                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : (
@@ -910,7 +1230,7 @@
                     </form>
                     
                     <div className="mt-6 text-center">
-                      <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="text-slate-400 hover:text-white text-sm transition-colors font-medium">
+                      <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="text-slate-400 hover:text-white font-ui font-bold text-sm transition-colors">
                         {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
                       </button>
                     </div>
@@ -925,16 +1245,16 @@
                     <button onClick={() => setShowSettingsModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
                       <XIcon size={24} />
                     </button>
-                    <h2 className="text-3xl font-black text-white mb-6">Settings</h2>
+                    <h2 className="text-3xl font-black font-heading text-white mb-6">Settings</h2>
                     
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-lg font-bold text-slate-200 mb-4">Audio</h3>
+                        <h3 className="text-xl font-bold font-heading text-slate-200 mb-4">Audio</h3>
                         
                         <div className="space-y-4">
                           <div>
-                            <div className="flex justify-between text-sm mb-2">
-                              <span className="text-slate-400 font-medium">Master Volume</span>
+                            <div className="flex justify-between text-sm mb-2 font-ui text-lg">
+                              <span className="text-slate-400 font-bold">Master Volume</span>
                               <span className="text-white font-bold">{masterVolume}%</span>
                             </div>
                             <input 
@@ -947,8 +1267,8 @@
                           </div>
                           
                           <div>
-                            <div className="flex justify-between text-sm mb-2">
-                              <span className="text-slate-400 font-medium">Music Volume</span>
+                            <div className="flex justify-between text-sm mb-2 font-ui text-lg">
+                              <span className="text-slate-400 font-bold">Music Volume</span>
                               <span className="text-white font-bold">{musicVolume}%</span>
                             </div>
                             <input 
@@ -961,8 +1281,8 @@
                           </div>
 
                           <div>
-                            <div className="flex justify-between text-sm mb-2">
-                              <span className="text-slate-400 font-medium">Sound Effects</span>
+                            <div className="flex justify-between text-sm mb-2 font-ui text-lg">
+                              <span className="text-slate-400 font-bold">Sound Effects</span>
                               <span className="text-white font-bold">{sfxVolume}%</span>
                             </div>
                             <input 
@@ -979,7 +1299,7 @@
                     
                     <button 
                       onClick={() => setShowSettingsModal(false)} 
-                      className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all mt-8"
+                      className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold font-ui text-lg tracking-wide rounded-xl transition-all mt-8"
                     >
                       Done
                     </button>
