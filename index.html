@@ -560,6 +560,9 @@
       const [sfxVolume, setSfxVolume] = useState(100);
       const [isLightMode, setIsLightMode] = useState(false);
 
+      // Auth Resolution Tracker
+      const [authResolved, setAuthResolved] = useState(false);
+
       useEffect(() => {
         if (isLightMode) {
           document.documentElement.classList.add('light-mode');
@@ -598,6 +601,7 @@
 
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
           setUser(currentUser);
+          setAuthResolved(true); // Tell the app we finished checking who is logged in!
           if (currentUser && !currentUser.isAnonymous) {
             setProfileUsername(currentUser.displayName || '');
             setProfilePhotoUrl(currentUser.photoURL || '');
@@ -685,7 +689,15 @@
 
       // Fetch Leaderboard (Live Data Sync)
       useEffect(() => {
-        if (activeView === 'leaderboard' && db && user) {
+        if (activeView === 'leaderboard' && db && authResolved) {
+          
+          // If auth resolved but there is NO user, it means Anonymous Auth is disabled in Firebase!
+          if (!user) {
+             setIsLeaderboardLoading(false);
+             setLeaderboardError("Please login to see the leaderboard");
+             return;
+          }
+
           setIsLeaderboardLoading(true);
           const usersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'users');
           const unsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -706,7 +718,7 @@
           });
           return () => unsubscribe();
         }
-      }, [activeView, db, user]);
+      }, [activeView, db, user, authResolved]);
 
       const checkTagAvailability = async (desiredTag) => {
         if (!db) throw new Error("Database not connected.");
@@ -1256,7 +1268,9 @@
                                 <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 mb-6">
                                   <XIcon size={40} className="text-rose-400" />
                                 </div>
-                                <p className="text-rose-400 font-bold font-heading text-2xl mb-3">Database Access Denied</p>
+                                <p className="text-rose-400 font-bold font-heading text-2xl mb-3">
+                                  {leaderboardError === "Please login to see the leaderboard" ? "Sign In Required" : "Database Access Denied"}
+                                </p>
                                 <p className="text-slate-400 font-ui text-xl max-w-lg">{leaderboardError}</p>
                              </div>
                           ) : isLeaderboardLoading ? (
