@@ -3,29 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexis Games Hub</title>
+  <title>Nexis Games</title>
   
-  <!-- Comprehensive Favicons -->
+  <!-- Comprehensive Favicons exactly as requested -->
   <link rel="icon" href="Favicon.png" type="image/png">
   <link rel="icon" type="image/png" href="/path/to/Favicon.png">
   <link rel="icon" type="image/png" href="/Favicon.png">
-  <link rel="apple-touch-icon" href="Favicon.png">
   <link rel="apple-touch-icon" href="/Favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/Favicon.png">
-  <link rel="shortcut icon" href="Favicon.png">
 
   <!-- SEO and Social Meta Tags -->
-  <meta name="description" content="Nexis Games Hub - Making games greater.">
-  <meta name="keywords" content="gaming, web games, html5 games, offline games, arcade, multiplayer">
+  <meta name="description" content="Nexis Games - Making games greater.">
+  <meta name="keywords" content="gaming, web games, browser games, free games, online games, unblocked games, 3D games, casual games, action games, racing games, io games, html5 games, offline games, arcade, multiplayer, minigames">
   <meta name="author" content="Nexis Games">
   <meta name="theme-color" content="#020617">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1">
   
   <!-- Open Graph Image / Social Sharing -->
-  <meta property="og:title" content="Nexis Games Hub">
+  <meta property="og:title" content="Nexis Games">
   <meta property="og:description" content="Making games greater.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="OpenGraph.png">
-  <meta property="og:image:secure_url" content="OpenGraph.png">
+  <meta property="og:image" content="Favicon.png">
+  <meta property="og:image:secure_url" content="Favicon.png">
 
   <!-- Google Fonts: Fira Sans for a clean, professional look -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +71,7 @@
             ui: ['Fira Sans', 'sans-serif'],
           },
           animation: {
-            blob: 'blob 10s infinite ease-in-out',
+            blob: 'blob 15s infinite ease-in-out',
             'gradient-x': 'gradient-x 5s ease infinite',
             'modal-pop': 'modal-pop 0.3s ease-out forwards',
             'toast-slide': 'toast-slide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
@@ -81,10 +80,9 @@
           },
           keyframes: {
             blob: {
-              '0%': { transform: 'translate(0px, 0px) scale(1)' },
-              '33%': { transform: 'translate(50px, -50px) scale(1.05)' },
-              '66%': { transform: 'translate(-40px, 20px) scale(0.95)' },
-              '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(150px, -150px) scale(1.2)' },
+              '66%': { transform: 'translate(-120px, 120px) scale(0.8)' },
             },
             'gradient-x': {
               '0%, 100%': {
@@ -397,50 +395,17 @@
     );
 
     const KartIcon = () => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="kBg" x1="0" y1="0" x2="200" y2="200">
-             <stop offset="0%" stopColor="#991b1b"/>
-             <stop offset="100%" stopColor="#ea580c"/>
-          </linearGradient>
-          <linearGradient id="kartBody" x1="0" y1="0" x2="0" y2="100">
-             <stop offset="0%" stopColor="#f87171"/>
-             <stop offset="100%" stopColor="#b91c1c"/>
-          </linearGradient>
-          <filter id="kSpeedGlow">
-             <feGaussianBlur stdDeviation="4" result="blur"/>
-             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#kBg)" />
-        <g opacity="0.1" fill="#fff">
-           <rect x="20" y="20" width="40" height="40" />
-           <rect x="100" y="20" width="40" height="40" />
-           <rect x="60" y="60" width="40" height="40" />
-           <rect x="140" y="60" width="40" height="40" />
-           <rect x="20" y="100" width="40" height="40" />
-           <rect x="100" y="100" width="40" height="40" />
-           <rect x="60" y="140" width="40" height="40" />
-           <rect x="140" y="140" width="40" height="40" />
-        </g>
-        <path d="M 20 130 Q 100 130 180 100 M 10 150 Q 100 150 190 120 M 30 170 Q 100 170 170 140" stroke="#fcd34d" strokeWidth="6" strokeLinecap="round" opacity="0.6" filter="url(#kSpeedGlow)" fill="none"/>
-        <g transform="translate(100, 115)">
-           <ellipse cx="0" cy="35" rx="65" ry="12" fill="#431407" opacity="0.6"/>
-           <rect x="-65" y="-15" width="25" height="45" rx="8" fill="#1e293b" stroke="#0f172a" strokeWidth="3"/>
-           <rect x="40" y="-15" width="25" height="45" rx="8" fill="#1e293b" stroke="#0f172a" strokeWidth="3"/>
-           <circle cx="-52.5" cy="7.5" r="5" fill="#475569"/>
-           <circle cx="52.5" cy="7.5" r="5" fill="#475569"/>
-           <path d="M-40 -10 C -20 -35, 20 -35, 40 -10 L 50 25 C 50 35, -50 35, -50 25 Z" fill="url(#kartBody)" stroke="#7f1d1d" strokeWidth="4"/>
-           <path d="M-55 -15 L 55 -15 L 65 -25 L -65 -25 Z" fill="#0f172a" stroke="#334155" strokeWidth="2" strokeLinejoin="round"/>
-           <path d="M-40 -15 L -40 0 M 40 -15 L 40 0" stroke="#334155" strokeWidth="4"/>
-           <rect x="-15" y="25" width="30" height="10" rx="3" fill="#334155"/>
-           <circle cx="-5" cy="30" r="4" fill="#facc15" filter="url(#kSpeedGlow)"/>
-           <circle cx="5" cy="30" r="4" fill="#facc15" filter="url(#kSpeedGlow)"/>
-           <circle cx="0" cy="-35" r="20" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="3"/>
-           <path d="M-14 -38 Q 0 -30 14 -38 Q 16 -46 0 -46 Q -16 -46 -14 -38 Z" fill="#0f172a"/>
-           <path d="M0 -55 L 0 -46" stroke="#ef4444" strokeWidth="4"/>
-        </g>
-      </svg>
+      <div style={{ width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#020617', padding: '15px', boxSizing: 'border-box' }}>
+        <img 
+          src="Racer.png" 
+          alt="Super Kart Racer" 
+          style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))' }}
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = 'https://placehold.co/200x200/991b1b/ffffff?text=Kart+Racer';
+          }} 
+        />
+      </div>
     );
 
     const VBrawlIcon = () => (
@@ -529,32 +494,17 @@
     );
 
     const VoidStalkerIcon = () => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="mazeGlow" cx="50%" cy="50%" r="50%">
-             <stop offset="0%" stopColor="#312e81"/>
-             <stop offset="100%" stopColor="#020617"/>
-          </radialGradient>
-          <filter id="hGlow2">
-             <feGaussianBlur stdDeviation="5" result="blur"/>
-             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="eyeGlow">
-             <feGaussianBlur stdDeviation="2" result="blur"/>
-             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#mazeGlow)"/>
-        <circle cx="100" cy="100" r="80" stroke="#1e1b4b" strokeWidth="10" fill="none" strokeDasharray="40 10 80 20 50 30"/>
-        <circle cx="100" cy="100" r="60" stroke="#312e81" strokeWidth="10" fill="none" strokeDasharray="60 20 40 10 90 20"/>
-        <circle cx="100" cy="100" r="40" stroke="#4338ca" strokeWidth="10" fill="none" strokeDasharray="30 10 50 10"/>
-        <circle cx="100" cy="100" r="20" stroke="#4f46e5" strokeWidth="6" fill="none" strokeDasharray="10 5 20 5"/>
-        <path d="M 50 100 Q 100 40 150 100 Q 100 160 50 100 Z" fill="#000" stroke="#a855f7" strokeWidth="8" filter="url(#hGlow2)"/>
-        <circle cx="100" cy="100" r="20" fill="#ef4444" filter="url(#eyeGlow)"/>
-        <circle cx="100" cy="100" r="8" fill="#000"/>
-        <circle cx="95" cy="95" r="4" fill="#fff" opacity="0.9"/>
-        <circle cx="105" cy="105" r="2" fill="#fff" opacity="0.6"/>
-      </svg>
+      <div style={{ width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#020617', padding: '15px', boxSizing: 'border-box' }}>
+        <img 
+          src="Spooky.png" 
+          alt="Shadows of the Labyrinth" 
+          style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))' }}
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = 'https://placehold.co/200x200/312e81/ffffff?text=Spooky';
+          }} 
+        />
+      </div>
     );
 
     const BurgerIcon = () => (
@@ -743,9 +693,7 @@
               try {
                 await signInWithCustomToken(auth, __initial_auth_token);
                 return; 
-              } catch (tokenError) {
-                console.warn("Custom token failed. Trying anonymous sign-in...");
-              }
+              } catch (tokenError) {}
             }
             try {
               await signInAnonymously(auth);
@@ -888,7 +836,6 @@
             setIsLeaderboardLoading(false);
             setLeaderboardError('');
           }, (err) => {
-            console.error("Leaderboard fetch error:", err);
             setIsLeaderboardLoading(false);
             if (err.message && (err.message.includes("permission") || err.message.includes("Missing or insufficient"))) {
                 setLeaderboardError("Leaderboard access blocked. Set Firebase Firestore Rules to Test Mode.");
@@ -1152,9 +1099,7 @@
           await updateDoc(userRef, { favorites: newFavorites });
           if (isFav) showToast("Removed from favorites.", "success");
           else showToast("Added to favorites!", "success");
-        } catch (err) {
-          console.error("Failed to update favorites:", err);
-        }
+        } catch (err) {}
       };
 
       const handleCopyEmail = (e) => {
@@ -1254,10 +1199,11 @@
       return (
         <div className="h-screen w-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black text-slate-100 font-sans flex overflow-hidden relative">
           
+          {/* Ambient Background */}
           <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-            <div className="absolute top-[-10%] -left-10 w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[150px] opacity-20 animate-blob"></div>
-            <div className="absolute top-[20%] -right-20 w-96 h-96 bg-fuchsia-600 rounded-full mix-blend-screen filter blur-[150px] opacity-10 animate-blob" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute -bottom-32 left-[20%] w-96 h-96 bg-cyan-600 rounded-full mix-blend-screen filter blur-[150px] opacity-10 animate-blob" style={{ animationDelay: '4s' }}></div>
+            <div className="absolute top-[5%] -left-32 w-[45rem] h-[45rem] bg-purple-600 rounded-full mix-blend-screen filter blur-[180px] opacity-25 animate-blob"></div>
+            <div className="absolute top-[5%] -right-32 w-[45rem] h-[45rem] bg-emerald-500 rounded-full mix-blend-screen filter blur-[180px] opacity-25 animate-blob" style={{ animationDelay: '4s' }}></div>
+            <div className="absolute -bottom-40 left-1/2 transform -translate-x-1/2 w-[45rem] h-[45rem] bg-indigo-600 rounded-full mix-blend-screen filter blur-[180px] opacity-20 animate-blob" style={{ animationDelay: '8s' }}></div>
           </div>
 
           {isSidebarOpen && (
@@ -1427,7 +1373,7 @@
               </header>
 
               {activeView === 'discover' && (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   {!searchQuery && activeCategory === 'All' && (
                     <div className="px-6 md:px-10 pb-8 pt-6 flex-shrink-0 relative z-10">
                       <div className="relative w-full h-80 md:h-[400px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" onClick={() => handleLaunchGame(FeaturedGame)}>
@@ -1443,8 +1389,8 @@
                         
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 transform group-hover:-translate-y-2 transition-transform duration-500 ease-out z-10">
                           <span className="px-4 py-1.5 text-xs md:text-sm font-bold font-ui uppercase tracking-widest text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 rounded-xl mb-4 inline-block backdrop-blur-md shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)]">Featured</span>
-                          <h2 className="text-4xl md:text-6xl font-black font-heading text-white mb-4 tracking-tight drop-shadow-lg">{FeaturedGame.title}</h2>
-                          <p className="text-slate-300 text-base md:text-xl mb-8 line-clamp-2 max-w-xl font-medium">{FeaturedGame.description}</p>
+                          <h2 data-nosnippet="true" className="text-4xl md:text-6xl font-black font-heading text-white mb-4 tracking-tight drop-shadow-lg">{FeaturedGame.title}</h2>
+                          <p data-nosnippet="true" className="text-slate-300 text-base md:text-xl mb-8 line-clamp-2 max-w-xl font-medium">{FeaturedGame.description}</p>
                           <button className="relative flex items-center space-x-3 bg-white text-slate-950 px-8 py-4 rounded-2xl font-bold font-ui text-xl md:text-2xl tracking-wide overflow-hidden group/btn shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all active:scale-95">
                             <span className="absolute inset-0 bg-gradient-to-r from-white via-slate-200 to-white transform -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out"></span>
                             <PlayIcon size={24} fill="currentColor" className="relative z-10" />
@@ -1462,7 +1408,7 @@
                     </div>
                   )}
 
-                  <div className="px-6 md:px-10 pb-10 flex-shrink-0 relative z-0">
+                  <div className="px-6 md:px-10 flex-shrink-0 relative z-0 pb-10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                       <h3 className="text-3xl font-bold font-heading text-white tracking-wide drop-shadow-md">
                         {activeCategory === 'Favorites' ? 'Your Favorites' : 'Library'}
@@ -1515,8 +1461,8 @@
                             </div>
                             
                             <div className="p-6 flex flex-col flex-1 relative z-10">
-                              <h4 className="text-2xl font-bold font-heading text-slate-100 line-clamp-1 group-hover:text-indigo-300 transition-colors mb-1 drop-shadow-sm">{game.title}</h4>
-                              <p className="text-base text-slate-400 mb-6 font-ui drop-shadow-sm">{game.developer}</p>
+                              <h4 data-nosnippet="true" className="text-2xl font-bold font-heading text-slate-100 line-clamp-1 group-hover:text-indigo-300 transition-colors mb-1 drop-shadow-sm">{game.title}</h4>
+                              <p data-nosnippet="true" className="text-base text-slate-400 mb-6 font-ui drop-shadow-sm">{game.developer}</p>
                               
                               <div className="mt-auto flex flex-wrap gap-2">
                                 {game.tags.map(tag => (
@@ -1545,7 +1491,7 @@
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="mt-16 flex flex-col items-center justify-center pt-10 border-t border-slate-800/50 pb-10">
                        <p className="text-slate-400 font-ui text-lg mb-6 tracking-wide uppercase font-bold text-center">Can't decide what to play?</p>
                        <button 
@@ -1558,15 +1504,11 @@
                     </div>
 
                   </div>
-                  
-                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
-                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
-                  </footer>
                 </div>
               )}
 
               {activeView === 'leaderboard' && (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                     <div className="w-full max-w-4xl relative z-10">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
@@ -1660,14 +1602,11 @@
                          </div>
                     </div>
                   </div>
-                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
-                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
-                  </footer>
                 </div>
               )}
 
               {activeView === 'profile' && (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                     <div className="w-full max-w-3xl relative z-10">
                       <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">User Profile</h2>
@@ -1815,14 +1754,11 @@
                       )}
                     </div>
                   </div>
-                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
-                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
-                  </footer>
                 </div>
               )}
 
               {activeView === 'about' && (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                     <div className="w-full max-w-4xl relative z-10 flex flex-col">
                       <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">About Nexis Games</h2>
@@ -1870,21 +1806,18 @@
                               <Gamepad2Icon size={24} className="text-indigo-400" /> Publish Your Game
                             </h4>
                             <p className="text-slate-300 font-ui text-lg leading-relaxed drop-shadow-sm">
-                              Are you a game dev looking to share your work with an active community? We're always on the lookout for fun new web games to add to the site. If you want to ask about getting your own game published here on the Nexis Games Hub, just send an email to <button onClick={handleCopyEmail} className="text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-4 transition-colors cursor-pointer">mofawoyt@gmail.com</button>.
+                              Are you a game dev looking to share your work with an active community? We're always on the lookout for fun new web games to add to the site. If you want to ask about getting your own game published here on Nexis Games, just send an email to <button onClick={handleCopyEmail} className="text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-4 transition-colors cursor-pointer">mofawoyt@gmail.com</button>.
                             </p>
                           </section>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
-                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
-                  </footer>
                 </div>
               )}
 
               {activeView === 'settings' && (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                     <div className="w-full max-w-3xl relative z-10">
                       <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Settings</h2>
@@ -1900,7 +1833,7 @@
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] gap-4">
                               <div>
                                 <span className="text-white font-bold font-ui text-xl block mb-1">Color Theme</span>
-                                <span className="text-slate-400 font-ui text-base">Toggle between Light and Dark mode for the Hub.</span>
+                                <span className="text-slate-400 font-ui text-base">Toggle between Light and Dark mode.</span>
                               </div>
                               <button 
                                 onClick={() => setIsLightMode(!isLightMode)}
@@ -1967,14 +1900,11 @@
                       </div>
                     </div>
                   </div>
-                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
-                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
-                  </footer>
                 </div>
               )}
 
               {activeView === 'admin' && isAdmin && (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                     <div className="w-full max-w-5xl relative z-10 flex flex-col h-full">
                       <h2 className="text-4xl font-black font-heading text-white mb-10 flex items-center gap-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
@@ -2037,10 +1967,14 @@
                       </div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Universal Global Footer */}
+              {!activeGame && (
                   <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
                     <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
                   </footer>
-                </div>
               )}
 
             </div> 
@@ -2185,7 +2119,7 @@
                         <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 hidden sm:block border border-white/10 shadow-lg">
                           <ActiveIcon />
                         </div>
-                        <span className="font-black font-heading text-xl text-white tracking-wider truncate max-w-[150px] sm:max-w-xs drop-shadow-sm">{activeGame.title}</span>
+                        <span data-nosnippet="true" className="font-black font-heading text-xl text-white tracking-wider truncate max-w-[150px] sm:max-w-xs drop-shadow-sm">{activeGame.title}</span>
                       </div>
                     </div>
                   
@@ -2245,7 +2179,7 @@
                       <div className="w-32 h-32 mb-8 animate-pulse text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
                         <ActiveIcon />
                       </div>
-                      <p className="text-indigo-300 font-bold font-ui text-2xl tracking-widest animate-pulse drop-shadow-md">CONNECTING SERVER...</p>
+                      <p data-nosnippet="true" className="text-indigo-300 font-bold font-ui text-2xl tracking-widest animate-pulse drop-shadow-md">CONNECTING SERVER...</p>
                     </div>
                   )}
 
