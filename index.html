@@ -5,15 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexis Games</title>
   
+  <!-- Preload Critical Loader Asset for Instant Display -->
+  <link rel="preload" href="assets/Favicon.png" as="image">
+
   <!-- Comprehensive Favicons exactly as requested -->
-  <link rel="icon" href="Favicon.ico" type="image/x-icon">
-  <link rel="icon" type="image/x-icon" href="/path/to/Favicon.ico">
-  <link rel="icon" type="image/png" href="/Favicon.png">
-  <link rel="apple-touch-icon" href="/Favicon.ico">
-  <link rel="shortcut icon" href="Favicon.ico">
+  <link rel="icon" href="assets/Favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/x-icon" href="/assets/Favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/Favicon.png">
+  <link rel="apple-touch-icon" href="/assets/Favicon.ico">
+  <link rel="shortcut icon" href="assets/Favicon.ico">
+
+  <!-- PWA Manifest for Mobile App Installation -->
+  <!-- Base64 encoded JSON manifest to keep everything in one file -->
+  <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk5leGlzIEdhbWVzIiwKICAic2hvcnRfbmFtZSI6ICJOZXhpcyIsCiAgImRlc2NyaXB0aW9uIjogIk1ha2luZyBnYW1lcyBncmVhdGVyLiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDIwNjE3IiwKICAidGhlbWVfY29sb3ciOiAiIzAyMDYxNyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImFzc2V0cy9GYXZpY29uLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
 
   <!-- SEO and Social Meta Tags -->
-  <meta name="description" content="Nexis Games - Making games greater.">
+  <meta name="description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
   <meta name="keywords" content="gaming, web games, browser games, free games, online games, unblocked games, 3D games, casual games, action games, racing games, io games, html5 games, offline games, arcade, multiplayer, minigames">
   <meta name="author" content="Nexis Games">
   <meta name="theme-color" content="#020617">
@@ -22,17 +29,130 @@
   
   <!-- Open Graph Image / Social Sharing -->
   <meta property="og:title" content="Nexis Games">
-  <meta property="og:description" content="Making games greater.">
+  <meta property="og:description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="Favicon.png">
-  <meta property="og:image:secure_url" content="Favicon.png">
+  <meta property="og:image" content="assets/og_image.png">
+  <meta property="og:image:secure_url" content="assets/og_image.png">
 
-  <!-- Google Fonts: Fira Sans for a clean, professional look -->
+  <!-- Google Fonts: Fira Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS -->
+  <!-- CRITICAL STYLES LOADED FIRST FOR INSTANT LOADER RENDERING -->
+  <style>
+    /* Global Loader Animations with Hardware Acceleration */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); opacity: 0.6; }
+      70% { transform: scale(1.2) translateZ(0); box-shadow: 0 0 0 40px rgba(99, 102, 241, 0); opacity: 0.1; }
+      100% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); opacity: 0.6; }
+    }
+    @keyframes float-logo {
+      0%, 100% { transform: translateY(0) translateZ(0); }
+      50% { transform: translateY(-20px) translateZ(0); }
+    }
+    @keyframes loading-bar {
+      0% { transform: translateX(-100%) translateZ(0); }
+      100% { transform: translateX(350%) translateZ(0); }
+    }
+    @keyframes loader-spin {
+      100% { transform: rotate(360deg) translateZ(0); }
+    }
+    @keyframes loader-spin-reverse {
+      100% { transform: rotate(-360deg) translateZ(0); }
+    }
+    @keyframes text-shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* Core Theme Variables */
+    :root {
+      --color-white: 255 255 255;
+      --color-black: 0 0 0;
+      --color-slate-50: 248 250 252;
+      --color-slate-100: 241 245 249;
+      --color-slate-200: 226 232 240;
+      --color-slate-300: 203 213 225;
+      --color-slate-400: 148 163 184;
+      --color-slate-500: 100 116 139;
+      --color-slate-600: 71 85 105;
+      --color-slate-700: 51 65 85;
+      --color-slate-800: 30 41 59;
+      --color-slate-900: 15 23 42;
+      --color-slate-950: 2 6 23;
+      --color-indigo-300: 165 180 252;
+      --color-indigo-400: 129 140 248;
+      --color-indigo-500: 99 102 241;
+      --color-indigo-600: 79 70 229;
+      --color-indigo-900: 49 46 129;
+      --color-fuchsia-600: 192 38 211;
+      --color-fuchsia-900: 112 26 117;
+    }
+    
+    /* Perfected Light Mode Inversion Palette */
+    .light-mode {
+      --color-white: 15 23 42;
+      --color-black: 255 255 255;
+      
+      --color-slate-50: 2 6 23; 
+      --color-slate-100: 15 23 42; 
+      --color-slate-200: 30 41 59; 
+      --color-slate-300: 51 65 85; 
+      --color-slate-400: 71 85 105; 
+      --color-slate-500: 100 116 139; 
+      --color-slate-600: 148 163 184; 
+      --color-slate-700: 203 213 225; 
+      --color-slate-800: 226 232 240; 
+      --color-slate-900: 241 245 249; 
+      --color-slate-950: 248 250 252; 
+      
+      --color-indigo-300: 79 70 229; 
+      --color-indigo-400: 99 102 241; 
+      --color-indigo-500: 129 140 248; 
+      --color-indigo-600: 165 180 252; 
+      --color-indigo-900: 224 231 255; 
+      
+      --color-fuchsia-600: 217 70 239; 
+      --color-fuchsia-900: 250 232 255; 
+    }
+
+    .light-mode .mix-blend-screen {
+      mix-blend-mode: multiply !important;
+      opacity: 0.1 !important;
+    }
+
+    .light-mode .aspect-video.bg-gradient-to-br,
+    .light-mode .animate-gradient-x {
+      background: #e2e8f0 !important;
+      background-image: none !important;
+    }
+
+    .light-mode button.bg-gradient-to-r,
+    .light-mode button.bg-indigo-600,
+    .light-mode button.bg-rose-600,
+    .light-mode button.bg-slate-800,
+    .light-mode button.bg-white {
+      background: #cbd5e1 !important;
+      background-image: none !important; 
+      color: #0f172a !important; 
+      box-shadow: none !important;
+    }
+
+    .light-mode button.bg-white span.bg-gradient-to-r {
+      background-image: none !important;
+      background-color: #94a3b8 !important;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgb(var(--color-slate-700)); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-slate-600)); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+
+  <!-- Tailwind CSS (Loaded after styles to not block initial paint) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -112,108 +232,6 @@
       }
     }
   </script>
-  
-  <style>
-    /* Global Loader Animations */
-    @keyframes pulse-ring {
-      0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); opacity: 0.6; }
-      70% { transform: scale(1.2); box-shadow: 0 0 0 40px rgba(99, 102, 241, 0); opacity: 0.1; }
-      100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); opacity: 0.6; }
-    }
-    @keyframes float-logo {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
-    }
-    @keyframes loading-bar {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(250%); }
-    }
-
-    /* Core Theme Variables */
-    :root {
-      --color-white: 255 255 255;
-      --color-black: 0 0 0;
-      --color-slate-50: 248 250 252;
-      --color-slate-100: 241 245 249;
-      --color-slate-200: 226 232 240;
-      --color-slate-300: 203 213 225;
-      --color-slate-400: 148 163 184;
-      --color-slate-500: 100 116 139;
-      --color-slate-600: 71 85 105;
-      --color-slate-700: 51 65 85;
-      --color-slate-800: 30 41 59;
-      --color-slate-900: 15 23 42;
-      --color-slate-950: 2 6 23;
-      --color-indigo-300: 165 180 252;
-      --color-indigo-400: 129 140 248;
-      --color-indigo-500: 99 102 241;
-      --color-indigo-600: 79 70 229;
-      --color-indigo-900: 49 46 129;
-      --color-fuchsia-600: 192 38 211;
-      --color-fuchsia-900: 112 26 117;
-    }
-    
-    /* Perfected Light Mode Inversion Palette */
-    .light-mode {
-      --color-white: 15 23 42; /* Makes text-white a readable deep slate */
-      --color-black: 255 255 255; /* Makes bg-black crisp white */
-      
-      --color-slate-50: 2 6 23; 
-      --color-slate-100: 15 23 42; 
-      --color-slate-200: 30 41 59; 
-      --color-slate-300: 51 65 85; 
-      --color-slate-400: 71 85 105; 
-      --color-slate-500: 100 116 139; 
-      --color-slate-600: 148 163 184; 
-      --color-slate-700: 203 213 225; 
-      --color-slate-800: 226 232 240; /* Cards and structural borders become soft gray */
-      --color-slate-900: 241 245 249; /* Sidebars and Modals become light slate */
-      --color-slate-950: 248 250 252; /* Main background becomes almost pure white */
-      
-      --color-indigo-300: 79 70 229; 
-      --color-indigo-400: 99 102 241; 
-      --color-indigo-500: 129 140 248; 
-      --color-indigo-600: 165 180 252; 
-      --color-indigo-900: 224 231 255; 
-      
-      --color-fuchsia-600: 217 70 239; 
-      --color-fuchsia-900: 250 232 255; 
-    }
-
-    .light-mode .mix-blend-screen {
-      mix-blend-mode: multiply !important;
-      opacity: 0.1 !important; /* Softens ambient background in light mode */
-    }
-
-    .light-mode .aspect-video.bg-gradient-to-br,
-    .light-mode .animate-gradient-x {
-      background: #e2e8f0 !important;
-      background-image: none !important;
-    }
-
-    .light-mode button.bg-gradient-to-r,
-    .light-mode button.bg-indigo-600,
-    .light-mode button.bg-rose-600,
-    .light-mode button.bg-slate-800,
-    .light-mode button.bg-white {
-      background: #cbd5e1 !important;
-      background-image: none !important; 
-      color: #0f172a !important; 
-      box-shadow: none !important;
-    }
-
-    .light-mode button.bg-white span.bg-gradient-to-r {
-      background-image: none !important;
-      background-color: #94a3b8 !important;
-    }
-
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgb(var(--color-slate-700)); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-slate-600)); }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
 
   <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -236,23 +254,45 @@
 <body class="bg-slate-950 text-slate-100 font-sans m-0 overflow-hidden selection:bg-indigo-500/30">
   
   <!-- INITIAL BOOT-UP LOADING SCREEN -->
-  <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s ease;">
-    <!-- Glowing background orb -->
-    <div style="position: absolute; width: 300px; height: 300px; background: #6366f1; border-radius: 50%; filter: blur(100px); animation: pulse-ring 4s infinite;"></div>
+  <!-- Using GPU-Accelerated styles (will-change) to prevent JS blocking lag -->
+  <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;">
     
-    <!-- Animated Logo -->
-    <div style="animation: float-logo 3s ease-in-out infinite; z-index: 10;">
-      <img src="Favicon.png" alt="Nexis Games Logo" width="120" height="120" style="border-radius: 24px; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6));" />
+    <!-- Deep space gradient -->
+    <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #1e1b4b 0%, #020617 60%); opacity: 0.9;"></div>
+    
+    <!-- Rotating UI Elements -->
+    <div style="position: relative; display: flex; justify-content: center; align-items: center; width: 220px; height: 220px;">
+      <!-- Outer Tech Ring -->
+      <svg style="position: absolute; width: 100%; height: 100%; animation: loader-spin 12s linear infinite; opacity: 0.4; will-change: transform;" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="none" stroke="#6366f1" stroke-width="1" stroke-dasharray="15 5 5 5 20 10" stroke-linecap="round"></circle>
+      </svg>
+      <!-- Inner Tech Ring -->
+      <svg style="position: absolute; width: 85%; height: 85%; animation: loader-spin-reverse 8s linear infinite; opacity: 0.6; will-change: transform;" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="none" stroke="#c026d3" stroke-width="1.5" stroke-dasharray="30 10 10 15" stroke-linecap="round"></circle>
+      </svg>
+      
+      <!-- Glowing background orb -->
+      <div style="position: absolute; width: 120px; height: 120px; background: #6366f1; border-radius: 50%; filter: blur(40px); animation: pulse-ring 3s infinite; will-change: transform, opacity, box-shadow;"></div>
+      
+      <!-- Animated Logo -->
+      <div style="animation: float-logo 4s ease-in-out infinite; z-index: 10; position: relative; will-change: transform;">
+        <img src="assets/Favicon.png" alt="Nexis Games Logo" width="90" height="90" style="border-radius: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));" />
+      </div>
     </div>
 
     <!-- Title -->
-    <div style="margin-top: 2.5rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.3em; color: #ffffff; z-index: 10; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-      NEXIS<span style="color: #818cf8;">GAMES</span>
+    <div style="margin-top: 2rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #94a3b8 0%, #ffffff 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; will-change: background-position;">
+      NEXIS<span style="color: #818cf8; -webkit-text-fill-color: #818cf8;">GAMES</span>
+    </div>
+    
+    <!-- Status Text -->
+    <div style="margin-top: 1rem; font-family: 'Fira Sans', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.25em; color: #64748b; text-transform: uppercase; animation: pulse-ring 2s infinite; will-change: transform, opacity;">
+      Initializing Hub Environment...
     </div>
     
     <!-- Progress Bar -->
-    <div style="margin-top: 1.5rem; width: 240px; height: 4px; background: #1e293b; border-radius: 4px; overflow: hidden; z-index: 10; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
-       <div style="height: 100%; width: 40%; background: linear-gradient(90deg, #6366f1, #c026d3); border-radius: 4px; animation: loading-bar 1.5s infinite ease-in-out;"></div>
+    <div style="margin-top: 1.5rem; width: 220px; height: 2px; background: #1e293b; border-radius: 2px; overflow: hidden; z-index: 10; position: relative;">
+       <div style="position: absolute; top: 0; left: 0; height: 100%; width: 40%; background: linear-gradient(90deg, transparent, #818cf8, #c026d3, transparent); border-radius: 2px; animation: loading-bar 1.5s infinite ease-in-out; will-change: transform;"></div>
     </div>
   </div>
 
@@ -279,7 +319,8 @@
       updateDoc,
       deleteDoc,
       collection,
-      onSnapshot
+      onSnapshot,
+      enableIndexedDbPersistence // Imported for Offline Data Support!
     } from 'firebase/firestore';
 
     const { useState, useEffect, useRef } = React;
@@ -311,6 +352,7 @@
     const ShieldIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.2"/></svg>;
     const BanIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="m4.9 4.9 14.2 14.2"/></svg>;
     const ClockIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><polyline points="12 6 12 12 16 14"/></svg>;
+    const WifiOffIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/></svg>;
 
     // --- FIREBASE CONFIG --- //
     const firebaseConfig = {
@@ -331,6 +373,15 @@
       const app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
+      
+      // ENABLE OFFLINE PERSISTENCE
+      enableIndexedDbPersistence(db).catch((err) => {
+        if (err.code == 'failed-precondition') {
+           console.warn('Multiple tabs open, persistence can only be enabled in one tab at a a time.');
+        } else if (err.code == 'unimplemented') {
+           console.warn('The current browser does not support all of the features required to enable persistence');
+        }
+      });
     } catch (e) {
       console.warn("Firebase not initialized:", e);
     }
@@ -425,7 +476,7 @@
     const ShaddoCraftIcon = () => (
       <div style={{ width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#020617', padding: '15px', boxSizing: 'border-box' }}>
         <img 
-          src="shado.png" 
+          src="assets/shado.png" 
           alt="Cube Game" 
           style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))' }}
           onError={(e) => {
@@ -439,7 +490,7 @@
     const KartIcon = () => (
       <div style={{ width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#020617', padding: '0', boxSizing: 'border-box' }}>
         <img 
-          src="Racer.png" 
+          src="assets/Racer.png" 
           alt="Super Kart Racer" 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           onError={(e) => {
@@ -538,7 +589,7 @@
     const VoidStalkerIcon = () => (
       <div style={{ width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#020617', padding: '0', boxSizing: 'border-box' }}>
         <img 
-          src="Spooky.png" 
+          src="assets/Spooky.png" 
           alt="Shadows of the Labyrinth" 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           onError={(e) => {
@@ -586,7 +637,7 @@
         title: 'VBrawl Ultimate',
         developer: 'Mofawo',
         description: 'Battle friends in VBrawl Ultimate, an epic 4-player platform brawler! Customize your 3D fighter, master dynamic maps, and unleash chaotic power-ups.',
-        src: 'https://vbrawl.edgeone.app/',
+        src: 'games/Brawl.html',
         icon: VBrawlIcon,
         theme: 'from-orange-600 to-rose-700',
         tags: ['3D', 'Action', 'Multiplayer'],
@@ -596,7 +647,7 @@
         title: 'Burger Chef',
         developer: 'Mofawo',
         description: 'Fire up the grill and serve hungry customers in this fast-paced burger cooking game!',
-        src: 'https://burgerchef.edgeone.app',
+        src: 'games/Burger.html',
         icon: BurgerIcon,
         theme: 'from-amber-500 to-orange-700',
         tags: ['Cooking', 'Action'],
@@ -606,7 +657,7 @@
         title: 'Super Kart Racer',
         developer: 'Mofawo',
         description: 'Start your engines! Drift, boost, and race your way to the finish line against friends in this high-speed kart racer.',
-        src: 'https://kartracer.edgeone.app',
+        src: 'games/Kart.html',
         icon: KartIcon,
         theme: 'from-red-600 to-orange-500',
         tags: ['Racing', 'Multiplayer', '3D'],
@@ -616,7 +667,7 @@
         title: 'Shadows of the Labyrinth',
         developer: 'Mofawo',
         description: 'A spooky, thrilling adventure! Navigate the dark corridors and solve the mystery in this eerie web game.',
-        src: 'https://nexis3d.github.io/spoky/',
+        src: 'games/Horror.html',
         icon: VoidStalkerIcon,
         theme: 'from-violet-900 to-black',
         tags: ['Spooky', 'Adventure'],
@@ -657,6 +708,20 @@
       const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
       const [toast, setToast] = useState(null);
       const playerContainerRef = useRef(null);
+
+      // Offline State Handler
+      const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+      useEffect(() => {
+        const handleOnline = () => setIsOffline(false);
+        const handleOffline = () => setIsOffline(true);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+          window.removeEventListener('online', handleOnline);
+          window.removeEventListener('offline', handleOffline);
+        };
+      }, []);
 
       // Auth & User State
       const [user, setUser] = useState(null);
@@ -728,9 +793,9 @@
             if (loader) {
               loader.style.opacity = '0';
               loader.style.visibility = 'hidden';
-              setTimeout(() => loader.remove(), 600);
+              setTimeout(() => loader.remove(), 800);
             }
-          }, 1800); // Guarantees the cool animation is visible for at least 1.8s
+          }, 1800);
           return () => clearTimeout(timer);
         }
       }, [authResolved]);
@@ -1263,6 +1328,13 @@
             <div className="absolute -bottom-40 left-1/2 transform -translate-x-1/2 w-[45rem] h-[45rem] bg-indigo-600 rounded-full mix-blend-screen filter blur-[180px] opacity-20 animate-blob" style={{ animationDelay: '8s' }}></div>
           </div>
 
+          {/* OFFLINE INDICATOR BADGE */}
+          {isOffline && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[200] bg-rose-600/90 backdrop-blur-md border border-rose-500/50 text-white px-6 py-2 rounded-full font-bold font-ui text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.5)] animate-in slide-in-from-top-4">
+               <WifiOffIcon size={16} /> Offline Mode - Playing locally
+            </div>
+          )}
+
           {isSidebarOpen && (
             <div 
               className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] animate-in fade-in duration-300"
@@ -1282,7 +1354,7 @@
           >
             <div className="p-6 flex items-center justify-start h-24 border-b border-slate-800/30">
               <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] flex-shrink-0 border border-white/10 relative bg-slate-800">
-                <img src="Favicon.png" alt="Nexis Games Logo" className="w-full h-full object-cover relative z-10" />
+                <img src="assets/Favicon.png" alt="Nexis Games Logo" className="w-full h-full object-cover relative z-10" />
               </div>
               <h1 className={`text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-heading drop-shadow-md transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>
                 NEXIS GAMES
@@ -1650,7 +1722,7 @@
                                            <div className="flex items-center gap-3 bg-slate-950/80 px-6 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 sm:flex-none justify-center">
                                               <span className={`text-2xl ${activeStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse' : 'text-slate-600 grayscale'}`}>🔥</span>
                                               <span className={`font-black font-heading text-3xl ${activeStreak > 0 ? 'text-white drop-shadow-md' : 'text-slate-600'}`}>{activeStreak}</span>
-                                           </div>
+                                            </div>
                                         </div>
                                      </div>
                                   )})}
