@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexis Games</title>
   
-  <!-- Preload Critical Loader Asset for Instant Display -->
+  <!-- Preload Critical Loader Assets for Instant Display -->
   <link rel="preload" href="assets/Favicon.png" as="image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Comprehensive Favicons exactly as requested -->
   <link rel="icon" href="assets/Favicon.ico" type="image/x-icon">
@@ -33,11 +37,6 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/og_image.png">
   <meta property="og:image:secure_url" content="assets/og_image.png">
-
-  <!-- Google Fonts: Fira Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- CRITICAL STYLES LOADED FIRST FOR INSTANT LOADER RENDERING -->
   <style>
@@ -255,44 +254,47 @@
   
   <!-- INITIAL BOOT-UP LOADING SCREEN -->
   <!-- Using GPU-Accelerated styles (will-change) to prevent JS blocking lag -->
-  <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;">
+  <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease; overflow: hidden;">
     
     <!-- Deep space gradient -->
     <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #1e1b4b 0%, #020617 60%); opacity: 0.9;"></div>
     
-    <!-- Rotating UI Elements -->
-    <div style="position: relative; display: flex; justify-content: center; align-items: center; width: 220px; height: 220px;">
-      <!-- Outer Tech Ring -->
-      <svg style="position: absolute; width: 100%; height: 100%; animation: loader-spin 12s linear infinite; opacity: 0.4; will-change: transform;" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="48" fill="none" stroke="#6366f1" stroke-width="1" stroke-dasharray="15 5 5 5 20 10" stroke-linecap="round"></circle>
-      </svg>
-      <!-- Inner Tech Ring -->
-      <svg style="position: absolute; width: 85%; height: 85%; animation: loader-spin-reverse 8s linear infinite; opacity: 0.6; will-change: transform;" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="48" fill="none" stroke="#c026d3" stroke-width="1.5" stroke-dasharray="30 10 10 15" stroke-linecap="round"></circle>
-      </svg>
+    <!-- Open Graph Ambient Background Orbs -->
+    <div style="position: absolute; top: -10%; left: 0; width: 600px; height: 600px; background: #6366f1; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(-30%, -30%); will-change: transform; animation: float-logo 8s ease-in-out infinite alternate;"></div>
+    <div style="position: absolute; bottom: -10%; right: 0; width: 700px; height: 700px; background: #c026d3; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(30%, 30%); will-change: transform; animation: float-logo 10s ease-in-out infinite alternate-reverse;"></div>
       
-      <!-- Glowing background orb -->
-      <div style="position: absolute; width: 120px; height: 120px; background: #6366f1; border-radius: 50%; filter: blur(40px); animation: pulse-ring 3s infinite; will-change: transform, opacity, box-shadow;"></div>
-      
-      <!-- Animated Logo -->
-      <div style="animation: float-logo 4s ease-in-out infinite; z-index: 10; position: relative; will-change: transform;">
-        <img src="assets/Favicon.png" alt="Nexis Games Logo" width="90" height="90" style="border-radius: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));" />
-      </div>
+    <!-- Animated Logo (Inlined SVG for instant zero-latency loading!) -->
+    <div style="animation: float-logo 4s ease-in-out infinite; z-index: 10; position: relative; will-change: transform; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+        <defs>
+          <linearGradient id="loaderNexisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6366f1" />
+            <stop offset="100%" stop-color="#c026d3" />
+          </linearGradient>
+        </defs>
+        <rect width="100" height="100" rx="24" fill="url(#loaderNexisGrad)" />
+        <rect width="100" height="100" rx="24" fill="#ffffff" opacity="0.15" />
+        <rect width="98" height="98" x="1" y="1" rx="23" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.2" />
+        <g transform="translate(25, 25) scale(2.0833)" fill="#ffffff">
+          <path d="M2 2 L 18 2 L 2 18 Z" />
+          <path d="M22 6 L 22 22 L 6 22 Z" />
+        </g>
+      </svg>
     </div>
 
     <!-- Title -->
-    <div style="margin-top: 2rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #94a3b8 0%, #ffffff 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; will-change: background-position;">
+    <div style="margin-top: 2.5rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2.2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #94a3b8 0%, #ffffff 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; will-change: background-position; drop-shadow: 0 4px 6px rgba(0,0,0,0.5);">
       NEXIS<span style="color: #818cf8; -webkit-text-fill-color: #818cf8;">GAMES</span>
     </div>
     
     <!-- Status Text -->
-    <div style="margin-top: 1rem; font-family: 'Fira Sans', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.25em; color: #64748b; text-transform: uppercase; animation: pulse-ring 2s infinite; will-change: transform, opacity;">
-      Initializing Hub Environment...
+    <div style="margin-top: 1.25rem; font-family: 'Fira Sans', sans-serif; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.3em; color: #94a3b8; text-transform: uppercase; animation: pulse-ring 2s infinite; will-change: transform, opacity; text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);">
+      Initializing Core Systems...
     </div>
     
     <!-- Progress Bar -->
-    <div style="margin-top: 1.5rem; width: 220px; height: 2px; background: #1e293b; border-radius: 2px; overflow: hidden; z-index: 10; position: relative;">
-       <div style="position: absolute; top: 0; left: 0; height: 100%; width: 40%; background: linear-gradient(90deg, transparent, #818cf8, #c026d3, transparent); border-radius: 2px; animation: loading-bar 1.5s infinite ease-in-out; will-change: transform;"></div>
+    <div style="margin-top: 1.5rem; width: 260px; height: 3px; background: #0f172a; border-radius: 4px; overflow: hidden; z-index: 10; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 1px 2px rgba(0,0,0,0.8);">
+       <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #818cf8, #38bdf8, #c026d3, transparent); border-radius: 4px; animation: loading-bar 1.2s infinite ease-in-out; will-change: transform; box-shadow: 0 0 10px #818cf8;"></div>
     </div>
   </div>
 
@@ -630,6 +632,28 @@
       </svg>
     );
 
+    const RealmIcon = () => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="realmGrad" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#0284c7"/>
+            <stop offset="100%" stopColor="#1e3a8a"/>
+          </linearGradient>
+          <filter id="shardGlow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#realmGrad)" />
+        <g transform="translate(100, 100)" filter="url(#shardGlow)">
+          <path d="M0 -60 L30 10 L0 50 L-30 10 Z" fill="#e0f2fe" opacity="0.9"/>
+          <path d="M0 -60 L30 10 L0 80 L0 50 Z" fill="#bae6fd" opacity="0.7"/>
+          <path d="M-40 -10 L-10 20 L-20 40 Z" fill="#7dd3fc" opacity="0.8"/>
+          <path d="M40 0 L15 30 L30 45 Z" fill="#38bdf8" opacity="0.8"/>
+        </g>
+      </svg>
+    );
+
     // --- GAME DATA --- //
     const GAMES = [
       {
@@ -691,10 +715,21 @@
         icon: ShaddoCraftIcon,
         theme: 'from-emerald-700 to-green-900',
         tags: ['3D', 'Adventure'],
+      },
+      {
+        id: 'ascension-realm',
+        title: 'Ascension: Realm of Shards',
+        developer: 'Nexis GD',
+        description: 'A breathtaking adventure awaits in the shattered realm. Rebuild the world, one shard at a time.',
+        src: 'games/Realm.html',
+        icon: RealmIcon,
+        theme: 'from-sky-500 to-blue-800',
+        tags: ['RPG', 'Adventure', '3D'],
+        isBeta: true // Restricts visibility to DEV and MOFU tags
       }
     ];
 
-    const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Racing', 'Action', 'Spooky', 'Adventure', 'Cooking'];
+    const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Racing', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG'];
 
     // --- MAIN APPLICATION --- //
     function App() {
@@ -733,6 +768,7 @@
       const [userStatus, setUserStatus] = useState('active');
       const isRegistered = user && !user.isAnonymous;
       const isAdmin = isRegistered && currentUserTag === "MOFU"; 
+      const isDevUser = isRegistered && ['MOFU', 'DEV1', 'DEV2', 'DEV3', 'DEV4', 'DEV5'].includes(currentUserTag);
       
       const [showAuthModal, setShowAuthModal] = useState(false);
       const [authMode, setAuthMode] = useState('login');
@@ -1283,6 +1319,9 @@
       };
 
       const filteredGames = GAMES.filter(g => {
+        // Restrict beta games to devs only
+        if (g.isBeta && !isDevUser) return false;
+
         const matchSearch = g.title.toLowerCase().includes(searchQuery.toLowerCase()) || g.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchCategory = activeCategory === 'All' 
            ? true 
@@ -1319,13 +1358,17 @@
       }
 
       return (
-        <div className="h-screen w-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black text-slate-100 font-sans flex overflow-hidden relative">
+        <div className="h-screen w-screen bg-[#030712] text-slate-100 font-sans flex overflow-hidden relative">
           
-          {/* Ambient Background */}
+          {/* Modern Ambient Mesh Background */}
           <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-            <div className="absolute top-[5%] -left-32 w-[45rem] h-[45rem] bg-purple-600 rounded-full mix-blend-screen filter blur-[180px] opacity-25 animate-blob"></div>
-            <div className="absolute top-[5%] -right-32 w-[45rem] h-[45rem] bg-emerald-500 rounded-full mix-blend-screen filter blur-[180px] opacity-25 animate-blob" style={{ animationDelay: '4s' }}></div>
-            <div className="absolute -bottom-40 left-1/2 transform -translate-x-1/2 w-[45rem] h-[45rem] bg-indigo-600 rounded-full mix-blend-screen filter blur-[180px] opacity-20 animate-blob" style={{ animationDelay: '8s' }}></div>
+            {/* Subtle top-down atmospheric lighting */}
+            <div className="absolute top-0 left-0 right-0 h-[60vh] bg-gradient-to-b from-indigo-900/10 to-transparent"></div>
+            
+            {/* Large, slow-moving diffuse mesh orbs */}
+            <div className="absolute -top-40 -left-40 w-[60rem] h-[60rem] bg-indigo-600 rounded-full filter blur-[140px] opacity-15 animate-blob"></div>
+            <div className="absolute top-20 -right-20 w-[50rem] h-[50rem] bg-fuchsia-600 rounded-full filter blur-[140px] opacity-10 animate-blob" style={{ animationDelay: '8s' }}></div>
+            <div className="absolute -bottom-60 left-1/4 w-[70rem] h-[70rem] bg-blue-600 rounded-full filter blur-[160px] opacity-10 animate-blob" style={{ animationDelay: '16s' }}></div>
           </div>
 
           {/* OFFLINE INDICATOR BADGE */}
@@ -1590,7 +1633,12 @@
                             </div>
                             
                             <div className="p-6 flex flex-col flex-1 relative z-10">
-                              <h4 data-nosnippet="true" className="text-2xl font-bold font-heading text-slate-100 line-clamp-1 group-hover:text-indigo-300 transition-colors mb-1 drop-shadow-sm">{game.title}</h4>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 data-nosnippet="true" className="text-2xl font-bold font-heading text-slate-100 line-clamp-1 group-hover:text-indigo-300 transition-colors drop-shadow-sm">{game.title}</h4>
+                                {game.isBeta && (
+                                  <span className="px-2 py-0.5 text-[10px] font-black font-ui uppercase tracking-widest bg-rose-500/20 text-rose-400 border border-rose-500/50 rounded-md shadow-[0_0_10px_-2px_rgba(244,63,94,0.5)]">Beta</span>
+                                )}
+                              </div>
                               <p data-nosnippet="true" className="text-base text-slate-400 mb-6 font-ui drop-shadow-sm">{game.developer}</p>
                               
                               <div className="mt-auto flex flex-wrap gap-2">
