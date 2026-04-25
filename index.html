@@ -5,113 +5,356 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexis Games</title>
   
-  <!-- Preload Critical Loader Assets -->
+  <!-- Preload Critical Loader Assets for Instant Display -->
   <link rel="preload" href="assets/Favicon.png" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Comprehensive Favicons exactly as requested -->
   <link rel="icon" href="assets/Favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/x-icon" href="/assets/Favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/Favicon.png">
   <link rel="apple-touch-icon" href="/assets/Favicon.ico">
+  <link rel="shortcut icon" href="assets/Favicon.ico">
 
-  <!-- PWA Manifest -->
+  <!-- PWA Manifest for Mobile App Installation -->
+  <!-- Base64 encoded JSON manifest to keep everything in one file -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk5leGlzIEdhbWVzIiwKICAic2hvcnRfbmFtZSI6ICJOZXhpcyIsCiAgImRlc2NyaXB0aW9uIjogIk1ha2luZyBnYW1lcyBncmVhdGVyLiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDIwNjE3IiwKICAidGhlbWVfY29sb3ciOiAiIzAyMDYxNyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImFzc2V0cy9GYXZpY29uLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
 
-  <meta name="description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family.">
+  <!-- SEO and Social Meta Tags -->
+  <meta name="description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
+  <meta name="keywords" content="gaming, web games, browser games, free games, online games, unblocked games, 3D games, casual games, action games, racing games, io games, html5 games, offline games, arcade, multiplayer, minigames">
+  <meta name="author" content="Nexis Games">
   <meta name="theme-color" content="#020617">
-  <meta name="robots" content="index, follow, max-snippet:-1">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1">
   
+  <!-- Open Graph Image / Social Sharing -->
   <meta property="og:title" content="Nexis Games">
+  <meta property="og:description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
+  <meta property="og:type" content="website">
   <meta property="og:image" content="assets/og_image.png">
+  <meta property="og:image:secure_url" content="assets/og_image.png">
 
+  <!-- CRITICAL STYLES LOADED FIRST FOR INSTANT LOADER RENDERING -->
   <style>
-    @keyframes pulse-ring { 0% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99,102,241,0.7); opacity: 0.6; } 70% { transform: scale(1.2) translateZ(0); box-shadow: 0 0 0 40px rgba(99,102,241,0); opacity: 0.1; } 100% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99,102,241,0); opacity: 0.6; } }
-    @keyframes float-logo { 0%, 100% { transform: translateY(0) translateZ(0); } 50% { transform: translateY(-20px) translateZ(0); } }
-    @keyframes loading-bar { 0% { transform: translateX(-100%) translateZ(0); } 100% { transform: translateX(350%) translateZ(0); } }
-    @keyframes loader-spin { 100% { transform: rotate(360deg) translateZ(0); } }
-    @keyframes loader-spin-reverse { 100% { transform: rotate(-360deg) translateZ(0); } }
-    @keyframes text-shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-    
+    /* Global Loader Animations with Hardware Acceleration */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); opacity: 0.6; }
+      70% { transform: scale(1.2) translateZ(0); box-shadow: 0 0 0 40px rgba(99, 102, 241, 0); opacity: 0.1; }
+      100% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); opacity: 0.6; }
+    }
+    @keyframes float-logo {
+      0%, 100% { transform: translateY(0) translateZ(0); }
+      50% { transform: translateY(-20px) translateZ(0); }
+    }
+    @keyframes loading-bar {
+      0% { transform: translateX(-100%) translateZ(0); }
+      100% { transform: translateX(350%) translateZ(0); }
+    }
+    @keyframes loader-spin {
+      100% { transform: rotate(360deg) translateZ(0); }
+    }
+    @keyframes loader-spin-reverse {
+      100% { transform: rotate(-360deg) translateZ(0); }
+    }
+    @keyframes text-shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* Core Theme Variables */
     :root {
-      --color-white: 255 255 255; --color-black: 0 0 0;
-      --color-slate-50: 248 250 252; --color-slate-100: 241 245 249; --color-slate-200: 226 232 240; --color-slate-300: 203 213 225; --color-slate-400: 148 163 184; --color-slate-500: 100 116 139; --color-slate-600: 71 85 105; --color-slate-700: 51 65 85; --color-slate-800: 30 41 59; --color-slate-900: 15 23 42; --color-slate-950: 2 6 23;
-      --color-indigo-300: 165 180 252; --color-indigo-400: 129 140 248; --color-indigo-500: 99 102 241; --color-indigo-600: 79 70 229;
+      --color-white: 255 255 255;
+      --color-black: 0 0 0;
+      --color-slate-50: 248 250 252;
+      --color-slate-100: 241 245 249;
+      --color-slate-200: 226 232 240;
+      --color-slate-300: 203 213 225;
+      --color-slate-400: 148 163 184;
+      --color-slate-500: 100 116 139;
+      --color-slate-600: 71 85 105;
+      --color-slate-700: 51 65 85;
+      --color-slate-800: 30 41 59;
+      --color-slate-900: 15 23 42;
+      --color-slate-950: 2 6 23;
+      --color-indigo-300: 165 180 252;
+      --color-indigo-400: 129 140 248;
+      --color-indigo-500: 99 102 241;
+      --color-indigo-600: 79 70 229;
+      --color-indigo-900: 49 46 129;
       --color-fuchsia-600: 192 38 211;
+      --color-fuchsia-900: 112 26 117;
     }
+    
+    /* Perfected Light Mode Inversion Palette */
     .light-mode {
-      --color-white: 15 23 42; --color-black: 255 255 255;
-      --color-slate-50: 2 6 23; --color-slate-100: 15 23 42; --color-slate-200: 30 41 59; --color-slate-300: 51 65 85; --color-slate-400: 71 85 105; --color-slate-500: 100 116 139; --color-slate-600: 148 163 184; --color-slate-700: 203 213 225; --color-slate-800: 226 232 240; --color-slate-900: 241 245 249; --color-slate-950: 248 250 252;
-      --color-indigo-300: 79 70 229; --color-indigo-400: 99 102 241; --color-indigo-500: 129 140 248; --color-indigo-600: 165 180 252;
-      --color-fuchsia-600: 217 70 239;
+      --color-white: 15 23 42;
+      --color-black: 255 255 255;
+      
+      --color-slate-50: 2 6 23; 
+      --color-slate-100: 15 23 42; 
+      --color-slate-200: 30 41 59; 
+      --color-slate-300: 51 65 85; 
+      --color-slate-400: 71 85 105; 
+      --color-slate-500: 100 116 139; 
+      --color-slate-600: 148 163 184; 
+      --color-slate-700: 203 213 225; 
+      --color-slate-800: 226 232 240; 
+      --color-slate-900: 241 245 249; 
+      --color-slate-950: 248 250 252; 
+      
+      --color-indigo-300: 79 70 229; 
+      --color-indigo-400: 99 102 241; 
+      --color-indigo-500: 129 140 248; 
+      --color-indigo-600: 165 180 252; 
+      --color-indigo-900: 224 231 255; 
+      
+      --color-fuchsia-600: 217 70 239; 
+      --color-fuchsia-900: 250 232 255; 
     }
-    .light-mode .animate-blob { opacity: 0.15 !important; mix-blend-mode: multiply; }
-    .light-mode .aspect-video.bg-gradient-to-br, .light-mode .animate-gradient-x { background: #e2e8f0 !important; background-image: none !important; }
-    .light-mode button.bg-gradient-to-r, .light-mode button.bg-indigo-600, .light-mode button.bg-rose-600, .light-mode button.bg-slate-800, .light-mode button.bg-white { background: #cbd5e1 !important; background-image: none !important; color: #0f172a !important; box-shadow: none !important; }
-    .light-mode button.bg-white span.bg-gradient-to-r { background-image: none !important; background-color: #94a3b8 !important; }
-    ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgb(var(--color-slate-700)); border-radius: 10px; } ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-slate-600)); } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .light-mode .animate-blob {
+      opacity: 0.15 !important;
+      mix-blend-mode: multiply;
+    }
+
+    .light-mode .aspect-video.bg-gradient-to-br,
+    .light-mode .animate-gradient-x {
+      background: #e2e8f0 !important;
+      background-image: none !important;
+    }
+
+    .light-mode button.bg-gradient-to-r,
+    .light-mode button.bg-indigo-600,
+    .light-mode button.bg-rose-600,
+    .light-mode button.bg-slate-800,
+    .light-mode button.bg-white {
+      background: #cbd5e1 !important;
+      background-image: none !important; 
+      color: #0f172a !important; 
+      box-shadow: none !important;
+    }
+
+    .light-mode button.bg-white span.bg-gradient-to-r {
+      background-image: none !important;
+      background-color: #94a3b8 !important;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgb(var(--color-slate-700)); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-slate-600)); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 
+  <!-- Tailwind CSS (Loaded after styles to not block initial paint) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: { colors: { white: 'rgb(var(--color-white) / <alpha-value>)', black: 'rgb(var(--color-black) / <alpha-value>)', slate: { 50: 'rgb(var(--color-slate-50) / <alpha-value>)', 100: 'rgb(var(--color-slate-100) / <alpha-value>)', 200: 'rgb(var(--color-slate-200) / <alpha-value>)', 300: 'rgb(var(--color-slate-300) / <alpha-value>)', 400: 'rgb(var(--color-slate-400) / <alpha-value>)', 500: 'rgb(var(--color-slate-500) / <alpha-value>)', 600: 'rgb(var(--color-slate-600) / <alpha-value>)', 700: 'rgb(var(--color-slate-700) / <alpha-value>)', 800: 'rgb(var(--color-slate-800) / <alpha-value>)', 900: 'rgb(var(--color-slate-900) / <alpha-value>)', 950: 'rgb(var(--color-slate-950) / <alpha-value>)' }, indigo: { 300: 'rgb(var(--color-indigo-300) / <alpha-value>)', 400: 'rgb(var(--color-indigo-400) / <alpha-value>)', 500: 'rgb(var(--color-indigo-500) / <alpha-value>)', 600: 'rgb(var(--color-indigo-600) / <alpha-value>)' }, fuchsia: { 600: 'rgb(var(--color-fuchsia-600) / <alpha-value>)' } }, fontFamily: { sans: ['Fira Sans', 'sans-serif'], heading: ['Fira Sans', 'sans-serif'], ui: ['Fira Sans', 'sans-serif'] }, animation: { blob: 'blob 25s infinite ease-in-out', 'gradient-x': 'gradient-x 5s ease infinite', 'modal-pop': 'modal-pop 0.3s ease-out forwards', 'toast-slide': 'toast-slide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', 'float-slow': 'float-slow 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }, keyframes: { blob: { '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' }, '33%': { transform: 'translate(150px, -150px) scale(1.2)' }, '66%': { transform: 'translate(-120px, 120px) scale(0.8)' } }, 'gradient-x': { '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' }, '50%': { 'background-size': '200% 200%', 'background-position': 'right center' } }, 'modal-pop': { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }, 'toast-slide': { '0%': { opacity: '0', transform: 'translateY(100%) scale(0.9)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } }, 'float-slow': { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-15px)' } } } } } }
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            white: 'rgb(var(--color-white) / <alpha-value>)',
+            black: 'rgb(var(--color-black) / <alpha-value>)',
+            slate: {
+              50: 'rgb(var(--color-slate-50) / <alpha-value>)',
+              100: 'rgb(var(--color-slate-100) / <alpha-value>)',
+              200: 'rgb(var(--color-slate-200) / <alpha-value>)',
+              300: 'rgb(var(--color-slate-300) / <alpha-value>)',
+              400: 'rgb(var(--color-slate-400) / <alpha-value>)',
+              500: 'rgb(var(--color-slate-500) / <alpha-value>)',
+              600: 'rgb(var(--color-slate-600) / <alpha-value>)',
+              700: 'rgb(var(--color-slate-700) / <alpha-value>)',
+              800: 'rgb(var(--color-slate-800) / <alpha-value>)',
+              900: 'rgb(var(--color-slate-900) / <alpha-value>)',
+              950: 'rgb(var(--color-slate-950) / <alpha-value>)',
+            },
+            indigo: {
+              300: 'rgb(var(--color-indigo-300) / <alpha-value>)',
+              400: 'rgb(var(--color-indigo-400) / <alpha-value>)',
+              500: 'rgb(var(--color-indigo-500) / <alpha-value>)',
+              600: 'rgb(var(--color-indigo-600) / <alpha-value>)',
+              900: 'rgb(var(--color-indigo-900) / <alpha-value>)',
+            },
+            fuchsia: {
+              600: 'rgb(var(--color-fuchsia-600) / <alpha-value>)',
+              900: 'rgb(var(--color-fuchsia-900) / <alpha-value>)',
+            }
+          },
+          fontFamily: {
+            sans: ['Fira Sans', 'sans-serif'],
+            heading: ['Fira Sans', 'sans-serif'],
+            ui: ['Fira Sans', 'sans-serif'],
+          },
+          animation: {
+            blob: 'blob 25s infinite ease-in-out',
+            'gradient-x': 'gradient-x 5s ease infinite',
+            'modal-pop': 'modal-pop 0.3s ease-out forwards',
+            'toast-slide': 'toast-slide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            'float-slow': 'float-slow 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            blob: {
+              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(150px, -150px) scale(1.2)' },
+              '66%': { transform: 'translate(-120px, 120px) scale(0.8)' },
+            },
+            'gradient-x': {
+              '0%, 100%': {
+                'background-size': '200% 200%',
+                'background-position': 'left center'
+              },
+              '50%': {
+                'background-size': '200% 200%',
+                'background-position': 'right center'
+              },
+            },
+            'modal-pop': {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            'toast-slide': {
+              '0%': { opacity: '0', transform: 'translateY(100%) scale(0.9)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            'float-slow': {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-15px)' },
+            }
+          }
+        }
+      }
+    }
   </script>
 
+  <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
+  <!-- Firebase Import Maps for ES Modules -->
   <script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js" } }
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"
+      }
+    }
   </script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans m-0 overflow-hidden selection:bg-indigo-500/30">
   
+  <!-- INITIAL BOOT-UP LOADING SCREEN -->
+  <!-- Using GPU-Accelerated styles (will-change) to prevent JS blocking lag -->
   <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease; overflow: hidden;">
+    
+    <!-- Deep space gradient -->
     <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #1e1b4b 0%, #020617 60%); opacity: 0.9;"></div>
+    
+    <!-- Open Graph Ambient Background Orbs -->
     <div style="position: absolute; top: -10%; left: 0; width: 600px; height: 600px; background: #6366f1; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(-30%, -30%); will-change: transform; animation: float-logo 8s ease-in-out infinite alternate;"></div>
     <div style="position: absolute; bottom: -10%; right: 0; width: 700px; height: 700px; background: #c026d3; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(30%, 30%); will-change: transform; animation: float-logo 10s ease-in-out infinite alternate-reverse;"></div>
+      
+    <!-- Animated Logo (Inlined SVG for instant zero-latency loading!) -->
     <div style="animation: float-logo 4s ease-in-out infinite; z-index: 10; position: relative; will-change: transform; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><defs><linearGradient id="loaderNexisGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1" /><stop offset="100%" stop-color="#c026d3" /></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#loaderNexisGrad)" /><rect width="100" height="100" rx="24" fill="#ffffff" opacity="0.15" /><rect width="98" height="98" x="1" y="1" rx="23" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.2" /><g transform="translate(25, 25) scale(2.0833)" fill="#ffffff"><path d="M2 2 L 18 2 L 2 18 Z" /><path d="M22 6 L 22 22 L 6 22 Z" /></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+        <defs>
+          <linearGradient id="loaderNexisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6366f1" />
+            <stop offset="100%" stop-color="#c026d3" />
+          </linearGradient>
+        </defs>
+        <rect width="100" height="100" rx="24" fill="url(#loaderNexisGrad)" />
+        <rect width="100" height="100" rx="24" fill="#ffffff" opacity="0.15" />
+        <rect width="98" height="98" x="1" y="1" rx="23" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.2" />
+        <g transform="translate(25, 25) scale(2.0833)" fill="#ffffff">
+          <path d="M2 2 L 18 2 L 2 18 Z" />
+          <path d="M22 6 L 22 22 L 6 22 Z" />
+        </g>
+      </svg>
     </div>
-    <div style="margin-top: 2.5rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2.2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #94a3b8 0%, #ffffff 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; will-change: background-position; drop-shadow: 0 4px 6px rgba(0,0,0,0.5);">NEXIS<span style="color: #818cf8; -webkit-text-fill-color: #818cf8;">GAMES</span></div>
-    <div style="margin-top: 1.25rem; font-family: 'Fira Sans', sans-serif; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.3em; color: #94a3b8; text-transform: uppercase; animation: pulse-ring 2s infinite; will-change: transform, opacity; text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);">Initializing Core Systems...</div>
-    <div style="margin-top: 1.5rem; width: 260px; height: 3px; background: #0f172a; border-radius: 4px; overflow: hidden; z-index: 10; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 1px 2px rgba(0,0,0,0.8);"><div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #818cf8, #38bdf8, #c026d3, transparent); border-radius: 4px; animation: loading-bar 1.2s infinite ease-in-out; will-change: transform; box-shadow: 0 0 10px #818cf8;"></div></div>
+
+    <!-- Title -->
+    <div style="margin-top: 2.5rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2.2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #94a3b8 0%, #ffffff 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; will-change: background-position; drop-shadow: 0 4px 6px rgba(0,0,0,0.5);">
+      NEXIS<span style="color: #818cf8; -webkit-text-fill-color: #818cf8;">GAMES</span>
+    </div>
+    
+    <!-- Status Text -->
+    <div style="margin-top: 1.25rem; font-family: 'Fira Sans', sans-serif; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.3em; color: #94a3b8; text-transform: uppercase; animation: pulse-ring 2s infinite; will-change: transform, opacity; text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);">
+      Loading...
+    </div>
+    
+    <!-- Progress Bar -->
+    <div style="margin-top: 1.5rem; width: 260px; height: 3px; background: #0f172a; border-radius: 4px; overflow: hidden; z-index: 10; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 1px 2px rgba(0,0,0,0.8);">
+       <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #818cf8, #38bdf8, #c026d3, transparent); border-radius: 4px; animation: loading-bar 1.2s infinite ease-in-out; will-change: transform; box-shadow: 0 0 10px #818cf8;"></div>
+    </div>
   </div>
 
   <div id="root"></div>
 
   <script type="text/babel" data-type="module">
     import { initializeApp } from 'firebase/app';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, signInAnonymously, signInWithCustomToken, sendPasswordResetEmail } from 'firebase/auth';
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot, enableIndexedDbPersistence } from 'firebase/firestore';
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged, 
+      updateProfile,
+      signInAnonymously,
+      signInWithCustomToken,
+      sendPasswordResetEmail
+    } from 'firebase/auth';
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc, 
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      collection,
+      onSnapshot,
+      enableIndexedDbPersistence // Imported for Offline Data Support!
+    } from 'firebase/firestore';
 
     const { useState, useEffect, useRef } = React;
 
-    // COMPRESSED ICONS
-    const HomeIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor" fillOpacity="0.2"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
-    const UserIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" fill="currentColor" fillOpacity="0.2"/><circle cx="12" cy="7" r="4" fill="currentColor" fillOpacity="0.2"/></svg>;
-    const SettingsIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" fillOpacity="0.2"/><circle cx="12" cy="12" r="3"/></svg>;
-    const TrophyIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" fill="currentColor" fillOpacity="0.2"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0z" fill="currentColor" fillOpacity="0.2"/></svg>;
-    const SearchIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8" fill="currentColor" fillOpacity="0.15"/><path d="m21 21-4.3-4.3"/></svg>;
-    const PlayIcon = ({ size=24, className="", fill="none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
-    const Gamepad2Icon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="12" x="2" y="6" rx="2" fill="currentColor" fillOpacity="0.2"/><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/></svg>;
-    const ChevronLeftIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>;
-    const Maximize2Icon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
-    const Minimize2Icon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
-    const XIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
-    const MenuIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
-    const UploadIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="currentColor" fillOpacity="0.2"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
-    const EyeIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" fill="currentColor" fillOpacity="0.15"/><circle cx="12" cy="12" r="3"/></svg>;
-    const EyeOffIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" fill="currentColor" fillOpacity="0.15"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" fill="currentColor" fillOpacity="0.15"/><line x1="2" y1="2" x2="22" y2="22"/></svg>;
-    const StarIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
-    const InfoIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
-    const HeartIcon = ({ size=24, className="", fill="none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
-    const SurpriseIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" fill="currentColor" fillOpacity="0.2"/><path d="M5 3v4M7 5H3"/><path d="M19 17v4M21 19h-4"/></svg>;
-    const ShieldIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.2"/></svg>;
-    const BanIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="m4.9 4.9 14.2 14.2"/></svg>;
-    const ClockIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><polyline points="12 6 12 12 16 14"/></svg>;
-    const WifiOffIcon = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/></svg>;
+    // --- COMPRESSED DUOTONE SVG ICONS --- //
+    const NexisLogo = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M2 2 L 18 2 L 2 18 Z" /><path d="M22 6 L 22 22 L 6 22 Z" /></svg>;
+    const HomeIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor" fillOpacity="0.2"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+    const UserIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" fill="currentColor" fillOpacity="0.2"/><circle cx="12" cy="7" r="4" fill="currentColor" fillOpacity="0.2"/></svg>;
+    const SettingsIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" fillOpacity="0.2"/><circle cx="12" cy="12" r="3"/></svg>;
+    const TrophyIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" fill="currentColor" fillOpacity="0.2"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0z" fill="currentColor" fillOpacity="0.2"/></svg>;
+    const SearchIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8" fill="currentColor" fillOpacity="0.15"/><path d="m21 21-4.3-4.3"/></svg>;
+    const PlayIcon = ({ size = 24, className = "", fill = "none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+    const Gamepad2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="12" x="2" y="6" rx="2" fill="currentColor" fillOpacity="0.2"/><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/></svg>;
+    const ChevronLeftIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>;
+    const Maximize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
+    const Minimize2Icon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>;
+    const XIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+    const MenuIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+    const UploadIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="currentColor" fillOpacity="0.2"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
+    const EditIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="currentColor" fillOpacity="0.2"/></svg>;
+    const TrashIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="currentColor" fillOpacity="0.2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+    const EyeIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" fill="currentColor" fillOpacity="0.15"/><circle cx="12" cy="12" r="3"/></svg>;
+    const EyeOffIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" fill="currentColor" fillOpacity="0.15"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" fill="currentColor" fillOpacity="0.15"/><line x1="2" y1="2" x2="22" y2="22"/></svg>;
+    const StarIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+    const InfoIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
+    const HeartIcon = ({ size = 24, className = "", fill = "none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+    const ShuffleIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l4.1-5.8c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.8.8 3.6 2.1l2 3.1"/><path d="m22 18-4-4v8z"/></svg>;
+    const SurpriseIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" fill="currentColor" fillOpacity="0.2"/><path d="M5 3v4M7 5H3"/><path d="M19 17v4M21 19h-4"/></svg>;
+    const ShieldIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.2"/></svg>;
+    const BanIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="m4.9 4.9 14.2 14.2"/></svg>;
+    const ClockIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><polyline points="12 6 12 12 16 14"/></svg>;
+    const WifiOffIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/></svg>;
 
     // COMPRESSED GAME ICONS
     const ShaddoCraftIcon = () => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'15px',boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%',height:'100%',objectFit:'contain',filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/></div>;
@@ -148,16 +391,55 @@
     function App() {
       const [activeView, setActiveView] = useState('discover'); const [activeGame, setActiveGame] = useState(null); const [searchQuery, setSearchQuery] = useState(''); const [activeCategory, setActiveCategory] = useState('All'); const [iframeLoading, setIframeLoading] = useState(true); const [adCountdown, setAdCountdown] = useState(0); const [isCssFullscreen, setIsCssFullscreen] = useState(false); const [isSidebarOpen, setIsSidebarOpen] = useState(false); const [toast, setToast] = useState(null); const playerContainerRef = useRef(null); const [isOffline, setIsOffline] = useState(!navigator.onLine);
       const [user, setUser] = useState(null); const [currentUserTag, setCurrentUserTag] = useState(''); const [currentUserPhoto, setCurrentUserPhoto] = useState(''); const [currentUserBanner, setCurrentUserBanner] = useState(''); const [currentUserBio, setCurrentUserBio] = useState(''); const [favorites, setFavorites] = useState([]); const [userStatus, setUserStatus] = useState('active'); const [showAuthModal, setShowAuthModal] = useState(false); const [authMode, setAuthMode] = useState('login'); const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [username, setUsername] = useState(''); const [authError, setAuthError] = useState(''); const [authLoading, setAuthLoading] = useState(false); const [showPassword, setShowPassword] = useState(false); const [resetMessage, setResetMessage] = useState(''); const [profileUsername, setProfileUsername] = useState(''); const [profileUserTag, setProfileUserTag] = useState(''); const [profilePhotoUrl, setProfilePhotoUrl] = useState(''); const [profileBannerUrl, setProfileBannerUrl] = useState(''); const [profileBio, setProfileBio] = useState(''); const [isUpdatingProfile, setIsUpdatingProfile] = useState(false); const [currentUserStreak, setCurrentUserStreak] = useState(0); const [leaderboard, setLeaderboard] = useState([]); const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true); const [leaderboardError, setLeaderboardError] = useState(''); const [viewingPlayer, setViewingPlayer] = useState(null); const [allUsers, setAllUsers] = useState([]); const [adminEditingUser, setAdminEditingUser] = useState(null); const [adminEditUsername, setAdminEditUsername] = useState(''); const [adminEditTag, setAdminEditTag] = useState(''); const [adminEditPhoto, setAdminEditPhoto] = useState(''); const [adminEditStreak, setAdminEditStreak] = useState(0); const [adminEditLevel, setAdminEditLevel] = useState(1); const [adminEditStatus, setAdminEditStatus] = useState('active'); const [adminActionLoading, setAdminActionLoading] = useState(false); const [masterVolume, setMasterVolume] = useState(100); const [musicVolume, setMusicVolume] = useState(80); const [sfxVolume, setSfxVolume] = useState(100); const [isLightMode, setIsLightMode] = useState(false); const [authResolved, setAuthResolved] = useState(false);
-
+      const bgMusicRef = useRef(null);
       const isRegistered = user && !user.isAnonymous; 
       const isAdmin = isRegistered && currentUserTag === "MOFU"; 
       const isDevUser = isRegistered && ['MOFU', 'DEV1', 'DEV2', 'DEV3', 'DEV4', 'DEV5'].includes(currentUserTag);
+
+      // Background Music Initializer
+      useEffect(() => {
+        if (!bgMusicRef.current) {
+          bgMusicRef.current = new Audio('assets/BG.mp3');
+          bgMusicRef.current.loop = true;
+          bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100);
+        }
+        
+        const tryPlayMusic = () => {
+          if (bgMusicRef.current && bgMusicRef.current.paused && !activeGame) {
+            bgMusicRef.current.play().catch(e => console.log("Audio waiting for user interaction."));
+          }
+        };
+
+        // Browsers require a user interaction before allowing audio to play
+        document.addEventListener('click', tryPlayMusic, { once: true });
+        document.addEventListener('keydown', tryPlayMusic, { once: true });
+
+        return () => {
+          document.removeEventListener('click', tryPlayMusic);
+          document.removeEventListener('keydown', tryPlayMusic);
+        };
+      }, []);
+
+      // Dynamic Audio Controls (Links to Settings Sliders & Pauses during Gameplay)
+      useEffect(() => {
+        if (bgMusicRef.current) {
+          if (activeGame) {
+            bgMusicRef.current.pause(); // Pause music while playing a game
+          } else {
+            bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100);
+            bgMusicRef.current.play().catch(e => {}); // Resume music when returning to hub
+          }
+        }
+      }, [musicVolume, masterVolume, activeGame]);
+
+
 
       useEffect(() => { const hO = () => setIsOffline(false); const hF = () => setIsOffline(true); window.addEventListener('online', hO); window.addEventListener('offline', hF); return () => { window.removeEventListener('online', hO); window.removeEventListener('offline', hF); }; }, []);
       useEffect(() => { if (isLightMode) document.documentElement.classList.add('light-mode'); else document.documentElement.classList.remove('light-mode'); }, [isLightMode]);
       useEffect(() => { if (authResolved) { setTimeout(() => { const l = document.getElementById('nexis-global-loader'); if (l) { l.style.opacity = '0'; l.style.visibility = 'hidden'; setTimeout(() => l.remove(), 800); } }, 1800); } }, [authResolved]);
 
-      const userLevel = 1 + Math.floor(currentUserStreak / 2); const levelProgress = ((currentUserStreak % 2) / 2) * 100;
+      const userLevel = 1 + Math.floor(currentUserStreak / 2);
+      const levelProgress = ((currentUserStreak % 2) / 2) * 100;
       const showToast = (m, t = 'success') => { setToast({ message: m, type: t }); setTimeout(() => setToast(null), 3500); };
 
       useEffect(() => {
@@ -200,6 +482,17 @@
         if (activeView === 'admin' && isAdmin && db) return onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'users'), s => { const u=[]; s.forEach(d=>u.push(d.data())); u.sort((a,b)=>getEffectiveStreak(b)-getEffectiveStreak(a)); setAllUsers(u); });
       }, [activeView, isAdmin, db]);
 
+      const checkTagAvailability = async (desiredTag) => {
+        if (!db) throw new Error("Database not connected.");
+        const tagRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', desiredTag.toUpperCase());
+        try {
+          const snapshot = await getDoc(tagRef);
+          return { available: !snapshot.exists(), ref: tagRef, doc: snapshot };
+        } catch (e) {
+          return { available: true, ref: tagRef, doc: null };
+        }
+      };
+
       const handleSignup = async (e) => {
         e.preventDefault(); setAuthError(''); setAuthLoading(true);
         try {
@@ -217,6 +510,8 @@
       const handleLogin = async (e) => { e.preventDefault(); setAuthError(''); setAuthLoading(true); try { await signInWithEmailAndPassword(auth, email, password); setShowAuthModal(false); showToast("Logged in!"); } catch (err) { setAuthError(err.message.replace('Firebase: ', '')); } finally { setAuthLoading(false); } };
       const handleLogout = async () => { if (auth) { await signOut(auth); setActiveView('discover'); setFavorites([]); setUserStatus('active'); showToast("Signed out."); try{await signInAnonymously(auth);}catch(e){} } };
       const handlePasswordReset = async (e) => { e.preventDefault(); setAuthError(''); setResetMessage(''); setAuthLoading(true); try { if(!email)throw new Error("Enter email."); await sendPasswordResetEmail(auth, email); setResetMessage('Reset email sent!'); } catch (err) { setAuthError(err.message.replace('Firebase: ', '')); } finally { setAuthLoading(false); } };
+      const handlePhotoChange = (e) => { const file = e.target.files[0]; if (file) processImageFile(file, 256, 256, setProfilePhotoUrl, false); };
+      const handleBannerChange = (e) => { const file = e.target.files[0]; if (file) processImageFile(file, 800, 300, setProfileBannerUrl, true); };
 
       const handleUpdateProfile = async (e) => {
         e.preventDefault(); if (!user) return; setIsUpdatingProfile(true);
@@ -246,7 +541,9 @@
 
       const handleLaunchGame = (game) => { setActiveGame(game); setIframeLoading(true); setIsCssFullscreen(false); };
       const handleCloseGame = () => { setActiveGame(null); setIsCssFullscreen(false); setAdCountdown(0); };
+      const playRandomGame = () => { const randomIndex = Math.floor(Math.random() * GAMES.length); handleLaunchGame(GAMES[randomIndex]); };
       const toggleFavorite = async (e, gid) => { e.stopPropagation(); if (!isRegistered) { showToast("Sign in required!", "error"); setShowAuthModal(true); return; } const favs = favorites.includes(gid) ? favorites.filter(id=>id!==gid) : [...favorites, gid]; setFavorites(favs); try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', user.uid), { favorites: favs }); showToast(favorites.includes(gid) ? "Removed from favorites" : "Added to favorites!"); } catch(err){} };
+      const handleCopyEmail = (e) => { e.preventDefault(); const textArea = document.createElement("textarea"); textArea.value = "mofawoyt@gmail.com"; document.body.appendChild(textArea); textArea.select(); try { document.execCommand('copy'); showToast("Email copied to clipboard!", 'success'); } catch (err) { showToast("Failed to copy email.", 'error'); } document.body.removeChild(textArea); };
 
       useEffect(() => {
         if (!activeGame) { setAdCountdown(0); return; }
