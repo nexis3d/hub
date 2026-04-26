@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexis Games</title>
   
-  <!-- Preload Critical Loader Assets for Instant Display -->
+  <!-- Preload Critical Loader Assets -->
   <link rel="preload" href="assets/Favicon.png" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Comprehensive Favicons exactly as requested -->
+  <!-- Favicons -->
   <link rel="icon" href="assets/Favicon.ico" type="image/x-icon">
   <link rel="icon" type="image/x-icon" href="/assets/Favicon.ico">
   <link rel="icon" type="image/png" href="/assets/Favicon.png">
@@ -20,7 +20,6 @@
   <link rel="shortcut icon" href="assets/Favicon.ico">
 
   <!-- PWA Manifest for Mobile App Installation -->
-  <!-- Base64 encoded JSON manifest to keep everything in one file -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk5leGlzIEdhbWVzIiwKICAic2hvcnRfbmFtZSI6ICJOZXhpcyIsCiAgImRlc2NyaXB0aW9uIjogIk1ha2luZyBnYW1lcyBncmVhdGVyLiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDIwNjE3IiwKICAidGhlbWVfY29sb3ciOiAiIzAyMDYxNyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImFzc2V0cy9GYXZpY29uLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
 
   <!-- SEO and Social Meta Tags -->
@@ -31,7 +30,6 @@
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <meta name="googlebot" content="index, follow, max-snippet:-1">
   
-  <!-- Open Graph Image / Social Sharing -->
   <meta property="og:title" content="Nexis Games">
   <meta property="og:description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
   <meta property="og:type" content="website">
@@ -93,7 +91,6 @@
     .light-mode {
       --color-white: 15 23 42;
       --color-black: 255 255 255;
-      
       --color-slate-50: 2 6 23; 
       --color-slate-100: 15 23 42; 
       --color-slate-200: 30 41 59; 
@@ -105,13 +102,11 @@
       --color-slate-800: 226 232 240; 
       --color-slate-900: 241 245 249; 
       --color-slate-950: 248 250 252; 
-      
       --color-indigo-300: 79 70 229; 
       --color-indigo-400: 99 102 241; 
       --color-indigo-500: 129 140 248; 
       --color-indigo-600: 165 180 252; 
       --color-indigo-900: 224 231 255; 
-      
       --color-fuchsia-600: 217 70 239; 
       --color-fuchsia-900: 250 232 255; 
     }
@@ -151,7 +146,7 @@
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 
-  <!-- Tailwind CSS (Loaded after styles to not block initial paint) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -253,17 +248,14 @@
 <body class="bg-slate-950 text-slate-100 font-sans m-0 overflow-hidden selection:bg-indigo-500/30">
   
   <!-- INITIAL BOOT-UP LOADING SCREEN -->
-  <!-- Using GPU-Accelerated styles (will-change) to prevent JS blocking lag -->
   <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease; overflow: hidden;">
-    
     <!-- Deep space gradient -->
     <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #1e1b4b 0%, #020617 60%); opacity: 0.9;"></div>
-    
     <!-- Open Graph Ambient Background Orbs -->
     <div style="position: absolute; top: -10%; left: 0; width: 600px; height: 600px; background: #6366f1; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(-30%, -30%); will-change: transform; animation: float-logo 8s ease-in-out infinite alternate;"></div>
     <div style="position: absolute; bottom: -10%; right: 0; width: 700px; height: 700px; background: #c026d3; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(30%, 30%); will-change: transform; animation: float-logo 10s ease-in-out infinite alternate-reverse;"></div>
       
-    <!-- Animated Logo (Inlined SVG for instant zero-latency loading!) -->
+    <!-- Animated Logo -->
     <div style="animation: float-logo 4s ease-in-out infinite; z-index: 10; position: relative; will-change: transform; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
         <defs>
@@ -349,14 +341,13 @@
     const StarIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
     const InfoIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
     const HeartIcon = ({ size = 24, className = "", fill = "none" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
-    const ShuffleIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l4.1-5.8c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.8.8 3.6 2.1l2 3.1"/><path d="m22 18-4-4v8z"/></svg>;
     const SurpriseIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" fill="currentColor" fillOpacity="0.2"/><path d="M5 3v4M7 5H3"/><path d="M19 17v4M21 19h-4"/></svg>;
     const ShieldIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.2"/></svg>;
     const BanIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="m4.9 4.9 14.2 14.2"/></svg>;
     const ClockIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><polyline points="12 6 12 12 16 14"/></svg>;
     const WifiOffIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/></svg>;
 
-    // COMPRESSED GAME ICONS
+    // --- COMPRESSED GAME ICONS --- //
     const ShaddoCraftIcon = () => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'15px',boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%',height:'100%',objectFit:'contain',filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/></div>;
     const KartIcon = () => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'0',boxSizing:'border-box'}}><img src="assets/Racer.png" alt="Super Kart Racer" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/991b1b/ffffff?text=Kart+Racer';}}/></div>;
     const VoidStalkerIcon = () => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'0',boxSizing:'border-box'}}><img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/312e81/ffffff?text=Spooky';}}/></div>;
@@ -365,38 +356,117 @@
     const BurgerIcon = () => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="burgerBg" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#b45309"/></linearGradient><filter id="glowSteam"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#burgerBg)" /><g transform="translate(100, 105) scale(1.15)"><ellipse cx="0" cy="35" rx="65" ry="15" fill="#fef3c7" stroke="#d97706" strokeWidth="3"/><ellipse cx="0" cy="35" rx="45" ry="8" fill="#fde68a" /><path d="M-25 -65Q-15 -80 -25 -95M0 -70Q10 -85 0 -100M25 -65Q35 -80 25 -95" stroke="#fde68a" strokeWidth="4" strokeLinecap="round" fill="none" filter="url(#glowSteam)" opacity="0.7"/><path d="M-50 20C-50 40,50 40,50 20Z" fill="#fbbf24" stroke="#d97706" strokeWidth="4"/><rect x="-55" y="0" width="110" height="20" rx="10" fill="#78350f" stroke="#451a03" strokeWidth="4"/><path d="M-60 -5L-50 5L-40 -5L-30 10L-20 -5L-10 5L0 -5L10 10L20 -5L30 5L40 -5L50 10L60 -5Z" fill="#facc15" stroke="#ca8a04" strokeWidth="3" strokeLinejoin="round"/><rect x="-52" y="-12" width="104" height="8" rx="4" fill="#ef4444" stroke="#b91c1c" strokeWidth="2"/><path d="M-55 -20C-40 -35,-30 -5,-15 -20C0 -35,10 -5,25 -20C40 -35,50 -5,55 -20C60 0,-60 0,-55 -20Z" fill="#4ade80" stroke="#16a34a" strokeWidth="4" strokeLinejoin="round"/><path d="M-50 -25C-50 -65,50 -65,50 -25Z" fill="#fbbf24" stroke="#d97706" strokeWidth="4"/><ellipse cx="-20" cy="-45" rx="4" ry="2" fill="#fff" transform="rotate(15 -20 -45)"/><ellipse cx="0" cy="-52" rx="4" ry="2" fill="#fff" /><ellipse cx="20" cy="-45" rx="4" ry="2" fill="#fff" transform="rotate(-15 20 -45)"/></g></svg>;
     const RealmIcon = () => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="realmGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#0284c7"/><stop offset="100%" stopColor="#1e3a8a"/></linearGradient><filter id="shardGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#realmGrad)" /><g transform="translate(100, 100)" filter="url(#shardGlow)"><path d="M0 -60L30 10L0 50L-30 10Z" fill="#e0f2fe" opacity="0.9"/><path d="M0 -60L30 10L0 80L0 50Z" fill="#bae6fd" opacity="0.7"/><path d="M-40 -10L-10 20L-20 40Z" fill="#7dd3fc" opacity="0.8"/><path d="M40 0L15 30L30 45Z" fill="#38bdf8" opacity="0.8"/></g></svg>;
 
-    // FIREBASE INIT
+    // --- FIREBASE INIT --- //
     const firebaseConfig = { apiKey: "AIzaSyBZsza33A9WhqSaywN3XJ4CsTa5lon8VPg", authDomain: "nexis-games.firebaseapp.com", projectId: "nexis-games", storageBucket: "nexis-games.firebasestorage.app", messagingSenderId: "291409336146", appId: "1:291409336146:web:adf717a48f75469c44cc8b" };
     let auth, db; const APP_ID = 'nexis-games-production';
-    try { const app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); enableIndexedDbPersistence(db).catch(()=>{}); } catch (e) { console.warn("Firebase error:", e); }
+    try { 
+      const app = initializeApp(firebaseConfig); 
+      auth = getAuth(app); 
+      db = getFirestore(app); 
+      enableIndexedDbPersistence(db).catch(()=>{}); 
+    } catch (e) { console.warn("Firebase error:", e); }
 
-    // UTILS
+    // --- UTILS --- //
     const getStreakDateString = (dateObj = new Date()) => { const utc = dateObj.getTime() + (dateObj.getTimezoneOffset() * 60000); const gmt7 = utc - (3600000 * 7); const rolloverShift = new Date(gmt7 - (3600000 * 8)); return rolloverShift.getFullYear() + '-' + String(rolloverShift.getMonth() + 1).padStart(2, '0') + '-' + String(rolloverShift.getDate()).padStart(2, '0'); };
     const getDaysDifference = (d1, d2) => { if (!d1 || !d2) return 999; return Math.floor((new Date(d1 + 'T00:00:00Z') - new Date(d2 + 'T00:00:00Z')) / 86400000); };
     const getEffectiveStreak = (p) => { if (!p.lastPlayedDate || !p.currentStreak) return 0; return getDaysDifference(getStreakDateString(), p.lastPlayedDate) <= 1 ? p.currentStreak : 0; };
     const isEligibleForLeaderboard = (d) => d.status !== 'banned' && (getEffectiveStreak(d) > 0 || getDaysDifference(getStreakDateString(), d.lastPlayedDate) < 2);
 
-    // GAMES DATA
+    const processImageFile = (file, maxWidth, maxHeight, callback, isBanner = false) => {
+      if (file.size > 5000000) { alert("Image is too large (max 5MB)."); return; }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+         const img = new Image();
+         img.onload = () => {
+           const canvas = document.createElement('canvas'); let width = img.width; let height = img.height;
+           if (width > height) { if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; } } else { if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; } }
+           canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d');
+           if (isBanner) { ctx.drawImage(img, 0, 0, width, height); const grd = ctx.createLinearGradient(0, height - 100, 0, height); grd.addColorStop(0, "transparent"); grd.addColorStop(1, "rgba(0,0,0,0.5)"); ctx.fillStyle = grd; ctx.fillRect(0, height - 100, width, 100); } else { ctx.drawImage(img, 0, 0, width, height); }
+           callback(canvas.toDataURL('image/jpeg', 0.85));
+         };
+         img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // --- GAMES DATA --- //
     const GAMES = [
-      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', description: 'Battle friends in VBrawl Ultimate, an epic 4-player platform brawler!', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
+      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', description: 'Battle friends in VBrawl Ultimate, an epic 4-player platform brawler! Customize your 3D fighter, master dynamic maps, and unleash chaotic power-ups.', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
       { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', description: 'Fire up the grill and serve hungry customers in this fast-paced burger cooking game!', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-500 to-orange-700', tags: ['Cooking', 'Action'] },
-      { id: 'kart-racer', title: 'Super Kart Racer', developer: 'Mofawo', description: 'Start your engines! Drift, boost, and race your way to the finish line.', src: 'games/Kart.html', icon: KartIcon, theme: 'from-red-600 to-orange-500', tags: ['Racing', 'Multiplayer', '3D'] },
-      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', description: 'A spooky, thrilling adventure! Navigate the dark corridors and solve the mystery.', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
-      { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', description: 'Take to the skies and battle it out in Super Pigeon Rumble!', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
-      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', description: 'Explore a custom 3D web experience!', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'] },
+      { id: 'kart-racer', title: 'Super Kart Racer', developer: 'Mofawo', description: 'Start your engines! Drift, boost, and race your way to the finish line against friends in this high-speed kart racer.', src: 'games/Kart.html', icon: KartIcon, theme: 'from-red-600 to-orange-500', tags: ['Racing', 'Multiplayer', '3D'] },
+      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', description: 'A spooky, thrilling adventure! Navigate the dark corridors and solve the mystery in this eerie web game.', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', description: 'Take to the skies and battle it out in Super Pigeon Rumble! Flap, peck, and outmaneuver your foes in this epic feathery frenzy.', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
+      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', description: 'Explore a custom 3D web experience! Jump into this immersive world directly from your browser.', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'] },
       { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', description: 'A breathtaking adventure awaits in the shattered realm. Rebuild the world, one shard at a time.', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true }
     ];
     const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Racing', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG'];
 
     function App() {
-      const [activeView, setActiveView] = useState('discover'); const [activeGame, setActiveGame] = useState(null); const [searchQuery, setSearchQuery] = useState(''); const [activeCategory, setActiveCategory] = useState('All'); const [iframeLoading, setIframeLoading] = useState(true); const [adCountdown, setAdCountdown] = useState(0); const [isCssFullscreen, setIsCssFullscreen] = useState(false); const [isSidebarOpen, setIsSidebarOpen] = useState(false); const [toast, setToast] = useState(null); const playerContainerRef = useRef(null); const [isOffline, setIsOffline] = useState(!navigator.onLine);
-      const [user, setUser] = useState(null); const [currentUserTag, setCurrentUserTag] = useState(''); const [currentUserPhoto, setCurrentUserPhoto] = useState(''); const [currentUserBanner, setCurrentUserBanner] = useState(''); const [currentUserBio, setCurrentUserBio] = useState(''); const [favorites, setFavorites] = useState([]); const [userStatus, setUserStatus] = useState('active'); const [showAuthModal, setShowAuthModal] = useState(false); const [authMode, setAuthMode] = useState('login'); const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [username, setUsername] = useState(''); const [authError, setAuthError] = useState(''); const [authLoading, setAuthLoading] = useState(false); const [showPassword, setShowPassword] = useState(false); const [resetMessage, setResetMessage] = useState(''); const [profileUsername, setProfileUsername] = useState(''); const [profileUserTag, setProfileUserTag] = useState(''); const [profilePhotoUrl, setProfilePhotoUrl] = useState(''); const [profileBannerUrl, setProfileBannerUrl] = useState(''); const [profileBio, setProfileBio] = useState(''); const [isUpdatingProfile, setIsUpdatingProfile] = useState(false); const [currentUserStreak, setCurrentUserStreak] = useState(0); const [leaderboard, setLeaderboard] = useState([]); const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true); const [leaderboardError, setLeaderboardError] = useState(''); const [viewingPlayer, setViewingPlayer] = useState(null); const [allUsers, setAllUsers] = useState([]); const [adminEditingUser, setAdminEditingUser] = useState(null); const [adminEditUsername, setAdminEditUsername] = useState(''); const [adminEditTag, setAdminEditTag] = useState(''); const [adminEditPhoto, setAdminEditPhoto] = useState(''); const [adminEditStreak, setAdminEditStreak] = useState(0); const [adminEditLevel, setAdminEditLevel] = useState(1); const [adminEditStatus, setAdminEditStatus] = useState('active'); const [adminActionLoading, setAdminActionLoading] = useState(false); const [masterVolume, setMasterVolume] = useState(100); const [musicVolume, setMusicVolume] = useState(80); const [sfxVolume, setSfxVolume] = useState(100); const [isLightMode, setIsLightMode] = useState(false); const [authResolved, setAuthResolved] = useState(false);
+      const [activeView, setActiveView] = useState('discover'); 
+      const [activeGame, setActiveGame] = useState(null); 
+      const [searchQuery, setSearchQuery] = useState(''); 
+      const [activeCategory, setActiveCategory] = useState('All'); 
+      const [iframeLoading, setIframeLoading] = useState(true); 
+      const [adCountdown, setAdCountdown] = useState(0); 
+      const [isCssFullscreen, setIsCssFullscreen] = useState(false); 
+      const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+      const [toast, setToast] = useState(null); 
+      const playerContainerRef = useRef(null); 
+      const [isOffline, setIsOffline] = useState(!navigator.onLine);
+      
+      const [user, setUser] = useState(null); 
+      const [currentUserTag, setCurrentUserTag] = useState(''); 
+      const [currentUserPhoto, setCurrentUserPhoto] = useState(''); 
+      const [currentUserBanner, setCurrentUserBanner] = useState(''); 
+      const [currentUserBio, setCurrentUserBio] = useState(''); 
+      const [favorites, setFavorites] = useState([]); 
+      const [userStatus, setUserStatus] = useState('active'); 
+      const [showAuthModal, setShowAuthModal] = useState(false); 
+      const [authMode, setAuthMode] = useState('login'); 
+      const [email, setEmail] = useState(''); 
+      const [password, setPassword] = useState(''); 
+      const [username, setUsername] = useState(''); 
+      const [authError, setAuthError] = useState(''); 
+      const [authLoading, setAuthLoading] = useState(false); 
+      const [showPassword, setShowPassword] = useState(false); 
+      const [resetMessage, setResetMessage] = useState(''); 
+      
+      const [profileUsername, setProfileUsername] = useState(''); 
+      const [profileUserTag, setProfileUserTag] = useState(''); 
+      const [profilePhotoUrl, setProfilePhotoUrl] = useState(''); 
+      const [profileBannerUrl, setProfileBannerUrl] = useState(''); 
+      const [profileBio, setProfileBio] = useState(''); 
+      const [isUpdatingProfile, setIsUpdatingProfile] = useState(false); 
+      
+      const [currentUserStreak, setCurrentUserStreak] = useState(0); 
+      const [leaderboard, setLeaderboard] = useState([]); 
+      const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true); 
+      const [leaderboardError, setLeaderboardError] = useState(''); 
+      const [viewingPlayer, setViewingPlayer] = useState(null); 
+      
+      const [allUsers, setAllUsers] = useState([]); 
+      const [adminEditingUser, setAdminEditingUser] = useState(null); 
+      const [adminEditUsername, setAdminEditUsername] = useState(''); 
+      const [adminEditTag, setAdminEditTag] = useState(''); 
+      const [adminEditPhoto, setAdminEditPhoto] = useState(''); 
+      const [adminEditStreak, setAdminEditStreak] = useState(0); 
+      const [adminEditLevel, setAdminEditLevel] = useState(1); 
+      const [adminEditStatus, setAdminEditStatus] = useState('active'); 
+      const [adminActionLoading, setAdminActionLoading] = useState(false); 
+      
+      const [masterVolume, setMasterVolume] = useState(100); 
+      const [musicVolume, setMusicVolume] = useState(50); 
+      const [sfxVolume, setSfxVolume] = useState(100); 
+      const [isLightMode, setIsLightMode] = useState(false); 
+      const [authResolved, setAuthResolved] = useState(false);
+      
       const bgMusicRef = useRef(null);
+      
       const isRegistered = user && !user.isAnonymous; 
       const isAdmin = isRegistered && currentUserTag === "MOFU"; 
       const isDevUser = isRegistered && ['MOFU', 'DEV1', 'DEV2', 'DEV3', 'DEV4', 'DEV5'].includes(currentUserTag);
 
-      // Background Music Initializer
+      // Background Music Logic
       useEffect(() => {
         if (!bgMusicRef.current) {
           bgMusicRef.current = new Audio('assets/BG.mp3');
@@ -410,7 +480,6 @@
           }
         };
 
-        // Browsers require a user interaction before allowing audio to play
         document.addEventListener('click', tryPlayMusic, { once: true });
         document.addEventListener('keydown', tryPlayMusic, { once: true });
 
@@ -420,28 +489,27 @@
         };
       }, []);
 
-      // Dynamic Audio Controls (Links to Settings Sliders & Pauses during Gameplay)
       useEffect(() => {
         if (bgMusicRef.current) {
           if (activeGame) {
-            bgMusicRef.current.pause(); // Pause music while playing a game
+            bgMusicRef.current.pause();
           } else {
             bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100);
-            bgMusicRef.current.play().catch(e => {}); // Resume music when returning to hub
+            bgMusicRef.current.play().catch(e => {}); 
           }
         }
       }, [musicVolume, masterVolume, activeGame]);
-
-
 
       useEffect(() => { const hO = () => setIsOffline(false); const hF = () => setIsOffline(true); window.addEventListener('online', hO); window.addEventListener('offline', hF); return () => { window.removeEventListener('online', hO); window.removeEventListener('offline', hF); }; }, []);
       useEffect(() => { if (isLightMode) document.documentElement.classList.add('light-mode'); else document.documentElement.classList.remove('light-mode'); }, [isLightMode]);
       useEffect(() => { if (authResolved) { setTimeout(() => { const l = document.getElementById('nexis-global-loader'); if (l) { l.style.opacity = '0'; l.style.visibility = 'hidden'; setTimeout(() => l.remove(), 800); } }, 1800); } }, [authResolved]);
 
-      const userLevel = 1 + Math.floor(currentUserStreak / 2);
+      const userLevel = 1 + Math.floor(currentUserStreak / 2); 
       const levelProgress = ((currentUserStreak % 2) / 2) * 100;
+      
       const showToast = (m, t = 'success') => { setToast({ message: m, type: t }); setTimeout(() => setToast(null), 3500); };
 
+      // Auth & DB logic
       useEffect(() => {
         const initAuth = async () => { try { if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { try { await signInWithCustomToken(auth, __initial_auth_token); return; } catch(e){} } await signInAnonymously(auth); } catch(e){} };
         initAuth();
@@ -557,52 +625,161 @@
       const filteredGames = GAMES.filter(g => { if (g.isBeta && !isDevUser) return false; const matchS = g.title.toLowerCase().includes(searchQuery.toLowerCase()) || g.tags.some(t=>t.toLowerCase().includes(searchQuery.toLowerCase())); const matchC = activeCategory === 'All' ? true : activeCategory === 'Favorites' ? favorites.includes(g.id) : g.tags.includes(activeCategory); return matchS && matchC; });
       const FeaturedGame = GAMES[0]; const FeaturedIcon = FeaturedGame.icon; const ActiveIcon = activeGame ? activeGame.icon : null;
 
-      if (userStatus === 'banned') return <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center"><BanIcon size={80} className="text-rose-600 mb-6 animate-pulse" /><h1 className="text-5xl font-black font-heading text-rose-500 mb-4">Account Banned</h1><button onClick={handleLogout} className="px-8 py-3 bg-slate-800 text-white rounded-xl">Sign Out</button></div>;
-      if (userStatus === 'suspended') return <div className="h-screen w-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8 text-center"><ClockIcon size={80} className="text-amber-500 mb-6 animate-bounce" /><h1 className="text-5xl font-black font-heading text-amber-500 mb-4">Account Suspended</h1><button onClick={handleLogout} className="px-8 py-3 bg-slate-800 text-white rounded-xl">Sign Out</button></div>;
+      if (userStatus === 'banned') {
+        return (
+          <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
+            <BanIcon size={80} className="text-rose-600 mb-6 animate-pulse" />
+            <h1 className="text-5xl font-black font-heading text-rose-500 mb-4 tracking-widest uppercase">Account Banned</h1>
+            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Your access to Nexis Games has been permanently revoked due to a violation of our community standards.</p>
+            <button onClick={handleLogout} className="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold uppercase tracking-widest">Sign Out</button>
+          </div>
+        );
+      }
+      
+      if (userStatus === 'suspended') {
+        return (
+          <div className="h-screen w-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8 text-center">
+            <ClockIcon size={80} className="text-amber-500 mb-6 animate-bounce" />
+            <h1 className="text-5xl font-black font-heading text-amber-500 mb-4 tracking-widest uppercase">Account Suspended</h1>
+            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Your account is currently under review or temporarily suspended. Please check back later.</p>
+            <button onClick={handleLogout} className="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold uppercase tracking-widest">Sign Out</button>
+          </div>
+        );
+      }
 
       return (
         <div className="h-screen w-screen bg-[#030712] text-slate-100 font-sans flex overflow-hidden relative">
+          
+          {/* Ambient Background */}
           <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
             <div className="absolute top-0 left-0 right-0 h-[60vh] bg-gradient-to-b from-indigo-900/10 to-transparent"></div>
             <div className="absolute -top-40 -left-40 w-[60rem] h-[60rem] bg-indigo-600 rounded-full filter blur-[140px] opacity-15 animate-blob"></div>
             <div className="absolute top-20 -right-20 w-[50rem] h-[50rem] bg-fuchsia-600 rounded-full filter blur-[140px] opacity-10 animate-blob" style={{ animationDelay: '8s' }}></div>
             <div className="absolute -bottom-60 left-1/4 w-[70rem] h-[70rem] bg-blue-600 rounded-full filter blur-[160px] opacity-10 animate-blob" style={{ animationDelay: '16s' }}></div>
           </div>
-          {isOffline && <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[200] bg-rose-600/90 backdrop-blur-md border border-rose-500/50 text-white px-6 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.5)]"><WifiOffIcon size={16} /> Offline Mode</div>}
+
+          {/* OFFLINE INDICATOR BADGE */}
+          {isOffline && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[200] bg-rose-600/90 backdrop-blur-md border border-rose-500/50 text-white px-6 py-2 rounded-full font-bold font-ui text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.5)] animate-in slide-in-from-top-4">
+               <WifiOffIcon size={16} /> Offline Mode - Playing locally
+            </div>
+          )}
+
+          {isSidebarOpen && (
+            <div className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] animate-in fade-in duration-300" onClick={() => setIsSidebarOpen(false)}></div>
+          )}
           
-          {isSidebarOpen && <div className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]" onClick={() => setIsSidebarOpen(false)}></div>}
-          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen z-[100] flex flex-col flex-shrink-0 bg-slate-900/95 backdrop-blur-3xl border-r border-slate-800/50 transition-[width,transform] duration-300 ease-out overflow-hidden whitespace-nowrap shadow-[10px_0_30px_rgba(0,0,0,0.5)] ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-[88px]'}`}>
-            <div className="p-6 flex items-center h-24 border-b border-slate-800/30"><div className="w-10 h-10 rounded-xl overflow-hidden shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] flex-shrink-0 bg-slate-800"><img src="assets/Favicon.png" className="w-full h-full object-cover" /></div><h1 className={`text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-heading transition-all ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>NEXIS GAMES</h1></div>
+          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen z-[100] flex flex-col flex-shrink-0 bg-slate-900/95 backdrop-blur-3xl border-r border-slate-800/50 transition-[width,transform] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden whitespace-nowrap shadow-[10px_0_30px_rgba(0,0,0,0.5)] ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-[88px]'}`}>
+            <div className="p-6 flex items-center justify-start h-24 border-b border-slate-800/30">
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] flex-shrink-0 border border-white/10 relative bg-slate-800">
+                <img src="assets/Favicon.png" alt="Nexis Games Logo" className="w-full h-full object-cover relative z-10" />
+              </div>
+              <h1 className={`text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-heading drop-shadow-md transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>
+                NEXIS GAMES
+              </h1>
+            </div>
+
             <nav className="flex-1 px-4 py-6 space-y-3 overflow-y-auto scrollbar-hide">
-              <button onClick={() => { setActiveView('discover'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all active:scale-95 border ${activeView==='discover' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}><HomeIcon size={24} className="flex-shrink-0"/><span className={`font-bold font-ui text-xl transition-all ${isSidebarOpen ? 'opacity-100 ml-4' : 'opacity-0'}`}>Discover</span></button>
-              <button onClick={() => { setActiveView('leaderboard'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all border ${activeView==='leaderboard' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50'}`}><TrophyIcon size={24} className="flex-shrink-0"/><span className={`font-bold font-ui text-xl transition-all ${isSidebarOpen ? 'opacity-100 ml-4' : 'opacity-0'}`}>Leaderboard</span></button>
-              <button onClick={() => { setActiveView('profile'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all border ${activeView==='profile' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50'}`}><UserIcon size={24} className="flex-shrink-0"/><span className={`font-bold font-ui text-xl transition-all ${isSidebarOpen ? 'opacity-100 ml-4' : 'opacity-0'}`}>Profile</span></button>
-              <button onClick={() => { setActiveView('about'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all border ${activeView==='about' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50'}`}><InfoIcon size={24} className="flex-shrink-0"/><span className={`font-bold font-ui text-xl transition-all ${isSidebarOpen ? 'opacity-100 ml-4' : 'opacity-0'}`}>About Us</span></button>
-              {isAdmin && <><div className="h-px w-full bg-slate-800/50 my-2"></div><button onClick={() => { setActiveView('admin'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all border ${activeView==='admin' ? 'bg-rose-500/20 border-rose-500/30 text-rose-400 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50'}`}><ShieldIcon size={24} className="flex-shrink-0"/><span className={`font-bold font-ui text-xl transition-all ${isSidebarOpen ? 'opacity-100 ml-4' : 'opacity-0'}`}>Admin Portal</span></button></>}
+              <button onClick={() => { setActiveView('discover'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'discover' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Discover">
+                <HomeIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Discover</span>
+              </button>
+
+              <button onClick={() => { setActiveView('leaderboard'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'leaderboard' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Leaderboard">
+                <TrophyIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Leaderboard</span>
+              </button>
+
+              <button onClick={() => { setActiveView('profile'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'profile' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Profile">
+                <UserIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>My Profile</span>
+              </button>
+
+              <button onClick={() => { setActiveView('about'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'about' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="About Us">
+                <InfoIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>About Us</span>
+              </button>
+
+              {isAdmin && (
+                 <>
+                   <div className="h-px w-full bg-slate-800/50 my-2"></div>
+                   <button onClick={() => { setActiveView('admin'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/20 border-rose-500/30 text-rose-400 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Admin Portal">
+                     <ShieldIcon size={24} className="flex-shrink-0" />
+                     <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Admin Portal</span>
+                   </button>
+                 </>
+              )}
             </nav>
-            <div className="p-4 border-t border-slate-800/50"><button onClick={() => { setActiveView('settings'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all border ${activeView==='settings' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50'}`}><SettingsIcon size={24} className="flex-shrink-0"/><span className={`font-bold font-ui text-xl transition-all ${isSidebarOpen ? 'opacity-100 ml-4' : 'opacity-0'}`}>Settings</span></button></div>
+
+            <div className="p-4 border-t border-slate-800/50">
+              <button onClick={() => { setActiveView('settings'); setActiveGame(null); setIsSidebarOpen(false); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(99,102,241,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Settings">
+                <SettingsIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Settings</span>
+              </button>
+            </div>
           </aside>
 
           <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10 ml-0 md:ml-[88px]">
-            <div className={`absolute inset-0 flex flex-col transition-all duration-500 ${activeGame ? 'opacity-0 pointer-events-none' : 'opacity-100 overflow-y-auto'}`}>
-              <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-slate-950/50 backdrop-blur-3xl border-b border-slate-800/50">
+            
+            <div className={`absolute inset-0 flex flex-col transition-all duration-500 ease-out ${activeGame ? 'opacity-0 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100 overflow-y-auto'}`}>
+              
+              <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-slate-950/50 backdrop-blur-3xl border-b border-slate-800/50 shadow-sm">
                 <div className="flex items-center flex-1">
-                  <button onClick={() => setIsSidebarOpen(true)} className="mr-4 md:hidden p-3 bg-slate-900/80 rounded-xl text-slate-400 hover:text-white border border-slate-800"><MenuIcon size={24} /></button>
-                  <div className="relative w-full max-w-md hidden sm:block">
-                    <SearchIcon size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input type="text" className="w-full bg-slate-900/60 border border-slate-800/60 rounded-2xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                  <button onClick={() => setIsSidebarOpen(true)} className="mr-4 md:hidden p-3 bg-slate-900/80 rounded-xl text-slate-400 hover:text-white border border-slate-800 hover:border-indigo-500/50 transition-all flex-shrink-0 active:scale-95 shadow-inner">
+                    <MenuIcon size={24} />
+                  </button>
+                  <div className="relative w-full max-w-md group hidden sm:block">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <SearchIcon size={20} className="text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                    </div>
+                    <input type="text" className="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-800/60 text-slate-100 font-ui text-xl font-bold rounded-2xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] placeholder-slate-500" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                   </div>
                 </div>
+                
                 <div className="flex items-center space-x-4 ml-4">
                   {isRegistered ? (
-                    <div className="flex items-center space-x-4 cursor-pointer" onClick={() => setActiveView('profile')}>
+                    <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => setActiveView('profile')}>
                       <div className="hidden sm:flex flex-col items-end">
-                        <div className="flex items-center gap-2"><span className="text-lg font-bold text-white">{user.displayName}</span><span className="text-sm font-bold text-indigo-400">Lvl {userLevel}</span></div>
+                        <div className="flex items-center gap-2">
+                           <span className="text-lg font-bold font-heading text-white group-hover:text-indigo-300 transition-colors">
+                             {user.displayName || 'Gamer'} 
+                             <span className="text-slate-500 font-ui text-sm ml-1">#{currentUserTag}</span>
+                           </span>
+                           {currentUserStreak > 0 ? (
+                              <div className="flex items-center bg-slate-900/80 border border-slate-700/50 px-2 py-0.5 rounded-md shadow-inner" title="Game Streak">
+                                 <span className="text-orange-500 text-xs mr-1 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse">🔥</span>
+                                 <span className="text-xs font-bold text-white font-ui">{currentUserStreak}</span>
+                              </div>
+                           ) : (
+                              <div className="flex items-center bg-slate-900/80 border border-slate-700/50 px-2 py-0.5 rounded-md shadow-inner" title="Streak Broken">
+                                 <span className="text-slate-500 text-xs mr-1 grayscale opacity-50">🔥</span>
+                                 <span className="text-xs font-bold text-slate-500 font-ui">0</span>
+                              </div>
+                           )}
+                        </div>
+                        <span className="text-sm text-indigo-400 font-bold font-ui flex items-center gap-1">
+                          <StarIcon size={14} /> Lvl {userLevel}
+                        </span>
                       </div>
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-600 overflow-hidden">{currentUserPhoto ? <img src={currentUserPhoto} className="w-full h-full object-cover"/> : <span className="flex items-center justify-center h-full font-bold text-xl">{user.displayName?.charAt(0).toUpperCase()}</span>}</div>
+                      
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 border border-white/20 flex items-center justify-center shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)] overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform active:scale-95">
+                        {currentUserPhoto ? (
+                           <img src={currentUserPhoto} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                           <span className="font-bold text-xl text-[#ffffff] font-heading">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                        )}
+                      </div>
                     </div>
                   ) : (
-                    <button onClick={() => setShowAuthModal(true)} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl">Sign In</button>
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="hidden sm:flex items-center bg-slate-900/50 border border-slate-800/80 px-3 py-1.5 rounded-lg shadow-inner opacity-70" title="Sign in to track your daily streak!">
+                         <span className="text-slate-500 text-sm mr-1.5">🔥</span>
+                         <span className="text-sm font-bold text-slate-400 font-ui tracking-widest">Sign in to save streak</span>
+                      </div>
+                      <button onClick={() => setShowAuthModal(true)} className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold font-ui text-xl tracking-wider rounded-2xl transition-all shadow-[0_0_20px_-5px_rgba(99,102,241,0.6)] hover:shadow-[0_0_25px_-2px_rgba(99,102,241,0.8)] whitespace-nowrap active:scale-95">
+                        Sign In
+                      </button>
+                    </div>
                   )}
                 </div>
               </header>
@@ -610,106 +787,508 @@
               {activeView === 'discover' && (
                 <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                   {!searchQuery && activeCategory === 'All' && (
-                    <div className="px-6 md:px-10 pb-8 pt-6 relative z-10">
-                      <div className="relative w-full h-80 md:h-[400px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5" onClick={() => handleLaunchGame(FeaturedGame)}>
+                    <div className="px-6 md:px-10 pb-8 pt-6 flex-shrink-0 relative z-10">
+                      <div className="relative w-full h-80 md:h-[400px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" onClick={() => handleLaunchGame(FeaturedGame)}>
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-slate-900 to-fuchsia-900 animate-gradient-x"></div>
-                        <div className="absolute right-0 top-0 w-full md:w-1/2 h-full opacity-50 transform translate-x-20 group-hover:scale-[1.1] transition-all duration-700 animate-float-slow"><FeaturedIcon /></div>
-                        <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 z-10">
-                          <span className="px-4 py-1.5 text-xs md:text-sm font-bold uppercase text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 rounded-xl mb-4 inline-block">Featured</span>
-                          <h2 className="text-4xl md:text-6xl font-black font-heading text-white mb-4">{FeaturedGame.title}</h2>
-                          <button className="flex items-center space-x-3 bg-white text-slate-950 px-8 py-4 rounded-2xl font-bold text-xl hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all"><PlayIcon size={24} fill="currentColor"/><span>Play Now</span></button>
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-400/20 via-transparent to-transparent mix-blend-overlay"></div>
+                        
+                        <div className="absolute right-0 top-0 w-full md:w-1/2 h-full opacity-30 md:opacity-50 transform translate-x-10 md:translate-x-20 -translate-y-10 group-hover:scale-[1.1] transition-all duration-700 ease-out filter drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] animate-float-slow">
+                          {React.createElement(FeaturedIcon)}
                         </div>
+                        
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent"></div>
+                        
+                        <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 transform group-hover:-translate-y-2 transition-transform duration-500 ease-out z-10">
+                          <span className="px-4 py-1.5 text-xs md:text-sm font-bold font-ui uppercase tracking-widest text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 rounded-xl mb-4 inline-block backdrop-blur-md shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)]">Featured</span>
+                          <h2 data-nosnippet="true" className="text-4xl md:text-6xl font-black font-heading text-white mb-4 tracking-tight drop-shadow-lg">{FeaturedGame.title}</h2>
+                          <p data-nosnippet="true" className="text-slate-300 text-base md:text-xl mb-8 line-clamp-2 max-w-xl font-medium">{FeaturedGame.description}</p>
+                          <button className="relative flex items-center space-x-3 bg-white text-slate-950 px-8 py-4 rounded-2xl font-bold font-ui text-xl md:text-2xl tracking-wide overflow-hidden group/btn shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all active:scale-95">
+                            <span className="absolute inset-0 bg-gradient-to-r from-white via-slate-200 to-white transform -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out"></span>
+                            <PlayIcon size={24} fill="currentColor" className="relative z-10" />
+                            <span className="relative z-10">Play Now</span>
+                          </button>
+                        </div>
+                        
+                        <button onClick={(e) => toggleFavorite(e, FeaturedGame.id)} className={`absolute top-6 right-6 z-20 p-3 rounded-2xl backdrop-blur-md transition-all active:scale-95 border ${favorites.includes(FeaturedGame.id) ? 'bg-rose-500/20 text-rose-500 border-rose-500/50 shadow-[0_0_20px_rgba(244,63,94,0.5)]' : 'bg-slate-900/60 text-slate-300 border-white/10 hover:bg-slate-800 hover:text-white hover:border-white/20 shadow-lg'}`}>
+                          <HeartIcon size={24} fill={favorites.includes(FeaturedGame.id) ? "currentColor" : "none"} />
+                        </button>
                       </div>
                     </div>
                   )}
 
-                  <div className="px-6 md:px-10 relative z-0 pb-10">
+                  <div className="px-6 md:px-10 flex-shrink-0 relative z-0 pb-10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                      <h3 className="text-3xl font-bold font-heading text-white">{activeCategory === 'Favorites' ? 'Your Favorites' : 'Library'}</h3>
-                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      <h3 className="text-3xl font-bold font-heading text-white tracking-wide drop-shadow-md">
+                        {activeCategory === 'Favorites' ? 'Your Favorites' : 'Library'}
+                      </h3>
+                      
+                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0 sm:pb-0">
                         {GAME_CATEGORIES.map(cat => (
-                          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-5 py-2.5 rounded-2xl font-bold text-lg whitespace-nowrap transition-all border ${activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-900/80 text-slate-400'}`}>{cat}</button>
+                          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-5 py-2.5 rounded-2xl font-ui font-bold text-lg whitespace-nowrap transition-all flex items-center gap-2 active:scale-95 border ${activeCategory === cat ? 'bg-indigo-600 text-white border-indigo-500 shadow-[0_0_20px_-5px_rgba(99,102,241,0.6)]' : 'bg-slate-900/80 text-slate-400 border-slate-800 hover:bg-slate-800 hover:border-slate-700 hover:text-white shadow-inner'}`}>
+                            {cat === 'Favorites' && <HeartIcon size={16} fill={activeCategory === 'Favorites' ? 'currentColor' : 'none'} className={activeCategory === 'Favorites' ? 'text-white' : 'text-rose-500'} />}
+                            {cat}
+                          </button>
                         ))}
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {filteredGames.map((game) => (
-                        <div key={game.id} className="group relative bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2rem] overflow-hidden hover:border-indigo-500/50 hover:-translate-y-2 transition-all cursor-pointer flex flex-col h-full" onClick={() => handleLaunchGame(game)}>
-                          <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center`}><div className="w-32 h-32 group-hover:scale-[1.15] transition-transform duration-500"><game.icon /></div></div>
-                          <div className="p-6 flex flex-col flex-1">
-                            <div className="flex items-center gap-2 mb-1"><h4 className="text-2xl font-bold text-slate-100 truncate">{game.title}</h4>{game.isBeta && <span className="px-2 py-0.5 text-[10px] font-black uppercase bg-rose-500/20 text-rose-400 rounded-md">Beta</span>}</div>
-                            <p className="text-slate-400 mb-6">{game.developer}</p>
-                            <div className="mt-auto flex flex-wrap gap-2">{game.tags.map(tag => <span key={tag} className="px-3 py-1 text-xs font-bold uppercase bg-slate-950/80 text-slate-300 rounded-lg">{tag}</span>)}</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                      {filteredGames.map((game) => {
+                        const GameIcon = game.icon;
+                        const isFav = favorites.includes(game.id);
+                        return (
+                          <div key={game.id} className="group relative bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2rem] overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.4)] hover:-translate-y-2 cursor-pointer flex flex-col h-full active:scale-[0.98]" onClick={() => handleLaunchGame(game)}>
+                            <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center overflow-hidden border-b border-white/5`}>
+                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
+                              <div className="w-32 h-32 transform group-hover:scale-[1.15] transition-transform duration-500 ease-out drop-shadow-2xl"><GameIcon /></div>
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
+                                <div className="w-16 h-16 bg-white/20 border border-white/50 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.3)] transform scale-50 group-hover:scale-100 transition-transform duration-300 ease-out">
+                                  <PlayIcon size={28} className="text-white ml-1.5 drop-shadow-lg" fill="currentColor" />
+                                </div>
+                              </div>
+                              <button onClick={(e) => toggleFavorite(e, game.id)} className={`absolute top-4 right-4 z-20 p-2.5 rounded-full backdrop-blur-md transition-all active:scale-95 border ${isFav ? 'opacity-100 bg-rose-500/20 text-rose-500 border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.5)]' : 'opacity-0 group-hover:opacity-100 bg-slate-900/60 text-white border-white/20 hover:bg-slate-800'}`}>
+                                <HeartIcon size={20} fill={isFav ? "currentColor" : "none"} />
+                              </button>
+                            </div>
+                            
+                            <div className="p-6 flex flex-col flex-1 relative z-10">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 data-nosnippet="true" className="text-2xl font-bold font-heading text-slate-100 line-clamp-1 group-hover:text-indigo-300 transition-colors drop-shadow-sm">{game.title}</h4>
+                                {game.isBeta && <span className="px-2 py-0.5 text-[10px] font-black font-ui uppercase tracking-widest bg-rose-500/20 text-rose-400 border border-rose-500/50 rounded-md shadow-[0_0_10px_-2px_rgba(244,63,94,0.5)]">Beta</span>}
+                              </div>
+                              <p data-nosnippet="true" className="text-base text-slate-400 mb-4 font-ui drop-shadow-sm">{game.developer}</p>
+                              <p data-nosnippet="true" className="text-sm text-slate-500 mb-6 font-ui line-clamp-2">{game.description}</p>
+                              
+                              <div className="mt-auto flex flex-wrap gap-2">
+                                {game.tags.map(tag => <span key={tag} className="px-3 py-1 text-xs font-bold font-ui uppercase tracking-wider bg-slate-950/80 text-slate-300 rounded-lg border border-slate-800/80 group-hover:border-indigo-500/40 group-hover:text-indigo-300 transition-colors shadow-inner">{tag}</span>)}
+                              </div>
+                            </div>
                           </div>
-                          <button onClick={(e) => toggleFavorite(e, game.id)} className={`absolute top-4 right-4 z-20 p-2.5 rounded-full border ${favorites.includes(game.id) ? 'bg-rose-500/20 text-rose-500' : 'bg-slate-900/60 text-white'}`}><HeartIcon size={20} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button>
+                        )
+                      })}
+                      
+                      {filteredGames.length === 0 && activeCategory !== 'Favorites' && (
+                        <div className="col-span-full py-32 flex flex-col items-center justify-center text-slate-500 animate-in fade-in">
+                          <Gamepad2Icon size={64} className="mb-6 opacity-30 drop-shadow-md" />
+                          <p className="text-2xl font-heading font-bold text-slate-400">No games found.</p>
                         </div>
-                      ))}
+                      )}
+
+                      {filteredGames.length === 0 && activeCategory === 'Favorites' && (
+                        <div className="col-span-full py-32 flex flex-col items-center justify-center text-slate-500 animate-in fade-in">
+                          <HeartIcon size={64} className="mb-6 opacity-30 text-rose-400 drop-shadow-md" />
+                          <p className="text-3xl font-heading font-black text-white mb-2 drop-shadow-md">No favorites yet.</p>
+                          <p className="text-xl font-ui text-slate-400">Click the heart icon on any game to save it here!</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-16 flex flex-col items-center justify-center pt-10 border-t border-slate-800/50 pb-10">
+                       <p className="text-slate-400 font-ui text-lg mb-6 tracking-wide uppercase font-bold text-center">Can't decide what to play?</p>
+                       <button onClick={() => { playRandomGame(); }} className="flex items-center gap-4 px-10 py-5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white font-black font-heading text-2xl sm:text-3xl tracking-widest rounded-[2rem] transition-all shadow-[0_0_30px_-5px_rgba(192,38,211,0.6)] hover:shadow-[0_0_40px_rgba(192,38,211,0.8)] active:scale-95 border border-white/10 group hover:-translate-y-1">
+                         <SurpriseIcon size={32} className="group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
+                         SURPRISE ME
+                       </button>
                     </div>
                   </div>
                 </div>
               )}
 
               {activeView === 'leaderboard' && (
-                <div className="animate-in fade-in p-6 md:px-10">
-                   <h2 className="text-4xl font-black text-white mb-10 flex items-center gap-4"><div className="p-3 bg-yellow-500 rounded-2xl"><TrophyIcon size={32}/></div> Global Rankings</h2>
-                   <div className="bg-slate-900/80 rounded-[2.5rem] overflow-hidden shadow-2xl p-4">
-                      {leaderboard.map((p, i) => (
-                         <div key={p.uid} onClick={() => setViewingPlayer(p)} className="flex items-center justify-between p-5 rounded-2xl hover:bg-slate-800 cursor-pointer">
-                            <div className="flex items-center gap-6"><span className="text-3xl font-black text-slate-500">#{i+1}</span><div className="w-16 h-16 rounded-2xl bg-slate-800 overflow-hidden">{p.photoURL ? <img src={p.photoURL}/> : <span className="flex justify-center items-center h-full text-2xl font-bold text-white">{p.username.charAt(0)}</span>}</div><span className="text-2xl font-bold text-white">{p.username}</span></div>
-                            <div className="bg-slate-950 px-6 py-3 rounded-2xl flex items-center gap-3"><span className="text-2xl text-orange-500 animate-pulse">🔥</span><span className="text-3xl font-black text-white">{getEffectiveStreak(p)}</span></div>
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                  <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                    <div className="w-full max-w-4xl relative z-10">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+                         <h2 className="text-4xl font-black font-heading text-white flex items-center gap-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                            <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(234,179,8,0.6)] text-white border border-white/20"><TrophyIcon size={32} /></div>
+                            Global Rankings
+                         </h2>
+                      </div>
+                      
+                      {!isRegistered && (
+                        <div className="mb-8 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-inner">
+                          <div>
+                            <h3 className="text-xl font-bold font-heading text-white">Want to join the rankings?</h3>
+                            <p className="text-slate-400 font-ui">Create an account to track your daily streaks and compete globally!</p>
+                          </div>
+                          <button onClick={() => setShowAuthModal(true)} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui text-lg tracking-widest rounded-xl transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)]">
+                            Sign In
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                            {leaderboardError ? (
+                               <div className="p-16 text-center flex flex-col items-center justify-center">
+                                  <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 mb-6 shadow-inner"><XIcon size={40} className="text-rose-400" /></div>
+                                  <p className="text-rose-400 font-bold font-heading text-2xl mb-3">{leaderboardError === "Please login to see the leaderboard" ? "Sign In Required" : "Database Access Denied"}</p>
+                                  <p className="text-slate-400 font-ui text-xl max-w-lg">{leaderboardError}</p>
+                               </div>
+                            ) : isLeaderboardLoading ? (
+                               <div className="p-20 text-center flex flex-col items-center justify-center">
+                                  <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
+                                  <p className="text-indigo-300 font-bold font-heading text-2xl animate-pulse drop-shadow-md">Syncing Ranks...</p>
+                               </div>
+                            ) : leaderboard.length === 0 ? (
+                               <div className="p-20 text-center flex flex-col items-center justify-center">
+                                  <TrophyIcon size={48} className="text-slate-600 mb-4 drop-shadow-md" />
+                                  <p className="text-slate-400 font-bold font-heading text-2xl">No players ranked yet.</p>
+                                  <p className="text-slate-500 font-ui text-lg mt-2">Be the first to start a streak!</p>
+                               </div>
+                            ) : (
+                               <div className="divide-y divide-slate-800/50 p-4">
+                                  {leaderboard.map((player, idx) => {
+                                     const activeStreak = getEffectiveStreak(player);
+                                     const effectiveLevel = player.currentLevel || (1 + Math.floor(activeStreak / 2));
+                                     return (
+                                     <div key={player.uid} onClick={() => setViewingPlayer(player)} className={`cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl mb-2 hover:bg-slate-800/80 transition-all duration-300 border border-transparent ${player.uid === user?.uid ? 'bg-indigo-500/10 border-indigo-500/30 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]' : ''}`}>
+                                        <div className="flex items-center gap-4 sm:gap-6">
+                                           <span className={`text-2xl sm:text-3xl font-black font-heading w-10 sm:w-12 text-center ${idx === 0 ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : idx === 1 ? 'text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.5)]' : idx === 2 ? 'text-amber-600 drop-shadow-[0_0_8px_rgba(217,119,6,0.5)]' : 'text-slate-600'}`}>#{idx + 1}</span>
+                                           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 shadow-lg">
+                                              {player.photoURL ? <img src={player.photoURL} alt="PFP" className="w-full h-full object-cover"/> : <span className="font-bold text-2xl text-slate-400 font-heading">{(player.username || 'U').charAt(0).toUpperCase()}</span>}
+                                           </div>
+                                           <div className="flex flex-col">
+                                             <div className="flex items-center gap-2">
+                                               <span className={`font-bold font-heading text-xl sm:text-2xl truncate max-w-[120px] sm:max-w-[250px] ${player.uid === user?.uid ? 'text-indigo-300' : 'text-white'} drop-shadow-sm`}>{player.username}</span>
+                                               <span className="text-slate-500 text-sm font-ui mt-1 opacity-60 hidden sm:inline-block">#{player.userTag}</span>
+                                             </div>
+                                             <div className="flex items-center gap-2 mt-1">
+                                               <span className="text-xs font-bold font-ui text-slate-400 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 shadow-inner">Lvl {effectiveLevel}</span>
+                                               {player.uid === user?.uid && <span className="text-xs uppercase tracking-widest text-indigo-400 font-bold font-ui">Your Rank</span>}
+                                             </div>
+                                           </div>
+                                        </div>
+                                        <div className="flex items-center gap-4 ml-14 sm:ml-0">
+                                           <div className="flex items-center gap-3 bg-slate-950/80 px-6 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 sm:flex-none justify-center">
+                                              <span className={`text-2xl ${activeStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse' : 'text-slate-600 grayscale'}`}>🔥</span>
+                                              <span className={`font-black font-heading text-3xl ${activeStreak > 0 ? 'text-white drop-shadow-md' : 'text-slate-600'}`}>{activeStreak}</span>
+                                            </div>
+                                        </div>
+                                     </div>
+                                  )})}
+                               </div>
+                            )}
                          </div>
-                      ))}
-                   </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {activeView === 'profile' && (
-                <div className="animate-in fade-in p-6 md:px-10 flex justify-center">
-                  <div className="w-full max-w-3xl">
-                    <h2 className="text-4xl font-black text-white mb-10">User Profile</h2>
-                    {!isRegistered ? <div className="text-center p-10"><button onClick={()=>setShowAuthModal(true)} className="px-10 py-4 bg-indigo-600 text-white rounded-2xl">Sign In</button></div> : <div className="bg-slate-900/80 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                      <div className="h-48 bg-slate-800">{profileBannerUrl && <img src={profileBannerUrl} className="w-full h-full object-cover"/>}</div>
-                      <div className="p-10 pt-0">
-                        <div className="w-40 h-40 rounded-[2.5rem] bg-indigo-600 -mt-20 border-4 border-slate-900 flex justify-center items-center overflow-hidden mb-6">{profilePhotoUrl ? <img src={profilePhotoUrl} className="w-full h-full object-cover"/> : <span className="text-6xl text-white font-bold">{user.displayName?.charAt(0)}</span>}</div>
-                        <h3 className="text-4xl font-black text-white">{user.displayName} <span className="text-slate-500 text-xl">#{currentUserTag}</span></h3>
-                        <div className="mt-8 flex gap-4"><button onClick={()=>handleLogout()} className="px-8 py-3 bg-rose-600 text-white font-bold rounded-xl">Sign Out</button></div>
-                      </div>
-                    </div>}
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                  <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                    <div className="w-full max-w-3xl relative z-10">
+                      <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">User Profile</h2>
+                      
+                      {!isRegistered ? (
+                         <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] p-16 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                           <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-indigo-500/20 shadow-inner">
+                              <UserIcon size={48} className="text-indigo-400" />
+                           </div>
+                           <h3 className="text-3xl font-bold font-heading text-white mb-4 drop-shadow-sm">Sign in to edit your profile</h3>
+                           <p className="text-slate-400 text-lg font-ui mb-10 max-w-md mx-auto drop-shadow-sm">Create an account to customize your avatar, display name, and track your progress.</p>
+                           <button onClick={() => setShowAuthModal(true)} className="px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold font-ui text-2xl tracking-wide rounded-2xl transition-all shadow-[0_0_20px_-5px_rgba(99,102,241,0.6)] active:scale-95 border border-white/10">
+                             Sign In Now
+                           </button>
+                         </div>
+                      ) : (
+                         <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                           <div className="relative w-full h-40 sm:h-52 bg-slate-800 group cursor-pointer border-b border-slate-700">
+                             {profileBannerUrl ? ( <img src={profileBannerUrl} alt="Banner" className="w-full h-full object-cover" /> ) : ( <div className="w-full h-full bg-gradient-to-r from-indigo-900 to-fuchsia-900"></div> )}
+                             <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                               <UploadIcon size={28} className="text-white mr-3 drop-shadow-md" /><span className="text-sm font-bold text-white font-ui uppercase tracking-widest drop-shadow-md">Change Banner</span>
+                             </div>
+                             <input type="file" accept="image/*" onChange={handleBannerChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload a custom profile banner" />
+                           </div>
+
+                           <div className="p-8 sm:p-10 pt-0 relative">
+                             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-10 pb-10 border-b border-slate-800/60">
+                               <div className="relative group w-32 h-32 sm:w-40 sm:h-40 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] overflow-hidden flex-shrink-0 cursor-pointer border-4 border-slate-900 -mt-16 sm:-mt-20 transition-all active:scale-95 z-10">
+                                 {profilePhotoUrl ? ( <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" /> ) : ( <span className="font-bold text-6xl text-[#ffffff] font-heading drop-shadow-md">{(profileUsername || 'U').charAt(0).toUpperCase()}</span> )}
+                                 <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                    <UploadIcon size={32} className="text-[#ffffff] mb-2 drop-shadow-md" /><span className="text-sm font-bold text-[#ffffff] font-ui uppercase tracking-widest drop-shadow-md">Change</span>
+                                 </div>
+                                 <input type="file" accept="image/*" onChange={handlePhotoChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload a custom profile picture" />
+                               </div>
+                               <div className="text-center sm:text-left flex-1 w-full sm:pt-4">
+                                 <div className="flex items-end justify-center sm:justify-start gap-2 mb-2">
+                                   <h3 className="text-4xl font-black font-heading text-white tracking-wide truncate drop-shadow-md">{user.displayName || 'Gamer'}</h3>
+                                   <span className="text-slate-500 font-ui text-xl mb-1 drop-shadow-sm">#{currentUserTag}</span>
+                                 </div>
+                                 <p className="text-slate-400 font-medium truncate font-ui text-xl mb-6 drop-shadow-sm">{user.email}</p>
+                                 <div className="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
+                                   <div className="flex justify-between items-center mb-4">
+                                     <div className="flex items-center gap-2"><StarIcon size={24} className="text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" /><span className="font-bold font-ui text-white text-xl">Level {userLevel}</span></div>
+                                     <div className="flex items-center gap-2"><span className={`text-xl ${currentUserStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse' : 'text-slate-500 grayscale'}`}>🔥</span><span className={`font-bold font-ui text-xl ${currentUserStreak > 0 ? 'text-slate-200' : 'text-slate-500'}`}>{currentUserStreak} Days</span></div>
+                                   </div>
+                                   <div className="w-full h-4 bg-slate-900 rounded-full overflow-hidden border border-slate-700 shadow-inner mb-4">
+                                     <div className="h-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 transition-all duration-1000 ease-out relative" style={{ width: `${levelProgress}%` }}><div className="absolute inset-0 bg-white/20 mix-blend-overlay"></div></div>
+                                   </div>
+                                   <div className="flex justify-between items-center border-t border-slate-800/80 pt-4 mt-2">
+                                     <p className="text-sm text-slate-500 font-ui uppercase tracking-widest">{100 - levelProgress}% to next level</p>
+                                     <p className="text-sm text-slate-300 font-ui uppercase tracking-widest flex items-center gap-1.5 font-bold"><HeartIcon size={16} className="text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]" fill="currentColor"/> {favorites.length} Saved</p>
+                                   </div>
+                                 </div>
+                               </div>
+                             </div>
+                             <form onSubmit={handleUpdateProfile} className="space-y-8">
+                               <div className="flex flex-col sm:flex-row gap-6">
+                                 <div className="flex-1">
+                                   <label className="block text-sm font-bold font-ui text-slate-400 mb-3 uppercase tracking-widest ml-1">Display Username</label>
+                                   <input type="text" value={profileUsername} onChange={e => setProfileUsername(e.target.value)} className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-6 py-5 font-heading text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="Enter your username" />
+                                 </div>
+                                 <div className="w-full sm:w-40">
+                                   <label className="block text-sm font-bold font-ui text-slate-400 mb-3 uppercase tracking-widest ml-1">ID Tag</label>
+                                   <div className="relative">
+                                     <span className="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-500 font-heading text-xl">#</span>
+                                     <input type="text" maxLength={4} value={profileUserTag} onChange={e => setProfileUserTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-4 py-5 pl-9 font-heading text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] text-center uppercase" placeholder="TAG" />
+                                   </div>
+                                 </div>
+                               </div>
+                               <div>
+                                 <label className="block text-sm font-bold font-ui text-slate-400 mb-3 uppercase tracking-widest ml-1">About Me (Bio)</label>
+                                 <textarea value={profileBio} onChange={e => setProfileBio(e.target.value)} maxLength={160} rows={3} className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-6 py-5 font-ui text-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] resize-none" placeholder="Tell everyone a little about yourself..."></textarea>
+                                 <p className="text-right text-xs text-slate-500 font-ui mt-2 uppercase tracking-widest">{profileBio.length} / 160</p>
+                               </div>
+                               <div className="pt-6 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-slate-800/50">
+                                 <button type="submit" disabled={isUpdatingProfile} className="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui tracking-widest text-xl uppercase rounded-2xl transition-all disabled:opacity-50 shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] active:scale-95 border border-white/10">
+                                   {isUpdatingProfile ? 'Saving...' : 'Save Profile'}
+                                 </button>
+                               </div>
+                             </form>
+                           </div>
+                         </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
 
-            </div>
+              {activeView === 'about' && (
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                  <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                    <div className="w-full max-w-4xl relative z-10 flex flex-col">
+                      <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">About Nexis Games</h2>
+                      
+                      <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden mb-12">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                        
+                        <div className="relative z-10 space-y-8">
+                          <section>
+                            <h3 className="text-2xl font-bold font-heading text-indigo-400 mb-4 flex items-center gap-3 drop-shadow-sm"><InfoIcon size={28} /> Who We Are</h3>
+                            <p className="text-slate-300 font-ui text-lg sm:text-xl leading-relaxed drop-shadow-sm">Hey there, and welcome to <strong className="text-white">Nexis Games</strong>! We're super excited to have you here. Nexis Games is part of the <strong className="text-indigo-400">Nexis GD (Game Development)</strong> family, which we officially kicked off on <strong className="text-white">April 10th, 2026</strong>. Our main goal is pretty simple. We want to make browser games incredibly fun and push what you can do on the web. Whether you want to jump into multiplayer matches, race your friends, or just get lost in a cool adventure, we've got you covered. The best part is you don't even need a fancy console to play them.</p>
+                          </section>
+                          <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-700/50 to-transparent my-8"></div>
+                          <section>
+                            <h3 className="text-2xl font-bold font-heading text-indigo-400 mb-4 flex items-center gap-3 drop-shadow-sm"><svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg> Active Development</h3>
+                            <p className="text-slate-300 font-ui text-lg sm:text-xl leading-relaxed drop-shadow-sm">Just a quick heads up. A lot of the games you'll find here are still growing and changing. <strong className="text-orange-400">Some games on this platform aren't the final product since they are under active development.</strong> This means you might be playing early alpha or beta builds! We actually love it when players try these early versions because your feedback directly helps the creators figure out what to improve next.</p>
+                          </section>
+                          <section className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] mt-4">
+                            <h4 className="text-xl font-bold font-heading text-white mb-3 flex items-center gap-3"><UserIcon size={24} className="text-slate-400" /> Support Our Creators</h4>
+                            <p className="text-slate-400 font-ui text-lg leading-relaxed">We really want to shine a light on the awesome people making these games. <strong>You'll always see the creator's name proudly displayed right under the game title</strong> on the Discover page. If you find a game you love, be sure to check out who made it and show them some support.</p>
+                          </section>
+                          <section className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6 sm:p-8 shadow-inner mt-6 transition-all hover:bg-indigo-500/20">
+                            <h4 className="text-xl font-bold font-heading text-indigo-300 mb-3 flex items-center gap-3 drop-shadow-sm"><Gamepad2Icon size={24} className="text-indigo-400" /> Publish Your Game</h4>
+                            <p className="text-slate-300 font-ui text-lg leading-relaxed drop-shadow-sm">Are you a game dev looking to share your work with an active community? We're always on the lookout for fun new web games to add to the site. If you want to ask about getting your own game published here on Nexis Games, just send an email to <button onClick={handleCopyEmail} className="text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-4 transition-colors cursor-pointer">mofawoyt@gmail.com</button>.</p>
+                          </section>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-            <div className={`absolute inset-0 flex flex-col bg-black transition-all duration-500 z-[70] ${activeGame ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              {activeView === 'settings' && (
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                  <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                    <div className="w-full max-w-3xl relative z-10">
+                      <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Settings</h2>
+                      
+                      <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                        <div className="space-y-10">
+                          <section>
+                            <h3 className="text-2xl font-bold font-heading text-indigo-300 mb-6 flex items-center gap-3 drop-shadow-sm border-b border-slate-800 pb-4"><svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg> Appearance</h3>
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] gap-4">
+                              <div><span className="text-white font-bold font-ui text-xl block mb-1">Color Theme</span><span className="text-slate-400 font-ui text-base">Toggle between Light and Dark mode.</span></div>
+                              <button onClick={() => setIsLightMode(!isLightMode)} className="px-8 py-3 bg-indigo-500/20 text-indigo-300 rounded-xl border border-indigo-500/30 transition-all hover:bg-indigo-500/30 active:scale-95 font-bold font-ui tracking-widest text-base uppercase shadow-inner whitespace-nowrap">{isLightMode ? 'Switch to Dark' : 'Switch to Light'}</button>
+                            </div>
+                          </section>
+                          <section>
+                            <h3 className="text-2xl font-bold font-heading text-indigo-300 mb-6 flex items-center gap-3 drop-shadow-sm border-b border-slate-800 pb-4"><SettingsIcon size={28} /> Audio Controls</h3>
+                            <div className="bg-slate-950/80 p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] space-y-8">
+                              <div><div className="flex justify-between items-end mb-3"><span className="text-white font-bold font-ui text-xl">Master Volume</span><span className="text-indigo-400 font-black text-xl">{masterVolume}%</span></div><input type="range" min="0" max="100" value={masterVolume} onChange={(e) => setMasterVolume(e.target.value)} className="w-full accent-indigo-500 h-3 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                              <div><div className="flex justify-between items-end mb-3"><span className="text-slate-300 font-bold font-ui text-lg">Music Volume</span><span className="text-indigo-400 font-black">{musicVolume}%</span></div><input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                              <div><div className="flex justify-between items-end mb-3"><span className="text-slate-300 font-bold font-ui text-lg">Sound Effects</span><span className="text-indigo-400 font-black">{sfxVolume}%</span></div><input type="range" min="0" max="100" value={sfxVolume} onChange={(e) => setSfxVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                            </div>
+                          </section>
+                          {isRegistered && (
+                            <section className="pt-4 border-t border-slate-800 flex justify-end">
+                              <button onClick={() => { handleLogout(); setActiveView('discover'); }} className="px-10 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold font-heading text-xl tracking-widest uppercase rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(225,29,72,0.5)] border border-white/10">Sign Out</button>
+                            </section>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeView === 'admin' && isAdmin && (
+                <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                  <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                    <div className="w-full max-w-5xl relative z-10 flex flex-col h-full">
+                      <h2 className="text-4xl font-black font-heading text-white mb-10 flex items-center gap-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                        <div className="p-3 bg-rose-500/20 text-rose-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(225,29,72,0.6)] border border-rose-500/50"><ShieldIcon size={32} /></div> Admin Portal
+                      </h2>
+                      <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col flex-1">
+                        <div className="p-6 sm:p-8 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center"><h3 className="text-2xl font-bold font-heading text-white">Player Database</h3><span className="bg-indigo-500/20 text-indigo-300 font-bold px-4 py-1.5 rounded-full border border-indigo-500/30 font-ui text-sm uppercase tracking-widest">{allUsers.length} Players</span></div>
+                        <div className="overflow-y-auto p-4 flex-1 scrollbar-hide">
+                           {allUsers.length === 0 ? (
+                              <div className="p-20 text-center text-slate-500 flex flex-col items-center"><div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6"></div><p className="text-xl font-bold font-ui">Loading player database...</p></div>
+                           ) : (
+                              <div className="space-y-3">
+                                 {allUsers.map(u => (
+                                    <div key={u.uid} className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-950/50 p-4 sm:p-5 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-colors shadow-inner">
+                                       <div className="flex items-center gap-4 sm:gap-5 mb-4 sm:mb-0">
+                                          <div className="w-14 h-14 rounded-xl bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 shadow-lg">{u.photoURL ? <img src={u.photoURL} alt="PFP" className="w-full h-full object-cover"/> : <span className="font-bold text-xl text-slate-400 font-heading">{(u.username || 'U').charAt(0).toUpperCase()}</span>}</div>
+                                          <div>
+                                             <div className="flex items-center gap-2"><span className="font-bold font-heading text-xl text-white">{u.username}</span><span className="text-slate-500 text-sm font-ui opacity-70">#{u.userTag}</span></div>
+                                             <div className="flex items-center gap-3 mt-1.5"><span className="text-xs font-bold font-ui text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Lvl {u.currentLevel || 1}</span><span className="text-xs font-bold font-ui text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">🔥 {getEffectiveStreak(u)}</span>{u.status === 'banned' && <span className="text-xs font-bold font-ui text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-wider">Banned</span>}{u.status === 'suspended' && <span className="text-xs font-bold font-ui text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase tracking-wider">Suspended</span>}{u.status === 'active' && <span className="text-xs font-bold font-ui text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wider">Active</span>}</div>
+                                          </div>
+                                       </div>
+                                       <button onClick={() => openAdminModal(u)} className="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)] active:scale-95 whitespace-nowrap">Manage</button>
+                                    </div>
+                                 ))}
+                              </div>
+                           )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Universal Global Footer */}
+              {!activeGame && (
+                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
+                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
+                  </footer>
+              )}
+
+            </div> 
+
+            {/* Modal for Viewing Player Profiles from Leaderboard */}
+            {viewingPlayer && (
+              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-[2.5rem] w-full max-w-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative max-h-[95vh] overflow-y-auto overflow-hidden">
+                     <button onClick={() => setViewingPlayer(null)} className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md rounded-xl text-slate-300 hover:text-white transition-colors active:scale-95 z-20"><XIcon size={24} /></button>
+                     <div className="w-full h-40 sm:h-48 bg-slate-800 relative">{viewingPlayer.bannerURL ? <img src={viewingPlayer.bannerURL} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gradient-to-r from-indigo-900 to-fuchsia-900"></div>}</div>
+                     <div className="px-8 pb-8 relative">
+                         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[2rem] bg-slate-800 flex items-center justify-center shadow-xl border-4 border-slate-900 -mt-12 sm:-mt-14 mb-4 overflow-hidden relative z-10">{viewingPlayer.photoURL ? <img src={viewingPlayer.photoURL} className="w-full h-full object-cover" /> : <span className="text-3xl sm:text-4xl font-bold text-white font-heading">{viewingPlayer.username.charAt(0).toUpperCase()}</span>}</div>
+                         <h2 className="text-3xl font-black text-white font-heading flex items-center gap-2">{viewingPlayer.username} <span className="text-lg text-slate-500 font-ui">#{viewingPlayer.userTag}</span></h2>
+                         <p className="text-slate-300 mt-4 mb-6 font-ui leading-relaxed bg-slate-950/50 p-5 rounded-2xl border border-slate-800/50 shadow-inner break-words">{viewingPlayer.bio || "This player hasn't written a bio yet."}</p>
+                         <div className="flex gap-4">
+                             <div className="bg-slate-950/80 px-5 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center"><span className="block text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">Level</span><span className="text-2xl font-black text-indigo-400 font-heading">{viewingPlayer.currentLevel || 1}</span></div>
+                             <div className="bg-slate-950/80 px-5 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center"><span className="block text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">Streak</span><span className={`text-2xl font-black font-heading flex items-center justify-center gap-2 ${getEffectiveStreak(viewingPlayer) > 0 ? 'text-orange-500' : 'text-slate-500'}`}><span className={getEffectiveStreak(viewingPlayer) > 0 ? 'animate-pulse' : 'grayscale'}>🔥</span> {getEffectiveStreak(viewingPlayer)}</span></div>
+                         </div>
+                     </div>
+                 </div>
+              </div>
+            )}
+
+            {/* ADMIN MANAGE PLAYER MODAL */}
+            {adminEditingUser && (
+              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
+                    <button onClick={() => setAdminEditingUser(null)} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-slate-800/50 rounded-xl text-slate-400 hover:text-white transition-colors active:scale-95 shadow-inner"><XIcon size={24} /></button>
+                    <div className="flex items-center gap-4 mb-8"><div className="p-3 bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/50"><ShieldIcon size={28} /></div><div><h2 className="text-2xl sm:text-3xl font-black font-heading text-white">Manage Player</h2><p className="text-slate-400 font-ui text-sm sm:text-base">Editing profile for <span className="text-white font-bold">{adminEditingUser.username}</span></p></div></div>
+                    <form onSubmit={submitAdminAction} className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                         <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Username</label><input type="text" required value={adminEditUsername} onChange={e => setAdminEditUsername(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" /></div>
+                         <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">ID Tag</label><div className="relative"><span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 font-heading text-xl">#</span><input type="text" maxLength={4} required value={adminEditTag} onChange={e => setAdminEditTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 pl-8 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] uppercase" /></div></div>
+                      </div>
+                      <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Profile Image URL</label><input type="text" value={adminEditPhoto} onChange={e => setAdminEditPhoto(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-base sm:text-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="https://..." /></div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                         <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Daily Streak</label><input type="number" required min="0" value={adminEditStreak} onChange={e => setAdminEditStreak(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" /></div>
+                         <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Player Level</label><input type="number" required min="1" value={adminEditLevel} onChange={e => setAdminEditLevel(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" /></div>
+                      </div>
+                      <div>
+                        <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Account Status</label>
+                        <select value={adminEditStatus} onChange={(e) => setAdminEditStatus(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] appearance-none cursor-pointer"><option value="active">🟢 Active</option><option value="suspended">🟡 Suspended</option><option value="banned">🔴 Banned</option></select>
+                      </div>
+                      <div className="pt-4 mt-8 border-t border-slate-800 flex justify-end"><button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] border border-white/10">{adminActionLoading ? (<div className="w-6 h-6 sm:w-7 sm:h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></div>) : ('Save Changes')}</button></div>
+                    </form>
+                 </div>
+              </div>
+            )}
+
+            {/* Game Player View */}
+            <div className={`absolute inset-0 flex flex-col bg-black transition-all duration-500 ease-out z-[70] ${activeGame ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-105 pointer-events-none'}`}>
               {activeGame && (
                 <>
-                  <div className={`h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 ${isCssFullscreen ? 'hidden' : 'flex'}`}>
-                    <div className="flex items-center space-x-6"><button onClick={handleCloseGame} className="flex items-center space-x-2 text-white bg-slate-800 px-4 py-2 rounded-xl"><ChevronLeftIcon size={20} /><span>Exit</span></button><h3 className="text-xl font-bold text-white">{activeGame.title}</h3></div>
-                    <button onClick={toggleFullscreen} className="text-white p-2 bg-slate-800 rounded-xl"><Maximize2Icon size={22} /></button>
+                  <div className={`h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 flex-shrink-0 transition-all ${isCssFullscreen ? 'hidden' : 'flex'}`}>
+                    <div className="flex items-center space-x-6">
+                      <button onClick={handleCloseGame} className="flex items-center space-x-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl transition-colors border border-slate-700 active:scale-95 shadow-inner"><ChevronLeftIcon size={20} /><span className="font-bold text-lg font-ui tracking-wide">Exit</span></button>
+                      <div className="h-8 w-px bg-slate-700 hidden sm:block"></div>
+                      <div className="flex items-center space-x-4"><div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 hidden sm:block border border-white/10 shadow-lg"><ActiveIcon /></div><span className="font-black font-heading text-xl text-white tracking-wider truncate max-w-[150px] sm:max-w-xs drop-shadow-sm">{activeGame.title}</span></div>
+                    </div>
+                    <div className="flex items-center space-x-3"><button onClick={toggleFullscreen} className="flex items-center space-x-2 text-slate-300 hover:text-white p-2.5 rounded-xl hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors tooltip group relative active:scale-95" title="Full Screen"><Maximize2Icon size={22} /></button></div>
                   </div>
+                  
                   <div className={`flex-1 w-full bg-slate-950 relative ${isCssFullscreen ? 'fixed inset-0 z-[100]' : ''}`} ref={playerContainerRef}>
-                    {adCountdown > 0 && <div className="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center"><h2 className="text-3xl text-white">Sponsor Break</h2><span className="text-6xl text-white">{adCountdown}</span></div>}
-                    {adCountdown === 0 && <iframe src={activeGame.src} className="w-full h-full border-0 relative z-10" allow="fullscreen; autoplay; gamepad; keyboard;"></iframe>}
+                    {isCssFullscreen && <button onClick={toggleFullscreen} className="absolute top-6 right-6 z-[60] opacity-30 hover:opacity-100 bg-slate-900/80 hover:bg-slate-700 text-slate-300 hover:text-white p-3 rounded-2xl border border-slate-700 backdrop-blur-md transition-all shadow-2xl active:scale-95" title="Exit Full Screen (Esc)"><Minimize2Icon size={24} /></button>}
+                    {adCountdown > 0 && (
+                      <div className="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center px-4 text-center">
+                        <div className="absolute inset-0 bg-indigo-500/5 mix-blend-screen animate-pulse"></div>
+                        <div className="bg-slate-900/80 backdrop-blur-xl p-12 rounded-[2.5rem] border border-slate-800/80 shadow-[0_0_50px_-10px_rgba(0,0,0,0.8)] max-w-xl w-full relative overflow-hidden animate-in zoom-in-95 duration-300">
+                          <div className="absolute bottom-0 left-0 h-2 bg-indigo-600 transition-all duration-1000 ease-linear" style={{width: `${(5 - adCountdown) * 20}%`}}></div>
+                          <h2 className="text-3xl font-black font-heading text-white mb-6 uppercase tracking-widest drop-shadow-md">Sponsor Break</h2>
+                          <div className="text-7xl mb-8 animate-bounce drop-shadow-2xl">💧</div>
+                          <p className="text-2xl text-indigo-300 font-bold font-ui mb-10">Hydrate and sit up straight before your game starts!</p>
+                          <div className="flex flex-col items-center">
+                            <div className="relative w-20 h-20 mb-6"><svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" strokeWidth="8" /><circle cx="50" cy="50" r="45" fill="none" stroke="#6366f1" strokeWidth="8" strokeDasharray="283" strokeDashoffset={283 - (283 * adCountdown) / 5} className="transition-all duration-1000 ease-linear" strokeLinecap="round" /></svg><div className="absolute inset-0 flex items-center justify-center"><span className="text-3xl font-black font-heading text-white">{adCountdown}</span></div></div>
+                            <p className="text-slate-400 font-bold font-ui text-xl tracking-wider">Starting soon...</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  {iframeLoading && adCountdown === 0 && <div className="absolute inset-0 flex flex-col items-center justify-center z-0 bg-slate-950"><div className="w-32 h-32 mb-8 animate-pulse text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]"><ActiveIcon /></div><p className="text-indigo-300 font-bold font-ui text-2xl tracking-widest animate-pulse drop-shadow-md">CONNECTING SERVER...</p></div>}
+                  {adCountdown === 0 && <iframe src={activeGame.src} title={activeGame.title} onLoad={() => setIframeLoading(false)} className={`w-full h-full border-0 relative z-10 transition-opacity duration-1000 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`} allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"></iframe>}
                   </div>
                 </>
               )}
             </div>
 
+            {/* TOAST NOTIFICATION */}
+            {toast && <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-[300] font-ui font-bold text-xl flex items-center gap-3 animate-toast-slide border border-white/10 ${toast.type === 'error' ? 'bg-rose-600 text-white' : 'bg-indigo-600 text-white'}`}>{toast.type === 'error' ? <XIcon size={24}/> : <TrophyIcon size={24}/>}{toast.message}</div>}
+
+            {/* AUTH MODAL */}
             {showAuthModal && (
-              <div className="absolute inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-md">
-                 <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 w-full max-w-lg relative">
-                    <button onClick={() => setShowAuthModal(false)} className="absolute top-6 right-6 text-slate-400"><XIcon size={24}/></button>
-                    <h2 className="text-4xl font-black text-white mb-8">{authMode === 'login' ? 'Sign In' : 'Sign Up'}</h2>
-                    {authError && <p className="text-rose-400 mb-4">{authError}</p>}
-                    <form onSubmit={authMode === 'login' ? handleLogin : handleSignup} className="space-y-4">
-                      {authMode === 'signup' && <input type="text" value={username} onChange={e=>setUsername(e.target.value)} className="w-full bg-slate-950 rounded-2xl px-5 py-4 text-white" placeholder="Username" />}
-                      <input type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full bg-slate-950 rounded-2xl px-5 py-4 text-white" placeholder="Email" />
-                      <input type="password" value={password} onChange={e=>setPassword(e.target.value)} className="w-full bg-slate-950 rounded-2xl px-5 py-4 text-white" placeholder="Password" />
-                      <button disabled={authLoading} type="submit" className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl mt-4">{authMode === 'login' ? 'Login' : 'Create Account'}</button>
+              <div className="absolute inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
+                    <button onClick={() => { setShowAuthModal(false); setAuthMode('login'); setAuthError(''); setResetMessage(''); }} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-slate-800/50 rounded-xl text-slate-400 hover:text-white hover:bg-rose-500/20 transition-colors active:scale-95 shadow-inner"><XIcon size={24} /></button>
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-fuchsia-600 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg border border-white/10"><UserIcon size={24} className="text-[#ffffff] sm:hidden" /><UserIcon size={32} className="text-[#ffffff] hidden sm:block" /></div>
+                    <h2 className="text-3xl sm:text-4xl font-black font-heading text-white mb-6 sm:mb-8 tracking-wide drop-shadow-sm">{authMode === 'login' ? 'Welcome Back' : authMode === 'signup' ? 'Join Nexis Games' : 'Reset Password'}</h2>
+                    {authError && <div className="mb-4 sm:mb-6 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 font-ui font-bold text-base sm:text-lg rounded-xl flex items-center gap-3"><XIcon size={20}/> {authError}</div>}
+                    {resetMessage && <div className="mb-4 sm:mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-ui font-bold text-base sm:text-lg rounded-xl flex items-center gap-3"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> {resetMessage}</div>}
+                    <form onSubmit={authMode === 'login' ? handleLogin : authMode === 'signup' ? handleSignup : handlePasswordReset} className="space-y-4 sm:space-y-5">
+                      {authMode === 'signup' && <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-1.5 sm:mb-2 ml-1">Username</label><input type="text" required value={username} onChange={e => setUsername(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 sm:px-5 py-3 sm:py-4 font-ui text-lg sm:text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="ProGamer123" /></div>}
+                      <div><label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-1.5 sm:mb-2 ml-1">Email Address</label><input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 sm:px-5 py-3 sm:py-4 font-ui text-lg sm:text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="player@example.com" /></div>
+                      {authMode !== 'reset' && (
+                        <div>
+                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-1.5 sm:mb-2 ml-1">Password</label>
+                          <div className="relative"><input type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 sm:px-5 py-3 sm:py-4 pr-12 font-ui text-lg sm:text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="••••••••" /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors active:scale-95">{showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}</button></div>
+                          {authMode === 'login' && <div className="mt-3 text-right"><button type="button" onClick={() => { setAuthMode('reset'); setAuthError(''); setResetMessage(''); }} className="text-sm font-ui font-bold text-indigo-400 hover:text-indigo-300 transition-colors drop-shadow-sm">Forgot password?</button></div>}
+                        </div>
+                      )}
+                      <button disabled={authLoading} type="submit" className="w-full py-3 sm:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all mt-6 sm:mt-8 disabled:opacity-50 flex justify-center shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] active:scale-95 border border-white/10">{authLoading ? (<div className="w-6 h-6 sm:w-7 sm:h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></div>) : ( authMode === 'login' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link' )}</button>
                     </form>
-                    <button onClick={()=>setAuthMode(authMode==='login'?'signup':'login')} className="w-full text-slate-400 mt-6">Switch to {authMode==='login'?'Sign Up':'Login'}</button>
+                    <div className="mt-6 sm:mt-8 text-center border-t border-slate-800 pt-6">
+                      {authMode === 'reset' ? <button onClick={() => { setAuthMode('login'); setAuthError(''); setResetMessage(''); }} className="text-slate-400 hover:text-indigo-300 font-ui font-bold text-base sm:text-lg tracking-wide transition-colors">Back to Sign In</button> : <button onClick={() => { setAuthMode(authMode === 'login' ? 'signup' : 'login'); setAuthError(''); }} className="text-slate-400 hover:text-indigo-300 font-ui font-bold text-base sm:text-lg tracking-wide transition-colors">{authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}</button>}
+                    </div>
                  </div>
               </div>
             )}
