@@ -34,21 +34,19 @@
   <!-- Google AdSense Script -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9729951455444854" crossorigin="anonymous"></script>
   
-  <!-- Open Graph Image / Social Sharing -->
   <meta property="og:site_name" content="Nexis Games">
   <meta property="og:locale" content="en_US">
   <meta property="og:title" content="Nexis Games">
   <meta property="og:description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/OpenGraph.png">
-  <meta property="og:image:secure_url" content="assets/OpenGraph.png">
+  <meta property="og:image" content="assets/og_image.png">
+  <meta property="og:image:secure_url" content="assets/og_image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Nexis Games promotional banner featuring game characters">
 
   <!-- CRITICAL STYLES LOADED FIRST FOR INSTANT LOADER RENDERING -->
   <style>
-    /* Global Loader Animations with Hardware Acceleration */
     @keyframes pulse-ring {
       0% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); opacity: 0.6; }
       70% { transform: scale(1.2) translateZ(0); box-shadow: 0 0 0 40px rgba(99, 102, 241, 0); opacity: 0.1; }
@@ -73,7 +71,6 @@
       100% { background-position: 200% center; }
     }
 
-    /* Core Theme Variables */
     :root {
       --color-white: 255 255 255;
       --color-black: 0 0 0;
@@ -97,7 +94,6 @@
       --color-fuchsia-900: 112 26 117;
     }
     
-    /* Perfected Light Mode Inversion Palette */
     .light-mode {
       --color-white: 15 23 42;
       --color-black: 255 255 255;
@@ -324,7 +320,7 @@
       deleteDoc,
       collection,
       onSnapshot,
-      enableIndexedDbPersistence // Imported for Offline Data Support!
+      enableIndexedDbPersistence
     } from 'firebase/firestore';
 
     const { useState, useEffect, useRef } = React;
@@ -359,7 +355,7 @@
 
     // --- COMPRESSED GAME ICONS --- //
     const ShaddoCraftIcon = React.memo(() => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'15px',boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%',height:'100%',objectFit:'contain',filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/></div>);
-    const KartIcon = React.memo(() => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'0',boxSizing:'border-box'}}><img src="assets/Racer.png" alt="Online Racing Game" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/991b1b/ffffff?text=Kart+Racer';}}/></div>);
+    const KartIcon = React.memo(() => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'0',boxSizing:'border-box'}}><img src="assets/Racer.png" alt="Super Kart Racer" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/991b1b/ffffff?text=Kart+Racer';}}/></div>);
     const VoidStalkerIcon = React.memo(() => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'0',boxSizing:'border-box'}}><img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/312e81/ffffff?text=Spooky';}}/></div>);
     const VBrawlIcon = React.memo(() => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#1e1b4b"/><stop offset="100%" stopColor="#0f172a"/></linearGradient><filter id="brawlImpactGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#bBg)" /><g transform="translate(100, 135)"><path d="M0 0L75 -37.5L0 -75L-75 -37.5Z" fill="#334155" stroke="#475569" strokeWidth="3" strokeLinejoin="round"/><path d="M-75 -37.5L0 0L0 25L-75 -12.5Z" fill="#0f172a" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/><path d="M75 -37.5L0 0L0 25L75 -12.5Z" fill="#1e293b" stroke="#334155" strokeWidth="2" strokeLinejoin="round"/></g><g filter="url(#brawlImpactGlow)"><path d="M90 80L110 100M110 80L90 100M100 70L100 110M80 90L120 90" stroke="#facc15" strokeWidth="4" strokeLinecap="round" /><circle cx="100" cy="90" r="15" fill="#fef08a" opacity="0.6" /></g><g filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.6))"><g transform="translate(75, 90)"><path d="M-15 0Q-25 -5 -35 0Q-25 5 -15 0" fill="#fca5a5" opacity="0.8"/><circle cx="0" cy="0" r="14" fill="#ef4444" /><path d="M3 -4L8 0L3 4" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></g><g transform="translate(125, 90)"><path d="M15 0Q25 -5 35 0Q25 5 15 0" fill="#93c5fd" opacity="0.8"/><circle cx="0" cy="0" r="14" fill="#3b82f6" /><path d="M-3 -4L-8 0L-3 4" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></g><g transform="translate(100, 45)"><path d="M0 -15L-5 -30L5 -30Z" fill="#86efac" opacity="0.8"/><circle cx="0" cy="0" r="14" fill="#22c55e" /><path d="M-4 2L0 6L4 2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></g><g transform="translate(145, 55)"><circle cx="0" cy="0" r="14" fill="#a855f7" /><path d="M-4 -2L4 -2M-4 2L4 2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round"/><path d="M-15 15Q-20 25 -30 35" stroke="#d8b4fe" strokeWidth="3" strokeDasharray="4 4" fill="none"/></g></g></svg>);
     const PigeonIcon = React.memo(() => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#4c1d95"/><stop offset="100%" stopColor="#be185d"/></linearGradient><filter id="pGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#pGrad)" /><g transform="translate(100, 115)"><path d="M-45 0C-45 30,-25 50,0 50C25 50,45 30,45 0C45 -40,25 -50,0 -50C-25 -50,-45 -40,-45 0Z" fill="#94a3b8" stroke="#334155" strokeWidth="4"/><path d="M-30 5C-30 25,-15 40,0 40C15 40,30 25,30 5Z" fill="#cbd5e1" /></g><g transform="translate(100, 60)"><circle cx="0" cy="0" r="35" fill="#94a3b8" stroke="#334155" strokeWidth="4"/><path d="M-12 8L12 8L0 28Z" fill="#f59e0b" stroke="#b45309" strokeWidth="3" strokeLinejoin="round"/><path d="M-28 -8L-5 0L-15 12Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/><path d="M28 -8L5 0L15 12Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/><circle cx="-12" cy="2" r="3.5" fill="#ef4444" /><circle cx="12" cy="2" r="3.5" fill="#ef4444" /></g><g transform="translate(50, 130)" filter="url(#pGlow)"><circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" /><path d="M-12 -15Q8 -22 18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/><rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/></g><g transform="translate(150, 130)" filter="url(#pGlow)"><circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" /><path d="M12 -15Q-8 -22 -18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/><rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/></g></svg>);
@@ -423,14 +419,15 @@
     };
 
     // --- GAMES DATA --- //
+    // Descriptions have been removed for a cleaner view as requested
     const GAMES = [
-      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', description: 'Battle friends in VBrawl Ultimate, an epic 4-player platform brawler! Customize your 3D fighter, master dynamic maps, and unleash chaotic power-ups.', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
-      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', description: 'Fire up the grill and serve hungry customers in this fast-paced burger cooking game!', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-500 to-orange-700', tags: ['Cooking', 'Action'] },
-      { id: 'kart-racer', title: 'Online Racing Game', developer: 'Unknown', description: 'Start your engines! Drift, boost, and race your way to the finish line against friends in this high-speed kart racer.', src: 'games/Racer/index.html', icon: KartIcon, theme: 'from-red-600 to-orange-500', tags: ['Racing', 'Multiplayer', '3D'] },
-      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', description: 'A spooky, thrilling adventure! Navigate the dark corridors and solve the mystery in this eerie web game.', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
-      { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', description: 'Take to the skies and battle it out in Super Pigeon Rumble! Flap, peck, and outmaneuver your foes in this epic feathery frenzy.', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
-      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', description: 'Explore a custom 3D web experience! Jump into this immersive world directly from your browser.', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'] },
-      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', description: 'A breathtaking adventure awaits in the shattered realm. Rebuild the world, one shard at a time.', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true }
+      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
+      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-500 to-orange-700', tags: ['Cooking', 'Action'] },
+      { id: 'kart-racer', title: 'Online Racing Game', developer: 'Unknown', src: 'Racer.html', icon: KartIcon, theme: 'from-red-600 to-orange-500', tags: ['Racing', 'Multiplayer', '3D'] },
+      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
+      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'] },
+      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true }
     ];
     const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Racing', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG'];
 
@@ -641,16 +638,18 @@
         } catch (err) { showToast(err.message, 'error'); } finally { setAdminActionLoading(false); }
       };
 
-      const handleLaunchGame = (game) => { setActiveGame(game); setIframeLoading(true); setIsCssFullscreen(false); };
-      const handleCloseGame = () => { setActiveGame(null); setIsCssFullscreen(false); setAdCountdown(0); };
+      const handleLaunchGame = (game) => { 
+        setActiveGame(game); 
+        setIframeLoading(true); 
+        setIsCssFullscreen(false); 
+        setPendingFullscreen(false);
+        if (!isDevUser) setAdCountdown(5);
+      };
+      
+      const handleCloseGame = () => { setActiveGame(null); setIsCssFullscreen(false); setAdCountdown(0); setPendingFullscreen(false); };
       const playRandomGame = () => { const randomIndex = Math.floor(Math.random() * GAMES.length); handleLaunchGame(GAMES[randomIndex]); };
       const toggleFavorite = async (e, gid) => { e.stopPropagation(); if (!isRegistered) { showToast("Sign in required!", "error"); setShowAuthModal(true); return; } const favs = favorites.includes(gid) ? favorites.filter(id=>id!==gid) : [...favorites, gid]; setFavorites(favs); try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', user.uid), { favorites: favs }); showToast(favorites.includes(gid) ? "Removed from favorites" : "Added to favorites!"); } catch(err){} };
       const handleCopyEmail = (e) => { e.preventDefault(); const textArea = document.createElement("textarea"); textArea.value = "mofawoyt@gmail.com"; document.body.appendChild(textArea); textArea.select(); try { document.execCommand('copy'); showToast("Email copied to clipboard!", 'success'); } catch (err) { showToast("Failed to copy email.", 'error'); } document.body.removeChild(textArea); };
-
-      useEffect(() => {
-        if (!activeGame) { setAdCountdown(0); setPendingFullscreen(false); return; }
-        if (!isDevUser) { setAdCountdown(5); }
-      }, [activeGame, isDevUser]);
 
       useEffect(() => {
         if (adCountdown > 0) {
@@ -673,7 +672,11 @@
 
       const executeFullscreen = async () => {
         setPendingFullscreen(false);
-        try { await playerContainerRef.current?.requestFullscreen(); } catch(e) { setIsCssFullscreen(true); }
+        try { 
+          await playerContainerRef.current?.requestFullscreen(); 
+        } catch(e) { 
+          setIsCssFullscreen(true); 
+        }
       };
 
       // CPU OPTIMIZATION: Only calculate filtered games when we are actually on the Discover page.
@@ -1291,7 +1294,7 @@
               </div>
             )}
 
-            {/* Game Player View */}
+            {/* Game Player View (Includes Sponsor Overlay & Fullscreen Sequences) */}
             <div className={`absolute inset-0 flex flex-col bg-black transition-all duration-500 ease-out z-[70] ${activeGame ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-105 pointer-events-none'}`}>
               {activeGame && (
                 <>
@@ -1301,11 +1304,15 @@
                       <div className="h-8 w-px bg-slate-700 hidden sm:block"></div>
                       <div className="flex items-center space-x-4"><div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 hidden sm:block border border-white/10 shadow-lg"><ActiveIcon /></div><span className="font-black font-heading text-xl text-white tracking-wider truncate max-w-[150px] sm:max-w-xs drop-shadow-sm">{activeGame.title}</span></div>
                     </div>
-                    <div className="flex items-center space-x-3"><button onClick={requestFullscreenSequence} className="flex items-center space-x-2 text-slate-300 hover:text-white p-2.5 rounded-xl hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors tooltip group relative active:scale-95" title="Full Screen"><Maximize2Icon size={22} /></button></div>
+                    <div className="flex items-center space-x-3">
+                      <button onClick={requestFullscreenSequence} className="flex items-center space-x-2 text-slate-300 hover:text-white p-2.5 rounded-xl hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors tooltip group relative active:scale-95" title="Full Screen"><Maximize2Icon size={22} /></button>
+                    </div>
                   </div>
                   
                   <div className={`flex-1 w-full bg-slate-950 relative ${isCssFullscreen ? 'fixed inset-0 z-[100]' : ''}`} ref={playerContainerRef}>
                     {isCssFullscreen && <button onClick={requestFullscreenSequence} className="absolute top-6 right-6 z-[60] opacity-30 hover:opacity-100 bg-slate-900/80 hover:bg-slate-700 text-slate-300 hover:text-white p-3 rounded-2xl border border-slate-700 backdrop-blur-md transition-all shadow-2xl active:scale-95" title="Exit Full Screen (Esc)"><Minimize2Icon size={24} /></button>}
+                    
+                    {/* Sponsor Break Overlay (Handles both game startup and fullscreen delays) */}
                     {adCountdown > 0 && (
                       <div className="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center px-4 text-center">
                         <div className="absolute inset-0 bg-indigo-500/5 mix-blend-screen animate-pulse"></div>
@@ -1317,12 +1324,14 @@
                             <span className="text-slate-400 font-bold font-ui px-4 py-2 bg-slate-950/80 rounded-xl border border-slate-800 shadow-inner text-sm tracking-wider uppercase">Starting in {adCountdown}s</span>
                           </div>
                           
-                          {/* AdSense Sponsored Inject */}
+                          {/* Specific AdSense Component Call */}
                           <AdSenseWidget />
                           
                         </div>
                       </div>
                     )}
+
+                    {/* Pending Fullscreen (Waiting for user gesture after Ad) */}
                     {pendingFullscreen && adCountdown === 0 && (
                       <div className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center px-4 text-center">
                          <div className="bg-slate-900/90 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-300">
@@ -1336,8 +1345,11 @@
                          </div>
                       </div>
                     )}
-                  {iframeLoading && adCountdown === 0 && <div className="absolute inset-0 flex flex-col items-center justify-center z-0 bg-slate-950"><div className="w-32 h-32 mb-8 animate-pulse text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]"><ActiveIcon /></div><p className="text-indigo-300 font-bold font-ui text-2xl tracking-widest animate-pulse drop-shadow-md">CONNECTING SERVER...</p></div>}
-                  {adCountdown === 0 && <iframe src={activeGame.src} title={activeGame.title} onLoad={() => setIframeLoading(false)} className={`w-full h-full border-0 relative z-10 transition-opacity duration-1000 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`} allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"></iframe>}
+
+                    {iframeLoading && adCountdown === 0 && !pendingFullscreen && <div className="absolute inset-0 flex flex-col items-center justify-center z-0 bg-slate-950"><div className="w-32 h-32 mb-8 animate-pulse text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]"><ActiveIcon /></div><p className="text-indigo-300 font-bold font-ui text-2xl tracking-widest animate-pulse drop-shadow-md">CONNECTING SERVER...</p></div>}
+                    
+                    {/* The Main Game Iframe */}
+                    {adCountdown === 0 && !pendingFullscreen && <iframe src={activeGame.src} title={activeGame.title} onLoad={() => setIframeLoading(false)} className={`w-full h-full border-0 relative z-10 transition-opacity duration-1000 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`} allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"></iframe>}
                   </div>
                 </>
               )}
