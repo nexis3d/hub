@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+ <title>The Spooky Maze</title>
+ <style>
+ body {
+ margin: 0;
+ padding: 0;
+ overflow: hidden;
+ background-color: #000;
+ font-family: 'Courier New', Courier, monospace;
+ user-select: none;
+ }
+
+ #game-canvas {
+ display: block;
+ width: 100vw;
+ height: 100vh;
+ }
+
+ /* UI Overlays */
+ #ui-layer {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ pointer-events: none;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ z-index: 10;
+ }
+
+ .screen {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: rgba(0, 0, 0, 0.85);
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ color: white;
+ text-align: center;
+ pointer-events: auto;
+ transition: opacity 0.5s;
+ }
+
+ h1 {
+ font-size: 4rem;
+ color: #8b0000;
+ text-shadow: 2px 2px 10px #ff0000;
+ margin-bottom: 10px;
+ text-transform: uppercase;
+ letter-spacing: 5px;
+ }
+
+ p {
+ font-size: 1.2rem;
+ color: #ccc;
+ max-width: 600px;
+ margin-bottom: 30px;
+ line-height: 1.5;
+ }
+
+ button {
+ padding: 15px 40px;
+ font-size: 1.5rem;
+ background-color: #8b0000;
+ color: white;
+ border: 2px solid #ff0000;
+ cursor: pointer;
+ font-family: 'Courier New', Courier, monospace;
+ text-transform: uppercase;
+ box-shadow: 0 0 15px #8b0000;
+ transition: all 0.2s;
+ }
+
+ button:hover {
+ background-color: #ff0000;
+ box-shadow: 0 0 25px #ff0000;
+ color: black;
+ }
+
+ #crosshair {
+ width: 4px;
+ height: 4px;
+ background-color: rgba(255, 255, 255, 0.5);
+ border-radius: 50%;
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ }
+
+ .hidden {
+ display: none !important;
+ }
+
+ /* Jumpscare overlay */
+ #jumpscare-screen {
+ background: black;
+ z-index: 100;
+ }
+
+ #jumpscare-face {
+ width: 100%;
+ height: 100%;
+ background: radial-gradient(circle, #ff0000 0%, #000000 60%);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ animation: shake 0.1s infinite;
+ }
+
+ .scary-eyes {
+ display: flex;
+ gap: 100px;
+ }
+
+ .eye {
+ width: 100px;
+ height: 60px;
+ background-color: white;
+ border-radius: 50%;
+ position: relative;
+ box-shadow: 0 0 50px white;
+ }
+
+ .pupil {
+ width: 30px;
+ height: 30px;
+ background-color: black;
+ border-radius: 50%;
+ position: absolute;
+ top: 15px;
+ left: 35px;
+ }
+
+ @keyframes shake {
+ 0% { transform: translate(2px, 1px) rotate(0deg); }
+ 10% { transform: translate(-1px, -2px) rotate(-1deg); }
+ 20% { transform: translate(-3px, 0px) rotate(1deg); }
+ 30% { transform: translate(0px, 2px) rotate(0deg); }
+ 40% { transform: translate(1px, -1px) rotate(1deg); }
+ 50% { transform: translate(-1px, 2px) rotate(-1deg); }
+ 60% { transform: translate(-3px, 1px) rotate(0deg); }
+ 70% { transform: translate(2px, 1px) rotate(-1deg); }
+ 80% { transform: translate(-1px, -1px) rotate(1deg); }
+ 90% { transform: translate(2px, 2px) rotate(0deg); }
+ 100% { transform: translate(1px, -2px) rotate(-1deg); }
+ }
+
+ #win-screen {
+ background: rgba(0, 50, 0, 0.9);
+ }
+ #win-screen h1 {
+ color: #00ff00;
+ text-shadow: 2px 2px 10px #00ff00;
+ }
+ </style>
+</head>
+<body>
+
+ <div id="ui-layer">
+ <div id="crosshair" class="hidden"></div>
+
+ <!-- HUD for Ammo -->
+ <div id="hud" class="hidden" style="position: absolute; bottom: 20px; right: 20px; color: #00ffff; font-size: 2rem; font-weight: bold; text-shadow: 0 0 10px #00ffff; pointer-events: none;">
+ AMMO: <span id="ammo-count">0</span>
+ </div>
+
+ <!-- Start Screen -->
+ <div id="start-screen" class="screen">
+ <h1>The Spooky Maze</h1>
+ <div style="background: rgba(255,0,0,0.1); padding: 20px; border: 1px solid #8b0000; margin-bottom: 30px; max-width: 600px;">
+ <h2 style="margin-top: 0; color: #ff5555; font-size: 1.5rem;">HOW TO PLAY</h2>
+ <ul style="text-align: left; font-size: 1.1rem; line-height: 1.6; color: #ccc;">
+ <li><strong>Goal:</strong> Navigate the labyrinth and find the glowing green exit.</li>
+ <li><strong>Controls:</strong> Use <b>W, A, S, D</b> to move. Use your <b>Mouse</b> to look around.</li>
+ <li><strong>Defense:</strong> <b>Left-Click</b> to shoot your Blaster. It will banish the monster temporarily.</li>
+ <li><strong>Warning:</strong> You have limited ammo! Use it wisely. The monster will always return.</li>
+ </ul>
+ </div>
+ <div style="display: flex; flex-direction: row; justify-content: center; gap: 20px;">
+ <button id="diff-toggle-btn">Difficulty: Medium</button>
+ <button id="start-btn" style="background-color: #006400; border-color: #00ff00; text-shadow: 0 0 5px #000;">Start Game</button>
+ </div>
+ </div>
+
+ <!-- Pause Screen -->
+ <div id="pause-screen" class="screen hidden">
+ <h1>Paused</h1>
+ <p>Click to resume</p>
+ </div>
+
+ <!-- Jumpscare / Game Over Screen -->
+ <div id="jumpscare-screen" class="screen hidden">
+ <div id="jumpscare-face">
+ <div class="scary-eyes">
+ <div class="eye"><div class="pupil"></div></div>
+ <div class="eye"><div class="pupil"></div></div>
+ </div>
+ </div>
+ <div style="position: absolute; bottom: 20%; display: flex; flex-direction: column; align-items: center;">
+ <h1 style="font-size: 6rem; margin-bottom: 20px;">YOU DIED</h1>
+ <button onclick="location.reload()">Try Again</button>
+ </div>
+ </div>
+
+ <!-- Win Screen -->
+ <div id="win-screen" class="screen hidden">
+ <h1>YOU ESCAPED</h1>
+ <p>You made it out of the maze alive.</p>
+ <button onclick="location.reload()">Play Again</button>
+ </div>
+ </div>
+
+ <!-- Load Three.js -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+ <script>
+ // --- GAME CONSTANTS & STATE ---
+ const CELL_SIZE = 4;
+ const WALL_HEIGHT = 5;
+ const PLAYER_SPEED = 6.0;
+ const MONSTER_START_DELAY = 3000; // MS before monster spawns
+ const BLASTER_COOLDOWN = 800; // MS between shots
+ const PROJECTILE_SPEED = 20.0;
+
+ let isPlaying = false;
+ let isGameOver = false;
+ let lastTime = performance.now();
+ let monsterActive = false;
+ let lastShotTime = 0;
+ let projectiles = [];
+ 
+ // Difficulty-based variables
+ let monsterSpeed = 2.5; 
+ let currentAmmo = 0;
+ let mazeMap = [];
+ let MAZE_WIDTH = 0;
+ let MAZE_HEIGHT = 0;
+
+ // --- MAZE DATA (1 = Wall, 0 = Path, 2 = Exit) ---
+ const mapEasy = [
+ [1,1,1,1,1,1,1,1,1,1],
+ [1,0,0,0,1,0,0,0,2,1],
+ [1,0,1,0,1,0,1,1,1,1],
+ [1,0,1,0,0,0,0,0,0,1],
+ [1,0,1,1,1,1,1,1,0,1],
+ [1,0,0,0,0,0,1,0,0,1],
+ [1,1,1,1,1,0,1,0,1,1],
+ [1,0,0,0,1,0,0,0,0,1],
+ [1,0,1,0,1,1,1,1,0,1],
+ [1,0,0,0,0,0,0,0,0,1],
+ [1,1,1,1,1,1,1,1,1,1]
+ ];
+
+ const mapNormal = [
+ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+ [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,2,1],
+ [1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1,1,1,1],
+ [1,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,1],
+ [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1],
+ [1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1],
+ [1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,1],
+ [1,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0,1,0,0,1],
+ [1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,1],
+ [1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,1],
+ [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+ [1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1],
+ [1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,0,1,0,1],
+ [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
+ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+ ];
+
+ const mapHard = [
+ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+ [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,2,1],
+ [1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1],
+ [1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+ [1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1],
+ [1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1],
+ [1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1],
+ [1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0,1],
+ [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
+ [1,0,1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0,1,0,1,0,1],
+ [1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1],
+ [1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1],
+ [1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1],
+ [1,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1],
+ [1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1],
+ [1,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1],
+ [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,0,1],
+ [1,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,1],
+ [1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1],
+ [1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1],
+ [1,0,1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1],
+ [1,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,1],
+ [1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1],
+ [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+ ];
+
+ // --- THREE.JS SETUP ---
+ const scene = new THREE.Scene();
+ // Thick, heavy black fog to limit visibility
+ scene.fog = new THREE.FogExp2(0x000000, 0.15); 
+ scene.background = new THREE.Color(0x000000);
+
+ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+ const renderer = new THREE.WebGLRenderer({ antialias: false }); // Performance
+ renderer.setSize(window.innerWidth, window.innerHeight);
+ document.body.appendChild(renderer.domElement);
+
+ // --- LIGHTING ---
+ // Very dim ambient light so absolute darkness isn't completely flat
+ const ambientLight = new THREE.AmbientLight(0x050510); 
+ scene.add(ambientLight);
+
+ // Player's Flashlight
+ const flashlight = new THREE.PointLight(0xffeedd, 1.2, 18);
+ camera.add(flashlight); // Light moves with camera
+ scene.add(camera);
+
+ // --- MATERIALS ---
+ const wallMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 1 });
+ const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 1 });
+ const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 1 });
+ const exitMat = new THREE.MeshStandardMaterial({ 
+ color: 0x00ff00, 
+ emissive: 0x00ff00, 
+ emissiveIntensity: 0.5 
+ });
+
+ // --- GAME OBJECTS ---
+ const boxes = [];
+ let exitPos = new THREE.Vector3();
+ let monsterGroup;
+
+ function buildGameWorld() {
+ MAZE_WIDTH = mazeMap[0].length;
+ MAZE_HEIGHT = mazeMap.length;
+
+ // Floor
+ const floorGeo = new THREE.PlaneGeometry(MAZE_WIDTH * CELL_SIZE, MAZE_HEIGHT * CELL_SIZE);
+ const floor = new THREE.Mesh(floorGeo, floorMat);
+ floor.rotation.x = -Math.PI / 2;
+ floor.position.set((MAZE_WIDTH * CELL_SIZE) / 2 - CELL_SIZE/2, 0, (MAZE_HEIGHT * CELL_SIZE) / 2 - CELL_SIZE/2);
+ scene.add(floor);
+
+ // Ceiling (gives claustrophobic feel)
+ const ceiling = new THREE.Mesh(floorGeo, ceilingMat);
+ ceiling.rotation.x = Math.PI / 2;
+ ceiling.position.set((MAZE_WIDTH * CELL_SIZE) / 2 - CELL_SIZE/2, WALL_HEIGHT, (MAZE_HEIGHT * CELL_SIZE) / 2 - CELL_SIZE/2);
+ scene.add(ceiling);
+
+ const wallGeo = new THREE.BoxGeometry(CELL_SIZE, WALL_HEIGHT, CELL_SIZE);
+ const exitGeo = new THREE.BoxGeometry(CELL_SIZE, WALL_HEIGHT, CELL_SIZE);
+
+ for (let z = 0; z < MAZE_HEIGHT; z++) {
+ for (let x = 0; x < MAZE_WIDTH; x++) {
+ if (mazeMap[z][x] === 1) {
+ const wall = new THREE.Mesh(wallGeo, wallMat);
+ wall.position.set(x * CELL_SIZE, WALL_HEIGHT / 2, z * CELL_SIZE);
+ scene.add(wall);
+ boxes.push(new THREE.Box3().setFromObject(wall));
+ } else if (mazeMap[z][x] === 2) {
+ const exit = new THREE.Mesh(exitGeo, exitMat);
+ exit.position.set(x * CELL_SIZE, WALL_HEIGHT / 2, z * CELL_SIZE);
+ scene.add(exit);
+ boxes.push(new THREE.Box3().setFromObject(exit)); // Treat as wall for collision, but triggers win
+ exitPos.set(x * CELL_SIZE, 0, z * CELL_SIZE);
+ 
+ // Add a glowing light to the exit
+ const exitLight = new THREE.PointLight(0x00ff00, 1, 10);
+ exitLight.position.set(x * CELL_SIZE, WALL_HEIGHT / 2, z * CELL_SIZE);
+ scene.add(exitLight);
+ }
+ }
+ }
+
+ // --- PLAYER SETUP ---
+ camera.position.set(1 * CELL_SIZE, WALL_HEIGHT / 2, 1 * CELL_SIZE);
+
+ // --- MONSTER SETUP ---
+ monsterGroup = new THREE.Group();
+ const monsterMat = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Unlit black shadow
+
+ // Head
+ const headGeo = new THREE.SphereGeometry(0.5, 16, 16);
+ const head = new THREE.Mesh(headGeo, monsterMat);
+ head.position.set(0, 1.3, 0);
+ monsterGroup.add(head);
+
+ // Torso
+ const torsoGeo = new THREE.BoxGeometry(1.0, 1.6, 0.6);
+ const torso = new THREE.Mesh(torsoGeo, monsterMat);
+ torso.position.set(0, 0, 0);
+ monsterGroup.add(torso);
+
+ // Arms (rotated to reach forward at the player)
+ const armGeo = new THREE.BoxGeometry(0.3, 1.4, 0.3);
+ const leftArm = new THREE.Mesh(armGeo, monsterMat);
+ leftArm.position.set(-0.7, 0.4, 0.5);
+ leftArm.rotation.x = -Math.PI / 2 + 0.3; // Angle forward and slightly down
+ leftArm.rotation.z = -0.1;
+ monsterGroup.add(leftArm);
+
+ const rightArm = new THREE.Mesh(armGeo, monsterMat);
+ rightArm.position.set(0.7, 0.4, 0.5);
+ rightArm.rotation.x = -Math.PI / 2 + 0.3;
+ rightArm.rotation.z = 0.1;
+ monsterGroup.add(rightArm);
+
+ // Legs (dangling down)
+ const legGeo = new THREE.BoxGeometry(0.35, 1.6, 0.35);
+ const leftLeg = new THREE.Mesh(legGeo, monsterMat);
+ leftLeg.position.set(-0.25, -1.5, 0);
+ leftLeg.rotation.x = 0.1;
+ monsterGroup.add(leftLeg);
+
+ const rightLeg = new THREE.Mesh(legGeo, monsterMat);
+ rightLeg.position.set(0.25, -1.5, 0);
+ rightLeg.rotation.x = -0.1;
+ monsterGroup.add(rightLeg);
+
+ // Glowing red eyes
+ const eyeGeo = new THREE.SphereGeometry(0.12, 8, 8);
+ const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+ 
+ const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+ leftEye.position.set(-0.2, 1.4, 0.42); // Positioned on the front of the head
+ monsterGroup.add(leftEye);
+
+ const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+ rightEye.position.set(0.2, 1.4, 0.42);
+ monsterGroup.add(rightEye);
+
+ // Add a creepy red aura light
+ const monsterLight = new THREE.PointLight(0xff0000, 1, 8);
+ monsterLight.position.set(0, 1, 0);
+ monsterGroup.add(monsterLight);
+
+ // Start monster far away
+ monsterGroup.position.set((MAZE_WIDTH - 2) * CELL_SIZE, WALL_HEIGHT / 2, (MAZE_HEIGHT - 2) * CELL_SIZE);
+ scene.add(monsterGroup);
+ }
+
+ const playerRadius = 0.5;
+
+ // --- AUDIO SYNTHESIS (No external files) ---
+ const AudioContext = window.AudioContext || window.webkitAudioContext;
+ let audioCtx;
+ let ambientOscillator;
+
+ function initAudio() {
+ if (audioCtx) return;
+ audioCtx = new AudioContext();
+ 
+ // Create creepy low drone
+ ambientOscillator = audioCtx.createOscillator();
+ ambientOscillator.type = 'sine';
+ ambientOscillator.frequency.setValueAtTime(45, audioCtx.currentTime); // Deep hum
+ 
+ // LFO to modulate the hum for unsteadiness
+ const lfo = audioCtx.createOscillator();
+ lfo.type = 'triangle';
+ lfo.frequency.setValueAtTime(0.5, audioCtx.currentTime);
+ 
+ const lfoGain = audioCtx.createGain();
+ lfoGain.gain.setValueAtTime(5, audioCtx.currentTime);
+ 
+ lfo.connect(lfoGain);
+ lfoGain.connect(ambientOscillator.frequency);
+ 
+ const mainGain = audioCtx.createGain();
+ mainGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+ 
+ ambientOscillator.connect(mainGain);
+ mainGain.connect(audioCtx.destination);
+ 
+ ambientOscillator.start();
+ lfo.start();
+ }
+
+ function playJumpscareSound() {
+ if (!audioCtx) return;
+ // Harsh screech using multiple oscillators
+ const dur = 1.5;
+ 
+ for (let i = 0; i < 5; i++) {
+ const osc = audioCtx.createOscillator();
+ osc.type = i % 2 === 0 ? 'sawtooth' : 'square';
+ 
+ // Random discordant frequencies
+ const freq = 200 + Math.random() * 800;
+ osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+ osc.frequency.exponentialRampToValueAtTime(freq * 2, audioCtx.currentTime + dur);
+ 
+ const gain = audioCtx.createGain();
+ gain.gain.setValueAtTime(1.0, audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+ 
+ osc.connect(gain);
+ gain.connect(audioCtx.destination);
+ osc.start();
+ osc.stop(audioCtx.currentTime + dur);
+ }
+ }
+
+ function playBlasterSound() {
+ if (!audioCtx) return;
+ const osc = audioCtx.createOscillator();
+ osc.type = 'square';
+ osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+ osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+ 
+ const gain = audioCtx.createGain();
+ gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+ 
+ osc.connect(gain);
+ gain.connect(audioCtx.destination);
+ osc.start();
+ osc.stop(audioCtx.currentTime + 0.2);
+ }
+
+ function playHitSound() {
+ if (!audioCtx) return;
+ const osc = audioCtx.createOscillator();
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+ osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.3);
+ 
+ const gain = audioCtx.createGain();
+ gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+ 
+ osc.connect(gain);
+ gain.connect(audioCtx.destination);
+ osc.start();
+ osc.stop(audioCtx.currentTime + 0.3);
+ }
+
+
+ // --- CUSTOM FPS CONTROLS ---
+ const keys = { w: false, a: false, s: false, d: false };
+ let pitch = 0;
+ let yaw = 0;
+ const PI_2 = Math.PI / 2;
+
+ document.addEventListener('keydown', (e) => {
+ if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = true;
+ if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = true;
+ if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = true;
+ if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = true;
+ });
+
+ document.addEventListener('keyup', (e) => {
+ if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = false;
+ if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = false;
+ if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = false;
+ if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = false;
+ });
+
+ document.addEventListener('mousemove', (e) => {
+ if (!isPlaying || isGameOver || document.pointerLockElement !== document.body) return;
+
+ const movementX = e.movementX || 0;
+ const movementY = e.movementY || 0;
+
+ yaw -= movementX * 0.002;
+ pitch -= movementY * 0.002;
+ 
+ // Limit looking up/down
+ pitch = Math.max(-PI_2, Math.min(PI_2, pitch));
+
+ camera.rotation.set(pitch, yaw, 0, 'YXZ');
+ });
+
+ // Pointer Lock Handling
+ document.addEventListener('pointerlockchange', () => {
+ if (document.pointerLockElement === document.body) {
+ isPlaying = true;
+ document.getElementById('pause-screen').classList.add('hidden');
+ document.getElementById('crosshair').classList.remove('hidden');
+ } else {
+ isPlaying = false;
+ if (!isGameOver) {
+ document.getElementById('pause-screen').classList.remove('hidden');
+ document.getElementById('crosshair').classList.add('hidden');
+ }
+ }
+ });
+
+ // Shooting handling
+ document.addEventListener('mousedown', (e) => {
+ if (!isPlaying || isGameOver || document.pointerLockElement !== document.body) return;
+ if (e.button === 0) { // Left click
+ const time = performance.now();
+ if (time - lastShotTime > BLASTER_COOLDOWN && currentAmmo > 0) {
+ lastShotTime = time;
+ shootBlaster();
+ }
+ }
+ });
+
+ function shootBlaster() {
+ currentAmmo--;
+ document.getElementById('ammo-count').innerText = currentAmmo;
+
+ playBlasterSound();
+ 
+ const projGeo = new THREE.SphereGeometry(0.2, 8, 8);
+ const projMat = new THREE.MeshBasicMaterial({ color: 0x00ffff }); // Cyan glowing energy
+ const projectile = new THREE.Mesh(projGeo, projMat);
+ 
+ // Start at camera position
+ projectile.position.copy(camera.position);
+ // Lower it slightly so it looks like it's coming from a handheld blaster
+ projectile.position.y -= 0.5; 
+ 
+ // Get direction camera is looking
+ const direction = new THREE.Vector3(0, 0, -1);
+ direction.applyQuaternion(camera.quaternion);
+ 
+ // Add a point light to the projectile for a cool visual effect
+ const projLight = new THREE.PointLight(0x00ffff, 1, 5);
+ projectile.add(projLight);
+ 
+ scene.add(projectile);
+ 
+ projectiles.push({
+ mesh: projectile,
+ velocity: direction.multiplyScalar(PROJECTILE_SPEED),
+ life: 2.0 // seconds before it disappears
+ });
+ }
+
+ // --- UI BUTTONS ---
+ let selectedDifficulty = 'medium';
+
+ function startGame() {
+ if (selectedDifficulty === 'easy') {
+ mazeMap = mapEasy;
+ monsterSpeed = 1.5;
+ currentAmmo = 10;
+ } else if (selectedDifficulty === 'medium') {
+ mazeMap = mapNormal;
+ monsterSpeed = 3.0;
+ currentAmmo = 5;
+ } else if (selectedDifficulty === 'hard') {
+ mazeMap = mapHard;
+ monsterSpeed = 4.5;
+ currentAmmo = 3;
+ }
+ 
+ buildGameWorld();
+ 
+ document.getElementById('ammo-count').innerText = currentAmmo;
+ document.getElementById('start-screen').classList.add('hidden');
+ document.getElementById('hud').classList.remove('hidden');
+ document.body.requestPointerLock();
+ initAudio();
+ 
+ // Spawn monster after delay
+ setTimeout(() => { monsterActive = true; }, MONSTER_START_DELAY);
+ }
+
+ const diffToggleBtn = document.getElementById('diff-toggle-btn');
+ if (diffToggleBtn) {
+ diffToggleBtn.addEventListener('click', () => {
+ if (selectedDifficulty === 'easy') {
+ selectedDifficulty = 'medium';
+ diffToggleBtn.innerText = 'Difficulty: Medium';
+ } else if (selectedDifficulty === 'medium') {
+ selectedDifficulty = 'hard';
+ diffToggleBtn.innerText = 'Difficulty: Hard';
+ } else {
+ selectedDifficulty = 'easy';
+ diffToggleBtn.innerText = 'Difficulty: Easy';
+ }
+ });
+ }
+
+ const startBtn = document.getElementById('start-btn');
+ if (startBtn) {
+ startBtn.addEventListener('click', startGame);
+ }
+
+ const pauseScreen = document.getElementById('pause-screen');
+ if (pauseScreen) {
+ pauseScreen.addEventListener('click', () => {
+ document.body.requestPointerLock();
+ });
+ }
+
+ // --- COLLISION DETECTION ---
+ function checkCollision(position) {
+ // Player bounding box
+ const playerBox = new THREE.Box3(
+ new THREE.Vector3(position.x - playerRadius, 0, position.z - playerRadius),
+ new THREE.Vector3(position.x + playerRadius, WALL_HEIGHT, position.z + playerRadius)
+ );
+
+ for (let i = 0; i < boxes.length; i++) {
+ if (playerBox.intersectsBox(boxes[i])) {
+ // Check if it's the exit block
+ const boxCenter = new THREE.Vector3();
+ boxes[i].getCenter(boxCenter);
+ if (boxCenter.distanceTo(exitPos) < CELL_SIZE) {
+ triggerWin();
+ }
+ return true; // Hit a wall
+ }
+ }
+ return false;
+ }
+
+ // --- GAME EVENTS ---
+ function triggerJumpscare() {
+ isGameOver = true;
+ document.exitPointerLock();
+ 
+ // Turn off lights
+ flashlight.intensity = 0;
+ ambientLight.intensity = 0;
+ 
+ // Show UI
+ document.getElementById('crosshair').classList.add('hidden');
+ document.getElementById('jumpscare-screen').classList.remove('hidden');
+ 
+ playJumpscareSound();
+ if (ambientOscillator) ambientOscillator.stop();
+ }
+
+ function triggerWin() {
+ isGameOver = true;
+ document.exitPointerLock();
+ document.getElementById('crosshair').classList.add('hidden');
+ document.getElementById('win-screen').classList.remove('hidden');
+ if (ambientOscillator) ambientOscillator.stop();
+ }
+
+ // --- MAIN GAME LOOP ---
+ function animate() {
+ requestAnimationFrame(animate);
+
+ const time = performance.now();
+ const delta = (time - lastTime) / 1000;
+ lastTime = time;
+
+ if (isPlaying && !isGameOver) {
+ // 1. Move Player
+ const velocity = new THREE.Vector3();
+ if (keys.w) velocity.z -= 1;
+ if (keys.s) velocity.z += 1;
+ if (keys.a) velocity.x -= 1;
+ if (keys.d) velocity.x += 1;
+
+ if (velocity.lengthSq() > 0) {
+ velocity.normalize();
+ // Apply camera rotation (yaw only) to velocity
+ velocity.applyEuler(new THREE.Euler(0, yaw, 0));
+ velocity.multiplyScalar(PLAYER_SPEED * delta);
+
+ // Move X and check collision
+ const nextPosX = camera.position.clone();
+ nextPosX.x += velocity.x;
+ if (!checkCollision(nextPosX)) {
+ camera.position.x = nextPosX.x;
+ }
+
+ // Move Z and check collision
+ const nextPosZ = camera.position.clone();
+ nextPosZ.z += velocity.z;
+ if (!checkCollision(nextPosZ)) {
+ camera.position.z = nextPosZ.z;
+ }
+ }
+
+ // 2. Head Bobbing effect
+ if (velocity.lengthSq() > 0) {
+ camera.position.y = WALL_HEIGHT / 2 + Math.sin(time * 0.01) * 0.1;
+ } else {
+ camera.position.y = WALL_HEIGHT / 2;
+ }
+
+ // 3. Flashlight Flickering (Random chance)
+ if (Math.random() > 0.97) {
+ flashlight.intensity = 0.5 + Math.random() * 0.8;
+ } else {
+ flashlight.intensity = 1.2;
+ }
+
+ // Update Projectiles
+ for (let i = projectiles.length - 1; i >= 0; i--) {
+ const p = projectiles[i];
+ p.life -= delta;
+ 
+ if (p.life <= 0) {
+ scene.remove(p.mesh);
+ projectiles.splice(i, 1);
+ continue;
+ }
+ 
+ p.mesh.position.addScaledVector(p.velocity, delta);
+ 
+ // Check collision with monster
+ if (monsterActive) {
+ const distToMonster = p.mesh.position.distanceTo(monsterGroup.position);
+ if (distToMonster < 2.0) { // Hit!
+ playHitSound();
+ scene.remove(p.mesh);
+ projectiles.splice(i, 1);
+ 
+ // Banish monster back to start
+ monsterGroup.position.set((MAZE_WIDTH - 2) * CELL_SIZE, WALL_HEIGHT / 2, (MAZE_HEIGHT - 2) * CELL_SIZE);
+ 
+ // Temporarily disable monster so it doesn't instantly snap back visually
+ monsterActive = false;
+ setTimeout(() => { monsterActive = true; }, 3000); // 3 second stun/respawn delay
+ continue;
+ }
+ }
+ }
+
+ // 4. Update Monster
+ if (monsterActive) {
+ // Hover effect
+ monsterGroup.position.y = WALL_HEIGHT / 2 + Math.sin(time * 0.003) * 0.3;
+
+ // Relentlessly move towards player (ignores walls like a ghost)
+ const dirToPlayer = new THREE.Vector3().subVectors(camera.position, monsterGroup.position);
+ dirToPlayer.y = 0; // Keep movement purely horizontal
+ 
+ const distance = dirToPlayer.length();
+ 
+ if (distance > 0.1) {
+ dirToPlayer.normalize();
+ monsterGroup.position.add(dirToPlayer.multiplyScalar(monsterSpeed * delta));
+ }
+
+ // Make monster look at player
+ monsterGroup.lookAt(camera.position.x, monsterGroup.position.y, camera.position.z);
+
+ // Check for Jumpscare (catch condition)
+ if (distance < 1.8) {
+ triggerJumpscare();
+ }
+ }
+ }
+
+ renderer.render(scene, camera);
+ }
+
+ // Handle Window Resize
+ window.addEventListener('resize', () => {
+ camera.aspect = window.innerWidth / window.innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(window.innerWidth, window.innerHeight);
+ });
+
+ // Start Loop
+ animate();
+
+ </script>
+</body>
+</html>
