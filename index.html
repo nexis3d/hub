@@ -236,6 +236,7 @@
     const RealmIcon = React.memo(() => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="realmGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#0284c7"/><stop offset="100%" stopColor="#1e3a8a"/></linearGradient><filter id="shardGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#realmGrad)" /><g transform="translate(100, 100)" filter="url(#shardGlow)"><path d="M0 -60L30 10L0 50L-30 10Z" fill="#e0f2fe" opacity="0.9"/><path d="M0 -60L30 10L0 80L0 50Z" fill="#bae6fd" opacity="0.7"/><path d="M-40 -10L-10 20L-20 40Z" fill="#7dd3fc" opacity="0.8"/><path d="M40 0L15 30L30 45Z" fill="#38bdf8" opacity="0.8"/></g></svg>);
     const ScaryMazeIcon = React.memo(() => <div style={{width:'100%',height:'100%',borderRadius:'20px',overflow:'hidden',backgroundColor:'#020617',padding:'0',boxSizing:'border-box'}}><img src="assets/Maze.png" alt="Scary Maze" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.onerror=null;e.target.src='https://placehold.co/200x200/0f172a/ffffff?text=Scary+Maze';}}/></div>);
     const GSwitchIcon = React.memo(() => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="gsGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#3b82f6"/><stop offset="100%" stopColor="#1e3a8a"/></linearGradient><filter id="gsGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#gsGrad)" /><g filter="url(#gsGlow)"><path d="M70 140 L70 60 L40 90 M70 60 L100 90" stroke="#93c5fd" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/><path d="M130 60 L130 140 L100 110 M130 140 L160 110" stroke="#60a5fa" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/></g></svg>);
+    const PolyBitIcon = React.memo(() => <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="polyGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#8b5cf6"/><stop offset="100%" stopColor="#d946ef"/></linearGradient><filter id="polyGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#polyGrad)" /><g filter="url(#polyGlow)"><path d="M100 40 L160 140 L40 140 Z" fill="#fbcfe8" opacity="0.8"/><path d="M100 40 L160 140 L100 120 Z" fill="#fdf4ff" opacity="0.9"/><polygon points="100,120 160,140 100,160 40,140" fill="#f0abfc" opacity="0.6"/><path d="M100 80 L120 120 L80 120 Z" fill="#d946ef" /></g></svg>);
 
     // --- ADSENSE WIDGET COMPONENT --- //
     const AdSenseWidget = React.memo(() => {
@@ -285,6 +286,7 @@
     const GAMES = [
       { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-500 to-orange-700', tags: ['Cooking', 'Action'] },
       { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: 'https://www.crazygames.com/embed/g-switch-3', icon: GSwitchIcon, theme: 'from-blue-600 to-indigo-800', tags: ['Action', 'Arcade'], isBeta: true },
+      { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-purple-600 to-fuchsia-800', tags: ['Action', 'Arcade'] },
       { id: 'scary-maze', title: 'Scary Maze', developer: 'Unknown', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-slate-900 to-black', tags: ['Spooky', 'Action'] },
       { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
       { id: 'kart-racer', title: 'Online Racing Game', developer: 'Unknown', src: 'games/Racer.html', icon: KartIcon, theme: 'from-red-600 to-orange-500', tags: ['Racing', 'Multiplayer', '3D'] },
@@ -352,6 +354,7 @@
       const [masterVolume, setMasterVolume] = useState(100); 
       const [musicVolume, setMusicVolume] = useState(2); 
       const [sfxVolume, setSfxVolume] = useState(100); 
+      const [isSoundEnabled, setIsSoundEnabled] = useState(false);
       const [isLightMode, setIsLightMode] = useState(false); 
       const [authResolved, setAuthResolved] = useState(false);
       
@@ -367,12 +370,19 @@
           bgMusicRef.current.loop = true;
           bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100);
         }
-        const tryPlayMusic = () => { if (bgMusicRef.current && bgMusicRef.current.paused && !activeGame) bgMusicRef.current.play().catch(e => {}); };
-        document.addEventListener('click', tryPlayMusic, { once: true }); document.addEventListener('keydown', tryPlayMusic, { once: true });
-        return () => { document.removeEventListener('click', tryPlayMusic); document.removeEventListener('keydown', tryPlayMusic); };
       }, []);
 
-      useEffect(() => { if (bgMusicRef.current) { if (activeGame) { bgMusicRef.current.pause(); } else { bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100); bgMusicRef.current.play().catch(e => {}); } } }, [musicVolume, masterVolume, activeGame]);
+      useEffect(() => { 
+        if (bgMusicRef.current) { 
+          if (activeGame || !isSoundEnabled) { 
+            bgMusicRef.current.pause(); 
+          } else { 
+            bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100); 
+            bgMusicRef.current.play().catch(e => {}); 
+          } 
+        } 
+      }, [musicVolume, masterVolume, activeGame, isSoundEnabled]);
+
       useEffect(() => { const hO = () => setIsOffline(false); const hF = () => setIsOffline(true); window.addEventListener('online', hO); window.addEventListener('offline', hF); return () => { window.removeEventListener('online', hO); window.removeEventListener('offline', hF); }; }, []);
       useEffect(() => { if (isLightMode) document.documentElement.classList.add('light-mode'); else document.documentElement.classList.remove('light-mode'); }, [isLightMode]);
       useEffect(() => { if (authResolved) { setTimeout(() => { const l = document.getElementById('nexis-global-loader'); if (l) { l.style.opacity = '0'; l.style.visibility = 'hidden'; setTimeout(() => l.remove(), 800); } }, 1800); } }, [authResolved]);
@@ -714,9 +724,15 @@
                               <section>
                                 <h3 className="text-2xl font-bold font-heading text-indigo-300 mb-6 flex items-center gap-3 drop-shadow-sm border-b border-slate-800 pb-4"><SettingsIcon size={28} /> Audio Controls</h3>
                                 <div className="bg-slate-950/80 p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] space-y-8">
-                                  <div><div className="flex justify-between items-end mb-3"><span className="text-white font-bold font-ui text-xl">Master Volume</span><span className="text-indigo-400 font-black text-xl">{masterVolume}%</span></div><input type="range" min="0" max="100" value={masterVolume} onChange={(e) => setMasterVolume(e.target.value)} className="w-full accent-indigo-500 h-3 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
-                                  <div><div className="flex justify-between items-end mb-3"><span className="text-slate-300 font-bold font-ui text-lg">Music Volume</span><span className="text-indigo-400 font-black">{musicVolume}%</span></div><input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
-                                  <div><div className="flex justify-between items-end mb-3"><span className="text-slate-300 font-bold font-ui text-lg">Sound Effects</span><span className="text-indigo-400 font-black">{sfxVolume}%</span></div><input type="range" min="0" max="100" value={sfxVolume} onChange={(e) => setSfxVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-slate-800/50 pb-6">
+                                    <div><span className="text-white font-bold font-ui text-xl block mb-1">Background Audio</span><span className="text-slate-400 font-ui text-base">Enable background music and sound effects.</span></div>
+                                    <button onClick={() => setIsSoundEnabled(!isSoundEnabled)} className={`px-8 py-3 rounded-xl border transition-all active:scale-95 font-bold font-ui tracking-widest text-base uppercase shadow-inner whitespace-nowrap ${isSoundEnabled ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/30' : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white'}`}>{isSoundEnabled ? 'Sound Enabled' : 'Enable Sound'}</button>
+                                  </div>
+                                  <div className={`transition-opacity duration-300 ${isSoundEnabled ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                                    <div><div className="flex justify-between items-end mb-3"><span className="text-white font-bold font-ui text-xl">Master Volume</span><span className="text-indigo-400 font-black text-xl">{masterVolume}%</span></div><input type="range" min="0" max="100" value={masterVolume} onChange={(e) => setMasterVolume(e.target.value)} className="w-full accent-indigo-500 h-3 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                                    <div className="mt-8"><div className="flex justify-between items-end mb-3"><span className="text-slate-300 font-bold font-ui text-lg">Music Volume</span><span className="text-indigo-400 font-black">{musicVolume}%</span></div><input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                                    <div className="mt-8"><div className="flex justify-between items-end mb-3"><span className="text-slate-300 font-bold font-ui text-lg">Sound Effects</span><span className="text-indigo-400 font-black">{sfxVolume}%</span></div><input type="range" min="0" max="100" value={sfxVolume} onChange={(e) => setSfxVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" /></div>
+                                  </div>
                                 </div>
                               </section>
                               {isRegistered && (<section className="pt-4 border-t border-slate-800 flex justify-end"><button onClick={() => { handleLogout(); setActiveView('discover'); }} className="px-10 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold font-heading text-xl tracking-widest uppercase rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(225,29,72,0.5)] border border-white/10">Sign Out</button></section>)}
