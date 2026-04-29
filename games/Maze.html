@@ -48,10 +48,15 @@
       <!-- UI Layer -->
       <div id="ui-layer" class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
         
+        <!-- HUD -->
+        <div id="hud" class="absolute top-4 left-4 text-xl font-bold tracking-widest text-gray-200 bg-black/50 px-4 py-2 border border-gray-800 hidden">
+          FLOOR: <span id="floor-display">1</span>
+        </div>
+
         <!-- Menu -->
         <div id="menu-ui" class="bg-black/80 p-8 border border-red-900 rounded-sm pointer-events-auto shadow-[0_0_20px_rgba(255,0,0,0.2)]">
           <h1 class="text-4xl text-red-600 font-bold mb-4 tracking-widest uppercase [text-shadow:2px_2px_0px_#000,-1px_-1px_0px_#f00]">The Entity</h1>
-          <p class="mb-6 text-gray-400 text-sm">Navigate the isometric maze. Find the yellow exit.<br/>Something is hunting you.</p>
+          <p class="mb-6 text-gray-400 text-sm">Endless Descent.<br/>The deeper you go, the more the maze expands, and the more they multiply.</p>
           <p class="mb-8 text-xs text-gray-500">Controls: WASD or Arrow Keys</p>
           <button id="btn-start" class="px-6 py-2 bg-red-900 text-red-100 hover:bg-red-700 transition-colors uppercase font-bold tracking-wider">
             Enter Maze
@@ -75,15 +80,17 @@
         <!-- Dead -->
         <div id="dead-ui" class="bg-black/90 p-8 border border-red-600 rounded-sm pointer-events-auto hidden" style="display: none;">
           <h1 class="text-5xl text-red-600 font-bold mb-4 uppercase animate-pulse">You Were Found</h1>
-          <button id="btn-retry" class="mt-6 px-6 py-2 bg-gray-800 text-white hover:bg-red-900 transition-colors uppercase">
-            Try Again
+          <p id="death-stats" class="text-gray-400 text-sm mb-6">Subject survived until Floor X</p>
+          <button id="btn-retry" class="px-6 py-2 bg-gray-800 text-white hover:bg-red-900 transition-colors uppercase">
+            Restart
           </button>
         </div>
 
         <!-- Won -->
         <div id="won-ui" class="bg-black/90 p-8 border border-green-600 rounded-sm pointer-events-auto hidden" style="display: none;">
-          <h1 class="text-4xl text-green-500 font-bold mb-4 uppercase">You Escaped</h1>
-          <button id="btn-next" class="mt-6 px-6 py-2 bg-gray-800 text-white hover:bg-green-900 transition-colors uppercase">
+          <h1 class="text-4xl text-green-500 font-bold mb-4 uppercase">Floor Cleared</h1>
+          <p class="text-gray-400 text-sm mb-6">You found the exit, but the maze goes deeper...</p>
+          <button id="btn-next" class="px-6 py-2 bg-gray-800 text-white hover:bg-green-900 transition-colors uppercase">
             Descend Deeper
           </button>
         </div>
@@ -96,11 +103,9 @@
     // --- Constants & Config ---
     const LOGICAL_WIDTH = 640;
     const LOGICAL_HEIGHT = 360;
-    // 2:1 ratio for exact 26.57 degree isometric projection
     const TILE_W = 48; 
     const TILE_H = 24;
     const WALL_H = 40;
-    const MAZE_SIZE = 21; // Must be odd
     const VISIBILITY_RADIUS = 5;
     const MONSTER_SPEED_MS = 400;
 
@@ -117,9 +122,11 @@
 
     // --- State Variables ---
     let gameState = 'menu'; // menu, playing, jumpscare, won, dead
+    let level = 1;
+    let mazeSize = 21;
     let maze = [];
     let player = { x: 1, y: 1 };
-    let monster = { x: 19, y: 19 };
+    let monsters = [];
     
     let lastMonsterMove = 0;
     let keys = {};
@@ -143,6 +150,9 @@
     const jumpscareUi = document.getElementById('jumpscare-ui');
     const deadUi = document.getElementById('dead-ui');
     const wonUi = document.getElementById('won-ui');
+    const hudUi = document.getElementById('hud');
+    const floorDisplay = document.getElementById('floor-display');
+    const deathStats = document.getElementById('death-stats');
 
     // --- Maze Generator (Recursive Backtracker) ---
     const generateMaze = (width, height) => {
@@ -155,7 +165,7 @@
         for (let [dx, dy] of dirs) {
           const nx = x + dx, ny = y + dy;
           if (nx > 0 && nx < width - 1 && ny > 0 && ny < height - 1 && newMaze[ny][nx] === 1) {
-            newMaze[y + dy / 2][x + dx / 2] = 0; // Carve through intermediate wall
+            newMaze[y + dy / 2][x + dx / 2] = 0; 
             carve(nx, ny);
           }
         }
@@ -174,6 +184,11 @@
       jumpscareUi.style.display = gameState === 'jumpscare' ? 'flex' : 'none';
       deadUi.style.display = gameState === 'dead' ? 'block' : 'none';
       wonUi.style.display = gameState === 'won' ? 'block' : 'none';
+      hudUi.style.display = gameState === 'playing' ? 'block' : 'none';
+
+      if(gameState === 'dead') {
+          deathStats.innerText = `Subject survived until Floor ${level}`;
+      }
     }
 
     function setGameState(newState) {
@@ -182,18 +197,42 @@
     }
 
     // --- Initialization ---
-    const initGame = () => {
-      maze = generateMaze(MAZE_SIZE, MAZE_SIZE);
+    const initGame = (descending = false) => {
+      if (!descending) {
+          level = 1;
+      } else {
+          level++;
+      }
+      
+      // The map gets larger the deeper you go (capping at size 45 to maintain performance)
+      mazeSize = Math.min(45, 15 + level * 6); 
+      floorDisplay.innerText = level;
+
+      maze = generateMaze(mazeSize, mazeSize);
       player = { x: 1, y: 1 };
-      // Spawn monster somewhat far away
-      monster = { x: MAZE_SIZE - 2, y: MAZE_SIZE - 2 };
+      
+      // Scale monsters based on level
+      monsters = [];
+      const numMonsters = Math.floor((level + 1) / 2); // Floor 1:1, Floor 2:1, Floor 3:2, Floor 4:2, Floor 5:3
+      
+      for(let i=0; i<numMonsters; i++) {
+          let mx, my;
+          // Find a valid empty spot far from the player
+          do {
+              mx = Math.floor(Math.random() * (mazeSize - 2)) + 1;
+              my = Math.floor(Math.random() * (mazeSize - 2)) + 1;
+          } while (maze[my][mx] !== 0 || (Math.abs(mx - player.x) + Math.abs(my - player.y) < 10));
+          
+          monsters.push({ x: mx, y: my });
+      }
+
       setGameState('playing');
     };
 
     // Event Listeners for UI buttons
-    document.getElementById('btn-start').addEventListener('click', initGame);
-    document.getElementById('btn-retry').addEventListener('click', initGame);
-    document.getElementById('btn-next').addEventListener('click', initGame);
+    document.getElementById('btn-start').addEventListener('click', () => initGame(false));
+    document.getElementById('btn-retry').addEventListener('click', () => initGame(false));
+    document.getElementById('btn-next').addEventListener('click', () => initGame(true));
 
     // Keyboard Input Handling
     window.addEventListener('keydown', (e) => {
@@ -225,34 +264,48 @@
     };
 
     // --- Helpers ---
-    const moveMonster = () => {
-      let { x, y } = monster;
-      const dx = player.x - x;
-      const dy = player.y - y;
-      
-      // Simple pathing: try to close distance on major axis
-      let possibleMoves = [
-        { nx: x + Math.sign(dx), ny: y, valid: dx !== 0 },
-        { nx: x, ny: y + Math.sign(dy), valid: dy !== 0 }
-      ];
+    
+    // Breadth-First Search (BFS) AI for perfect maze pathfinding
+    const moveMonsters = () => {
+      // 1. Build a distance map from the player to everywhere else
+      let distMap = Array(mazeSize).fill().map(() => Array(mazeSize).fill(9999));
+      let queue = [[player.x, player.y, 0]];
+      distMap[player.y][player.x] = 0;
 
-      // Shuffle to prevent getting stuck in alternating loops sometimes
-      if (Math.random() > 0.5) possibleMoves.reverse();
-
-      for (let move of possibleMoves) {
-        if (move.valid && maze[move.ny] && maze[move.ny][move.nx] !== 1) {
-          monster = { x: move.nx, y: move.ny };
-          return;
+      while(queue.length > 0) {
+        let [cx, cy, d] = queue.shift();
+        const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
+        for(let [dx, dy] of dirs) {
+            let nx = cx + dx, ny = cy + dy;
+            if(nx > 0 && nx < mazeSize-1 && ny > 0 && ny < mazeSize-1 && maze[ny][nx] !== 1) {
+                if(distMap[ny][nx] > d + 1) {
+                    distMap[ny][nx] = d + 1;
+                    queue.push([nx, ny, d + 1]);
+                }
+            }
         }
       }
 
-      // If blocked, random valid move
-      const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
-      const validDirs = dirs.filter(([vx, vy]) => maze[y+vy] && maze[y+vy][x+vx] !== 1);
-      if (validDirs.length > 0) {
-        const [vx, vy] = validDirs[Math.floor(Math.random() * validDirs.length)];
-        monster = { x: x + vx, y: y + vy };
-      }
+      // 2. Move each monster to the adjacent tile that has the lowest distance to the player
+      monsters.forEach(m => {
+          let bestDist = distMap[m.y][m.x];
+          let tx = m.x, ty = m.y;
+          const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
+
+          // Shuffle directions to prevent getting stuck if distances are equal
+          dirs.sort(() => Math.random() - 0.5);
+
+          for(let [dx, dy] of dirs) {
+              let nx = m.x + dx, ny = m.y + dy;
+              if(distMap[ny] && distMap[ny][nx] < bestDist) {
+                  bestDist = distMap[ny][nx];
+                  tx = nx; 
+                  ty = ny;
+              }
+          }
+          m.x = tx; 
+          m.y = ty;
+      });
     };
 
     const applyLighting = (hex, intensity) => {
@@ -370,12 +423,17 @@
 
       // --- Monster AI ---
       if (time - lastMonsterMove > MONSTER_SPEED_MS) {
-        moveMonster();
+        moveMonsters();
         lastMonsterMove = time;
       }
 
       // Check Death & Trigger Jumpscare
-      if (player.x === monster.x && player.y === monster.y) {
+      let isCaught = false;
+      monsters.forEach(m => {
+          if (player.x === m.x && player.y === m.y) isCaught = true;
+      });
+
+      if (isCaught) {
         if (gameState !== 'jumpscare') {
           setGameState('jumpscare');
           setTimeout(() => setGameState('dead'), 1000); // 1 second jumpscare duration
@@ -397,8 +455,8 @@
       const currentFlicker = 0.95 + Math.random() * 0.1;
 
       // Painter's Algorithm: Draw from back to front
-      for (let y = 0; y < MAZE_SIZE; y++) {
-        for (let x = 0; x < MAZE_SIZE; x++) {
+      for (let y = 0; y < mazeSize; y++) {
+        for (let x = 0; x < mazeSize; x++) {
           const isWall = maze[y][x] === 1;
           const isExit = maze[y][x] === 2;
           
@@ -422,9 +480,14 @@
           if (x === player.x && y === player.y) {
             drawEntity(ctx, sx, sy, COLORS.player, 1.0);
           }
-          if (x === monster.x && y === monster.y && distToPlayer <= VISIBILITY_RADIUS) {
-            drawEntity(ctx, sx, sy, COLORS.monster, lightIntensity + 0.2); // Monster glows slightly
-          }
+          
+          // Draw all monsters
+          monsters.forEach(m => {
+             if (x === m.x && y === m.y && distToPlayer <= VISIBILITY_RADIUS) {
+               drawEntity(ctx, sx, sy, COLORS.monster, lightIntensity + 0.2);
+             }
+          });
+
           if (isExit) {
              drawEntity(ctx, sx, sy, COLORS.exit, lightIntensity, true);
           }
