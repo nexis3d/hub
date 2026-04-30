@@ -763,6 +763,29 @@
       </svg>
     ));
 
+    const DungeonCrawlerIcon = React.memo(() => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id="dungGrad" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#3f3f46"/>
+            <stop offset="100%" stopColor="#1c1917"/>
+          </linearGradient>
+          <filter id="dungGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#dungGrad)" />
+        <g filter="url(#dungGlow)" transform="translate(100, 100)">
+          <path d="M-30 -40 L30 -40 L40 40 L0 80 L-40 40 Z" fill="#52525b" stroke="#a1a1aa" strokeWidth="6" strokeLinejoin="round"/>
+          <path d="M-8 -70 L8 -70 L8 -30 L25 -30 L25 -14 L8 -14 L8 40 L-8 40 L-8 -14 L-25 -14 L-25 -30 L-8 -30 Z" fill="#facc15" stroke="#ca8a04" strokeWidth="2"/>
+        </g>
+      </svg>
+    ));
+
     // --- ADSENSE WIDGET COMPONENT ---
     const AdSenseWidget = React.memo(() => {
       useEffect(() => {
@@ -864,7 +887,8 @@
       { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-500 to-orange-700', tags: ['Cooking', 'Action'] },
       { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: 'https://gswitch.io/g-switch-3.embed', icon: GSwitchIcon, theme: 'from-blue-600 to-indigo-800', tags: ['Action', 'Arcade'] },
       { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-purple-600 to-fuchsia-800', tags: ['Action', 'Arcade'] },
-      { id: 'scary-maze', title: 'Scary Maze', developer: 'Unknown', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-slate-900 to-black', tags: ['Spooky', 'Action'] },
+      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Unknown', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-700 to-stone-900', tags: ['RPG', 'Adventure'] },
+      { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-slate-900 to-black', tags: ['Spooky', 'Action'] },
       { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Unknown', src: 'games/Spok.html', icon: TheSpookyMazeIcon, theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
       { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
