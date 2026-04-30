@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casual Blackjack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-pulse-fast {
+            animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800">
+
+    <!-- Header and Stats -->
+    <div class="max-w-4xl w-full flex flex-col md:flex-row items-center justify-between bg-white p-6 rounded-2xl shadow-sm mb-8 border border-slate-200">
+        <h1 class="text-3xl font-extrabold text-indigo-900 tracking-tight flex items-center gap-2 mb-4 md:mb-0">
+            <span class="text-indigo-500">♠</span> Casual Blackjack
+        </h1>
+        <div class="flex items-center gap-4 text-sm font-medium bg-slate-100 p-3 rounded-lg">
+            <div class="text-green-600 flex flex-col items-center px-2">
+                <span class="text-xs uppercase tracking-wider text-slate-500">Wins</span>
+                <span class="text-xl" id="stat-wins">0</span>
+            </div>
+            <div class="w-px h-8 bg-slate-300"></div>
+            <div class="text-red-600 flex flex-col items-center px-2">
+                <span class="text-xs uppercase tracking-wider text-slate-500">Losses</span>
+                <span class="text-xl" id="stat-losses">0</span>
+            </div>
+            <div class="w-px h-8 bg-slate-300"></div>
+            <div class="text-slate-600 flex flex-col items-center px-2">
+                <span class="text-xs uppercase tracking-wider text-slate-500">Ties</span>
+                <span class="text-xl" id="stat-ties">0</span>
+            </div>
+            <button id="reset-btn" class="ml-2 text-xs text-slate-400 hover:text-slate-600 transition-colors" title="Reset Scores">
+                Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Area -->
+    <div class="max-w-4xl w-full flex-1 flex flex-col justify-center items-center">
+        
+        <!-- Menu Screen -->
+        <div id="menu-screen" class="text-center space-y-6 bg-white p-12 rounded-3xl shadow-sm border border-slate-200 w-full max-w-xl">
+            <h2 class="text-2xl font-bold text-slate-700">Ready to play?</h2>
+            <p class="text-slate-500 max-w-md mx-auto">
+                Enjoy a friendly, risk-free game of Blackjack. Try to beat the dealer by getting a score as close to 21 as possible without going over!
+            </p>
+            <button id="start-btn-menu" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full font-bold text-lg transition-transform transform hover:scale-105 shadow-md active:scale-95">
+                Start Playing
+            </button>
+        </div>
+
+        <!-- Game Screen (Hidden initially) -->
+        <div id="game-screen" class="hidden flex-col items-center w-full gap-8">
+            
+            <!-- Dealer Area -->
+            <div class="w-full flex flex-col items-center">
+                <div class="flex items-center justify-between w-full max-w-md mb-2 px-4">
+                    <h2 class="text-lg font-bold text-slate-600 uppercase tracking-wide">Dealer</h2>
+                    <span id="dealer-score-badge" class="hidden bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-sm font-bold">
+                        0
+                    </span>
+                </div>
+                <div id="dealer-hand" class="flex justify-center flex-wrap min-h-[150px]">
+                    <!-- Dealer cards injected here -->
+                </div>
+            </div>
+
+            <!-- Game Message (Center) -->
+            <div class="h-16 flex items-center justify-center my-4 w-full">
+                <div id="game-message" class="hidden bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-lg animate-fade-in shadow-lg text-center">
+                    <!-- Message text -->
+                </div>
+                <div id="dealer-drawing" class="hidden text-indigo-600 font-bold animate-pulse-fast">
+                    Dealer is drawing...
+                </div>
+            </div>
+
+            <!-- Player Area -->
+            <div class="w-full flex flex-col items-center">
+                <div class="flex items-center justify-between w-full max-w-md mb-2 px-4">
+                    <h2 class="text-lg font-bold text-slate-600 uppercase tracking-wide">Your Hand</h2>
+                    <span id="player-score-badge" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold">
+                        0
+                    </span>
+                </div>
+                <div id="player-hand" class="flex justify-center flex-wrap min-h-[150px]">
+                    <!-- Player cards injected here -->
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex gap-4 mt-8 h-14 items-center justify-center">
+                <div id="playing-controls" class="hidden flex gap-4">
+                    <button id="hit-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-8 py-3 rounded-xl font-bold text-lg transition-colors shadow-sm active:scale-95 min-w-[120px]">
+                        Hit
+                    </button>
+                    <button id="stand-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition-colors shadow-md active:scale-95 min-w-[120px]">
+                        Stand
+                    </button>
+                </div>
+                <div id="gameover-controls" class="hidden">
+                    <button id="start-btn-again" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full font-bold text-lg transition-transform transform hover:scale-105 shadow-md active:scale-95">
+                        Play Again
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- Game Logic & Constants ---
+        const SUITS = [
+            { name: 'Hearts', symbol: '♥', color: 'text-red-500' },
+            { name: 'Diamonds', symbol: '♦', color: 'text-red-500' },
+            { name: 'Clubs', symbol: '♣', color: 'text-gray-900' },
+            { name: 'Spades', symbol: '♠', color: 'text-gray-900' }
+        ];
+        const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let gameState = 'menu'; // menu, playing, dealerTurn, gameOver
+        let stats = { wins: 0, losses: 0, ties: 0 };
+
+        // --- DOM Elements ---
+        const ui = {
+            menuScreen: document.getElementById('menu-screen'),
+            gameScreen: document.getElementById('game-screen'),
+            dealerHand: document.getElementById('dealer-hand'),
+            playerHand: document.getElementById('player-hand'),
+            dealerScoreBadge: document.getElementById('dealer-score-badge'),
+            playerScoreBadge: document.getElementById('player-score-badge'),
+            gameMessage: document.getElementById('game-message'),
+            dealerDrawing: document.getElementById('dealer-drawing'),
+            playingControls: document.getElementById('playing-controls'),
+            gameoverControls: document.getElementById('gameover-controls'),
+            statWins: document.getElementById('stat-wins'),
+            statLosses: document.getElementById('stat-losses'),
+            statTies: document.getElementById('stat-ties')
+        };
+
+        // --- Functions ---
+        function createDeck() {
+            let newDeck = [];
+            for (let suit of SUITS) {
+                for (let rank of RANKS) {
+                    let value = parseInt(rank);
+                    if (['J', 'Q', 'K'].includes(rank)) value = 10;
+                    if (rank === 'A') value = 11;
+                    newDeck.push({ suit, rank, value, id: `${rank}-${suit.name}` });
+                }
+            }
+            for (let i = newDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+            }
+            return newDeck;
+        }
+
+        function calculateScore(hand) {
+            let score = 0;
+            let aces = 0;
+            for (let card of hand) {
+                score += card.value;
+                if (card.rank === 'A') aces += 1;
+            }
+            while (score > 21 && aces > 0) {
+                score -= 10;
+                aces -= 1;
+            }
+            return score;
+        }
+
+        function generateCardHTML(card, hidden = false) {
+            if (hidden) {
+                return `
+                <div class="w-24 h-36 rounded-xl bg-indigo-600 border-2 border-white shadow-lg flex items-center justify-center m-1">
+                    <div class="w-20 h-32 border-2 border-indigo-400 border-dashed rounded-lg flex items-center justify-center opacity-50">
+                        <span class="text-white text-3xl font-bold">?</span>
+                    </div>
+                </div>`;
+            }
+            return `
+            <div class="w-24 h-36 rounded-xl bg-white border-2 border-gray-200 shadow-md flex flex-col justify-between p-2 m-1 relative overflow-hidden">
+                <span class="text-xl font-bold leading-none ${card.suit.color}">${card.rank}</span>
+                <span class="text-5xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${card.suit.color}">${card.suit.symbol}</span>
+                <span class="text-xl font-bold leading-none self-end rotate-180 ${card.suit.color}">${card.rank}</span>
+            </div>`;
+        }
+
+        function updateUI(messageText = '') {
+            // Stats Update
+            ui.statWins.textContent = stats.wins;
+            ui.statLosses.textContent = stats.losses;
+            ui.statTies.textContent = stats.ties;
+
+            if (gameState === 'menu') {
+                ui.menuScreen.classList.remove('hidden');
+                ui.gameScreen.classList.add('hidden');
+                ui.gameScreen.classList.remove('flex');
+                return;
+            }
+
+            ui.menuScreen.classList.add('hidden');
+            ui.gameScreen.classList.remove('hidden');
+            ui.gameScreen.classList.add('flex');
+
+            // Render Hands
+            ui.playerHand.innerHTML = playerHand.map(c => generateCardHTML(c)).join('');
+            ui.dealerHand.innerHTML = dealerHand.map((c, idx) => generateCardHTML(c, gameState === 'playing' && idx === 1)).join('');
+
+            // Update Scores
+            ui.playerScoreBadge.textContent = calculateScore(playerHand);
+            if (gameState === 'gameOver') {
+                ui.dealerScoreBadge.classList.remove('hidden');
+                ui.dealerScoreBadge.textContent = calculateScore(dealerHand);
+            } else {
+                ui.dealerScoreBadge.classList.add('hidden');
+            }
+
+            // Controls Visibility
+            if (gameState === 'playing') {
+                ui.playingControls.classList.remove('hidden');
+                ui.gameoverControls.classList.add('hidden');
+                ui.gameMessage.classList.add('hidden');
+                ui.dealerDrawing.classList.add('hidden');
+            } else if (gameState === 'dealerTurn') {
+                ui.playingControls.classList.add('hidden');
+                ui.gameoverControls.classList.add('hidden');
+                ui.gameMessage.classList.add('hidden');
+                ui.dealerDrawing.classList.remove('hidden');
+            } else if (gameState === 'gameOver') {
+                ui.playingControls.classList.add('hidden');
+                ui.gameoverControls.classList.remove('hidden');
+                ui.dealerDrawing.classList.add('hidden');
+                ui.gameMessage.classList.remove('hidden');
+                
+                // Force a reflow to re-trigger the animation if it changed
+                ui.gameMessage.style.animation = 'none';
+                ui.gameMessage.offsetHeight; 
+                ui.gameMessage.style.animation = null;
+                ui.gameMessage.textContent = messageText;
+            }
+        }
+
+        function startNewGame() {
+            deck = createDeck();
+            playerHand = [deck.pop(), deck.pop()];
+            dealerHand = [deck.pop(), deck.pop()];
+            
+            const pScore = calculateScore(playerHand);
+            const dScore = calculateScore(dealerHand);
+
+            if (pScore === 21 || dScore === 21) {
+                gameState = 'gameOver';
+                let msg = '';
+                if (pScore === 21 && dScore === 21) {
+                    msg = "Double Blackjack! It's a Tie.";
+                    stats.ties++;
+                } else if (pScore === 21) {
+                    msg = "Blackjack! You Win!";
+                    stats.wins++;
+                } else {
+                    msg = "Dealer has Blackjack. You Lose.";
+                    stats.losses++;
+                }
+                updateUI(msg);
+            } else {
+                gameState = 'playing';
+                updateUI();
+            }
+        }
+
+        function hit() {
+            if (gameState !== 'playing') return;
+            playerHand.push(deck.pop());
+            
+            if (calculateScore(playerHand) > 21) {
+                gameState = 'gameOver';
+                stats.losses++;
+                updateUI('Bust! You went over 21.');
+            } else {
+                updateUI();
+            }
+        }
+
+        async function stand() {
+            if (gameState !== 'playing') return;
+            gameState = 'dealerTurn';
+            updateUI(); // Show "dealer drawing..."
+            
+            while (calculateScore(dealerHand) < 17) {
+                // Artificial delay for dramatic effect
+                await new Promise(resolve => setTimeout(resolve, 600));
+                dealerHand.push(deck.pop());
+                updateUI(); // Keep UI updated while drawing
+            }
+
+            const pScore = calculateScore(playerHand);
+            const dScore = calculateScore(dealerHand);
+
+            gameState = 'gameOver';
+            let msg = '';
+
+            if (dScore > 21) {
+                msg = 'Dealer busts! You Win!';
+                stats.wins++;
+            } else if (dScore > pScore) {
+                msg = 'Dealer wins with a higher score.';
+                stats.losses++;
+            } else if (pScore > dScore) {
+                msg = 'You win with a higher score!';
+                stats.wins++;
+            } else {
+                msg = "It's a Tie!";
+                stats.ties++;
+            }
+            
+            updateUI(msg);
+        }
+
+        function resetStats() {
+            // Using a custom-looking modal could be done, but keeping it to a safe confirm box or direct reset
+            if (window.confirm("Are you sure you want to reset your scores?")) {
+                stats = { wins: 0, losses: 0, ties: 0 };
+                updateUI();
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('start-btn-menu').addEventListener('click', startNewGame);
+        document.getElementById('start-btn-again').addEventListener('click', startNewGame);
+        document.getElementById('hit-btn').addEventListener('click', hit);
+        document.getElementById('stand-btn').addEventListener('click', stand);
+        document.getElementById('reset-btn').addEventListener('click', resetStats);
+
+        // Initial Render
+        updateUI();
+    </script>
+</body>
+</html>
