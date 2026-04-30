@@ -1,1 +1,0 @@
-User-agent: *Allow: /Ensure Google AdSense crawlers can reach the ads verification fileAllow: /ads.txt
