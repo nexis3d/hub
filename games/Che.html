@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Beauty and the Cheese</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spinY { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+        .spin-y { animation: spinY 0.4s linear infinite; }
+        
+        @keyframes floatHigh {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-40px); }
+        }
+        .animate-float-high { animation: floatHigh 1.8s ease-in-out infinite; }
+    </style>
+</head>
+<body class="m-0 p-0 overflow-hidden select-none bg-black text-white font-mono">
+
+<div id="app" class="w-screen h-screen"></div>
+
+<script>
+// --- DATA: WARDROBE ---
+const HATS = [
+  { id: 'crown', name: 'Golden Crown' },
+  { id: 'tophat', name: 'Gentleman\'s Top Hat' },
+  { id: 'propeller', name: 'Propeller Beanie' },
+  { id: 'wizard', name: 'Wizard Hat' },
+  { id: 'chef', name: 'Master Chef' },
+  { id: 'literal', name: 'The "Hat" Hat' },
+  { id: 'pirate', name: 'Pirate Captain' },
+  { id: 'astronaut', name: 'Space Helmet' },
+  { id: 'none', name: 'No Hat' }
+];
+
+const DRESSES = [
+  { id: 'fuchsia', name: 'Royal Fuchsia', bg: 'bg-fuchsia-500' },
+  { id: 'emerald', name: 'Emerald Forest', bg: 'bg-emerald-500' },
+  { id: 'ocean', name: 'Ocean Wave', bg: 'bg-sky-500' },
+  { id: 'gold', name: 'Golden Sun', bg: 'bg-yellow-400' },
+  { id: 'obsidian', name: 'Midnight Shadow', bg: 'bg-zinc-800' },
+  { id: 'ruby', name: 'Ruby Slipper', bg: 'bg-red-500' },
+  { id: 'literal', name: 'The "Dress" Dress', bg: 'bg-white' },
+  { id: 'pirate', name: 'Pirate Coat', bg: 'bg-red-800' }
+];
+
+// --- DATA: COLORS & STYLES ---
+const KEY_COLORS = {
+  yellow: { bg: 'bg-yellow-400', text: 'text-yellow-400' },
+  red: { bg: 'bg-red-500', text: 'text-red-500' },
+  blue: { bg: 'bg-blue-500', text: 'text-blue-500' },
+  green: { bg: 'bg-green-500', text: 'text-green-500' },
+  purple: { bg: 'bg-purple-500', text: 'text-purple-400' }
+};
+
+// --- DATA: LEVELS ---
+const LEVELS = [
+  { id: 1, name: "1", spawn: { t: 0, x: 10 }, cheese: { t: 0, x: 90 }, platforms: [], ladders: [], doors: [], keys: [] },
+  { id: 2, name: "2", spawn: { t: 0, x: 10 }, cheese: { t: 1, x: 90 }, platforms: [{ t: 1, l: 30, w: 70 }], ladders: [{ t: 0, x: 50 }], doors: [], keys: [] },
+  { id: 3, name: "3", spawn: { t: 0, x: 10 }, cheese: { t: 2, x: 10 }, platforms: [{ t: 1, l: 10, w: 90 }, { t: 2, l: 0, w: 80 }], ladders: [{ t: 0, x: 80 }, { t: 1, x: 20 }], doors: [], keys: [] },
+  { id: 4, name: "4", spawn: { t: 0, x: 10 }, cheese: { t: 0, x: 90 }, platforms: [], ladders: [], doors: [{ id: 'd1', t: 0, x: 60, color: 'yellow' }], keys: [{ id: 'k1', t: 0, x: 40, color: 'yellow' }] },
+  { id: 5, name: "5", spawn: { t: 0, x: 10 }, cheese: { t: 2, x: 90 }, platforms: [{ t: 1, l: 0, w: 70 }, { t: 2, l: 30, w: 70 }], ladders: [{ t: 0, x: 50 }, { t: 1, x: 40 }], doors: [{ id: 'd1', t: 2, x: 70, color: 'yellow' }], keys: [{ id: 'k1', t: 1, x: 10, color: 'yellow' }] },
+  { id: 6, name: "6", spawn: { t: 0, x: 10 }, cheese: { t: 2, x: 90 }, platforms: [{ t: 1, l: 0, w: 80 }, { t: 2, l: 20, w: 80 }], ladders: [{ t: 0, x: 70 }, { t: 1, x: 30 }], doors: [{ id: 'd1', t: 1, x: 50, color: 'yellow' }], keys: [{ id: 'k1', t: 0, x: 90, color: 'yellow' }] },
+  { id: 7, name: "7", spawn: { t: 0, x: 10 }, cheese: { t: 3, x: 90 }, platforms: [{ t: 1, l: 20, w: 80 }, { t: 2, l: 0, w: 80 }, { t: 3, l: 20, w: 80 }], ladders: [{ t: 0, x: 80 }, { t: 1, x: 20 }, { t: 2, x: 80 }], doors: [{ id: 'd1', t: 2, x: 60, color: 'yellow' }], keys: [{ id: 'k1', t: 1, x: 90, color: 'yellow' }] },
+  { id: 8, name: "8", spawn: { t: 0, x: 50 }, cheese: { t: 2, x: 90 }, platforms: [{ t: 1, l: 0, w: 100 }, { t: 2, l: 0, w: 100 }], ladders: [{ t: 0, x: 80 }, { t: 1, x: 20 }], doors: [{ id: 'd1', t: 0, x: 30, color: 'red' }, { id: 'd2', t: 1, x: 60, color: 'blue' }, { id: 'd3', t: 2, x: 50, color: 'yellow' }], keys: [{ id: 'k1', t: 0, x: 90, color: 'red' }, { id: 'k2', t: 0, x: 10, color: 'blue' }, { id: 'k3', t: 1, x: 10, color: 'yellow' }] },
+  { id: 9, name: "9", spawn: { t: 0, x: 10 }, cheese: { t: 0, x: 90 }, platforms: [{ t: 1, l: 20, w: 60 }, { t: 2, l: 20, w: 60 }, { t: 3, l: 20, w: 60 }], ladders: [{ t: 0, x: 30 }, { t: 1, x: 70 }, { t: 2, x: 30 }], doors: [{ id: 'd1', t: 0, x: 70, color: 'green' }], keys: [{ id: 'k1', t: 3, x: 70, color: 'green' }] },
+  { id: 10, name: "10", spawn: { t: 0, x: 50 }, cheese: { t: 4, x: 50 }, platforms: [{ t: 1, l: 20, w: 60 }, { t: 2, l: 0, w: 40 }, { t: 2, l: 60, w: 40 }, { t: 3, l: 20, w: 60 }, { t: 4, l: 40, w: 20 }], ladders: [{ t: 0, x: 30 }, { t: 0, x: 70 }, { t: 1, x: 30 }, { t: 1, x: 70 }, { t: 2, x: 30 }, { t: 2, x: 70 }, { t: 3, x: 50 }], doors: [{ id: 'd1', t: 1, x: 50, color: 'red' }, { id: 'd2', t: 3, x: 50, color: 'blue' }], keys: [{ id: 'k1', t: 2, x: 10, color: 'red' }, { id: 'k2', t: 2, x: 90, color: 'blue' }] },
+  { id: 11, name: "11", spawn: { t: 0, x: 10 }, cheese: { t: 2, x: 10 }, platforms: [{ t: 1, l: 10, w: 80 }, { t: 2, l: 0, w: 35 }, { t: 2, l: 65, w: 35 }], ladders: [{ t: 0, x: 70 }, { t: 1, x: 85 }, { t: 1, x: 25 }], doors: [{ id: 'd1', t: 1, x: 50, color: 'yellow' }, { id: 'd2', t: 2, x: 18, color: 'purple' }], keys: [{ id: 'k1', t: 0, x: 40, color: 'yellow' }, { id: 'k2', t: 2, x: 85, color: 'purple' }] },
+  { id: 12, name: "12", spawn: { t: 0, x: 50 }, cheese: { t: 3, x: 20 }, platforms: [{ t: 1, l: 0, w: 100 }, { t: 2, l: 0, w: 100 }, { t: 3, l: 0, w: 100 }], ladders: [{ t: 0, x: 80 }, { t: 1, x: 20 }, { t: 2, x: 80 }], doors: [{ id: 'd1', t: 0, x: 30, color: 'red' }, { id: 'd2', t: 1, x: 50, color: 'green' }, { id: 'd3', t: 2, x: 50, color: 'blue' }, { id: 'd4', t: 3, x: 50, color: 'yellow' }], keys: [{ id: 'k1', t: 0, x: 70, color: 'green' }, { id: 'k2', t: 1, x: 10, color: 'red' }, { id: 'k3', t: 0, x: 10, color: 'blue' }, { id: 'k4', t: 2, x: 90, color: 'yellow' }] },
+  { id: 13, name: "13", spawn: { t: 0, x: 50 }, cheese: { t: 4, x: 20 }, platforms: [{ t: 1, l: 0, w: 100 }, { t: 2, l: 0, w: 100 }, { t: 3, l: 0, w: 100 }, { t: 4, l: 0, w: 100 }], ladders: [{ t: 0, x: 20 }, { t: 1, x: 80 }, { t: 2, x: 20 }, { t: 3, x: 80 }], doors: [{ id: 'd1', t: 0, x: 30, color: 'red' }, { id: 'd2', t: 1, x: 70, color: 'blue' }, { id: 'd3', t: 2, x: 30, color: 'green' }, { id: 'd4', t: 3, x: 70, color: 'purple' }, { id: 'd5', t: 4, x: 50, color: 'yellow' }], keys: [{ id: 'k1', t: 0, x: 90, color: 'red' }, { id: 'k2', t: 0, x: 10, color: 'blue' }, { id: 'k3', t: 1, x: 90, color: 'green' }, { id: 'k4', t: 2, x: 10, color: 'purple' }, { id: 'k5', t: 3, x: 90, color: 'yellow' }] },
+  { id: 14, name: "14", spawn: { t: 0, x: 10 }, cheese: { t: 2, x: 10 }, platforms: [{ t: 1, l: 0, w: 100 }, { t: 2, l: 0, w: 100 }], ladders: [{ t: 0, x: 50 }, { t: 1, x: 90 }], doors: [{ id: 'd1', t: 0, x: 30, color: 'red' }, { id: 'd2', t: 0, x: 70, color: 'purple' }, { id: 'd3', t: 1, x: 30, color: 'green' }, { id: 'd4', t: 1, x: 70, color: 'blue' }, { id: 'd5', t: 2, x: 50, color: 'yellow' }], keys: [{ id: 'k1', t: 0, x: 20, color: 'red' }, { id: 'k2', t: 1, x: 55, color: 'purple' }, { id: 'k3', t: 0, x: 90, color: 'green' }, { id: 'k4', t: 1, x: 10, color: 'blue' }, { id: 'k5', t: 2, x: 90, color: 'yellow' }] },
+  { id: 15, name: "15", spawn: { t: 3, x: 90 }, cheese: { t: 1, x: 10 }, platforms: [{ t: 1, l: 0, w: 40 }, { t: 1, l: 60, w: 40 }, { t: 2, l: 0, w: 100 }, { t: 3, l: 0, w: 100 }], ladders: [{ t: 2, x: 20 }, { t: 1, x: 80 }, { t: 0, x: 70 }, { t: 0, x: 30 }], doors: [{ id: 'd1', t: 3, x: 50, color: 'red' }, { id: 'd2', t: 2, x: 50, color: 'blue' }, { id: 'd3', t: 1, x: 75, color: 'green' }, { id: 'd4', t: 0, x: 50, color: 'yellow' }], keys: [{ id: 'k1', t: 3, x: 70, color: 'red' }, { id: 'k2', t: 2, x: 30, color: 'blue' }, { id: 'k3', t: 1, x: 90, color: 'green' }, { id: 'k4', t: 0, x: 90, color: 'yellow' }] }
+];
+
+// --- APP STATE ---
+let state = {
+    appState: 'menu', // 'menu', 'dressup', 'game', 'win'
+    dressUpTab: 'hats',
+    hatIndex: 0,
+    dressIndex: 0,
+    mapIndex: 0,
+    charPos: { t: 0, x: 10 },
+    facing: 'forward',
+    isMoving: false,
+    pickedKeys: [],
+    inventoryKeys: [],
+    hasCheese: false,
+    unlockedDoors: []
+};
+
+// --- HELPER FUNCTIONS ---
+const getFloorBottom = (tier) => tier === 0 ? 10 : 10 + tier * 18 + 4;
+
+function loadLevel(index) {
+    const map = LEVELS[index];
+    state.mapIndex = index;
+    state.charPos = { t: map.spawn.t, x: map.spawn.x };
+    state.facing = 'forward';
+    state.pickedKeys = [];
+    state.inventoryKeys = [];
+    state.hasCheese = false;
+    state.unlockedDoors = [];
+    state.isMoving = false;
+}
+
+// --- RENDERERS ---
+
+function renderHat(hatId, facing) {
+  if (hatId === 'none') return '';
+  const scaleX = facing === 'left' ? -1 : 1;
+  const antiFlip = `transform: translateX(-50%) scaleX(${scaleX}); transform-origin: center;`;
+  const baseClasses = "absolute left-1/2 z-30 flex flex-col items-center pointer-events-none";
+
+  if (hatId === 'crown') return `
+    <div class="${baseClasses} -top-4 md:-top-5 w-8 h-4 md:w-10 md:h-5 bg-yellow-400 border-x-[4px] border-b-[4px] border-black flex justify-between" style="${antiFlip}">
+      <div class="w-3 h-3 bg-yellow-400 border-[4px] border-b-0 border-black absolute -top-3 -left-[4px]"></div>
+      <div class="w-3 h-3 bg-yellow-400 border-[4px] border-b-0 border-black absolute -top-3 left-[calc(50%-6px)]"></div>
+      <div class="w-3 h-3 bg-yellow-400 border-[4px] border-b-0 border-black absolute -top-3 -right-[4px]"></div>
+    </div>`;
+
+  if (hatId === 'tophat') return `
+    <div class="${baseClasses} -top-20 md:-top-24" style="${antiFlip}">
+      <div class="w-8 h-16 md:w-10 md:h-20 bg-zinc-800 border-[4px] border-black border-b-0"></div>
+      <div class="w-8 h-3 md:w-10 md:h-4 bg-red-600 border-x-[4px] border-black"></div>
+      <div class="w-14 h-3 md:w-16 md:h-4 bg-zinc-800 border-[4px] border-black"></div>
+    </div>`;
+
+  if (hatId === 'propeller') return `
+    <div class="${baseClasses} -top-8 md:-top-10" style="${antiFlip}">
+      <div class="w-12 h-2 md:w-16 md:h-3 bg-gray-300 border-[2px] border-black spin-y flex items-center justify-center z-20">
+         <div class="absolute w-2 h-2 bg-red-600 border-[1px] border-black"></div>
+      </div>
+      <div class="w-1 h-3 md:h-4 bg-gray-400 border-x-[2px] border-black z-10"></div>
+      <div class="w-8 h-4 md:w-10 md:h-5 bg-blue-500 border-[4px] border-black flex overflow-hidden">
+         <div class="w-1/2 h-full bg-red-500"></div>
+         <div class="w-1/2 h-full bg-yellow-400"></div>
+      </div>
+    </div>`;
+
+  if (hatId === 'wizard') return `
+    <div class="${baseClasses} -top-12 md:-top-14" style="${antiFlip}">
+      <div class="w-2 h-2 md:w-3 md:h-3 bg-indigo-600 border-[4px] border-black border-b-0"></div>
+      <div class="w-4 h-3 md:w-6 md:h-4 bg-indigo-600 border-x-[4px] border-black flex items-center justify-center">
+         <div class="w-1 h-1 bg-yellow-300"></div>
+      </div>
+      <div class="w-6 h-4 md:w-8 md:h-5 bg-indigo-600 border-x-[4px] border-black flex justify-between px-1">
+         <div class="w-1 h-1 md:w-2 md:h-2 bg-yellow-300 self-end"></div>
+         <div class="w-1 h-1 md:w-2 md:h-2 bg-yellow-300"></div>
+      </div>
+      <div class="w-10 h-2 md:w-12 md:h-3 bg-indigo-700 border-[4px] border-black"></div>
+    </div>`;
+
+  if (hatId === 'chef') return `
+    <div class="${baseClasses} -top-[90px] md:-top-[110px]" style="${antiFlip}">
+      <div class="relative w-20 h-12 flex justify-center items-end mb-[-4px] z-10">
+          <div class="absolute left-0 bottom-0 w-8 h-8 md:w-10 md:h-10 bg-white border-[4px] border-black"></div>
+          <div class="absolute left-4 bottom-2 w-10 h-10 md:w-12 md:h-12 bg-white border-[4px] border-black"></div>
+          <div class="absolute right-4 bottom-2 w-10 h-10 md:w-12 md:h-12 bg-white border-[4px] border-black"></div>
+          <div class="absolute right-0 bottom-0 w-8 h-8 md:w-10 md:h-10 bg-white border-[4px] border-black"></div>
+          <div class="absolute bottom-[4px] w-16 h-6 bg-white z-20"></div>
+      </div>
+      <div class="w-12 h-10 md:w-14 md:h-12 bg-white border-x-[4px] border-black z-0 flex flex-col justify-evenly">
+          <div class="w-full h-1 bg-gray-200"></div>
+          <div class="w-full h-1 bg-gray-200"></div>
+      </div>
+      <div class="w-14 h-3 md:w-16 md:h-4 bg-white border-[4px] border-black border-t-0"></div>
+    </div>`;
+
+  if (hatId === 'literal') return `
+    <div class="${baseClasses} -top-8 md:-top-10 bg-white border-[4px] border-black text-black font-bold text-[10px] md:text-[12px] leading-none px-1 py-0.5" style="${antiFlip}">
+      HAT
+    </div>`;
+
+  if (hatId === 'pirate') return `
+    <div class="${baseClasses} -top-8 md:-top-10" style="${antiFlip}">
+      <div class="w-12 h-4 md:w-16 md:h-5 bg-zinc-900 border-[4px] border-black flex justify-center items-center">
+         <div class="w-2 h-2 bg-yellow-400"></div>
+      </div>
+      <div class="w-16 h-2 md:w-20 md:h-3 bg-zinc-900 border-[4px] border-black"></div>
+    </div>`;
+
+  if (hatId === 'astronaut') return `
+    <div class="absolute top-[-2px] md:top-[0px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 bg-cyan-200/40 border-[4px] border-gray-300 w-24 h-24 md:w-28 md:h-28 flex items-start justify-end p-2 pointer-events-none" style="${antiFlip}">
+       <div class="w-4 h-4 md:w-5 md:h-5 bg-white/60"></div>
+    </div>`;
+
+  return '';
+}
+
+function renderPixelCharacter(x, tier, facing, dressColor, hatId, customScale, dressId, hasCheese) {
+  const isForward = facing === 'forward';
+  const scaleX = facing === 'left' ? -1 : 1;
+  const antiFlip = `transform: scaleX(${scaleX}); transform-origin: center;`;
+
+  let innerHTML = '';
+
+  if (isForward) {
+    innerHTML = `
+      <div class="relative w-10 h-10 md:w-12 md:h-12 z-20 mt-4 md:mt-5">
+        ${renderHat(hatId, facing)}
+        <div class="absolute -left-5 -top-2 w-8 h-8 md:w-10 md:h-10 bg-slate-300 border-[4px] border-black z-10 flex items-center justify-center">
+           <div class="w-3 h-3 md:w-4 md:h-4 bg-pink-400"></div>
+        </div>
+        <div class="absolute -right-5 -top-2 w-8 h-8 md:w-10 md:h-10 bg-slate-300 border-[4px] border-black z-10 flex items-center justify-center">
+           <div class="w-3 h-3 md:w-4 md:h-4 bg-pink-400"></div>
+        </div>
+        <div class="absolute inset-0 bg-slate-200 border-[4px] border-black z-20 shadow-[inset_-2px_-2px_0_rgba(0,0,0,0.1)] flex flex-col items-center">
+          <div class="flex w-full justify-around mt-2 md:mt-3 px-1">
+             <div class="w-2 h-2 bg-black"></div>
+             <div class="w-2 h-2 bg-black"></div>
+          </div>
+          <div class="w-2 h-2 md:w-3 md:h-3 bg-pink-500 mt-1"></div>
+          <div class="absolute top-4 -left-4 w-5 h-[2px] bg-black rotate-12"></div>
+          <div class="absolute top-6 -left-4 w-5 h-[2px] bg-black -rotate-12"></div>
+          <div class="absolute top-4 -right-4 w-5 h-[2px] bg-black -rotate-12"></div>
+          <div class="absolute top-6 -right-4 w-5 h-[2px] bg-black rotate-12"></div>
+        </div>
+      </div>
+    `;
+  } else {
+    innerHTML = `
+      <div class="relative w-12 h-10 md:w-14 md:h-12 z-20 mt-4 md:mt-5 translate-x-1 md:translate-x-2">
+        ${renderHat(hatId, facing)}
+        <div class="absolute -left-2 -top-2 md:-left-3 md:-top-3 w-8 h-8 md:w-10 md:h-10 bg-slate-300 border-[4px] border-black z-10 flex items-center justify-center">
+           <div class="w-3 h-3 md:w-4 md:h-4 bg-pink-400"></div>
+        </div>
+        <div class="absolute inset-0 bg-slate-200 border-[4px] border-black z-20 shadow-[inset_-2px_-2px_0_rgba(0,0,0,0.1)]">
+          <div class="absolute top-2 right-2 md:top-2 md:right-3 w-2 h-3 md:w-3 md:h-4 bg-black"></div>
+          <div class="absolute top-4 -right-[4px] md:top-5 md:-right-[4px] w-2 h-2 md:w-3 md:h-3 bg-pink-500 z-30"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  let dressDecor = '';
+  if (dressId === 'literal') dressDecor = `<span class="text-[6px] md:text-[8px] font-black text-black z-20">DRESS</span>`;
+  if (dressId === 'pirate') dressDecor = `<div class="absolute top-0 bottom-0 w-2 bg-yellow-400 border-x-[2px] border-black z-20 left-1"></div>`;
+
+  let carriedCheese = '';
+  if (hasCheese) {
+    carriedCheese = `
+      <div class="absolute top-2 -right-4 md:-right-5 w-8 h-6 md:w-10 md:h-8 bg-yellow-300 border-[4px] border-black z-50 flex items-center justify-center">
+         <div class="w-2 h-2 bg-yellow-500"></div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="absolute z-40 transition-all duration-700 ease-in-out ${customScale || ''}" style="bottom: ${getFloorBottom(tier)}%; left: ${x}%; transform: translateX(-50%); transform-origin: bottom center;">
+      <div class="w-16 h-24 md:w-20 md:h-28 flex flex-col items-center justify-end relative" style="transform: scaleX(${scaleX});">
+        ${innerHTML}
+        <div class="w-8 h-6 md:w-10 md:h-8 ${dressColor} border-x-[4px] border-t-[4px] border-black -mt-1 z-10 transition-colors flex items-center justify-center relative overflow-hidden" style="${antiFlip}">
+          ${dressDecor}
+        </div>
+        <div class="w-14 h-6 md:w-16 md:h-8 ${dressColor} border-[4px] border-black -mt-[4px] z-10 shadow-[inset_-4px_-4px_0_rgba(0,0,0,0.2)] transition-colors flex justify-center" style="${antiFlip}">
+          ${carriedCheese}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// --- RENDERING CORE ---
+
+function render() {
+    const appContainer = document.getElementById('app');
+    const activeHat = HATS[state.hatIndex];
+    const activeDress = DRESSES[state.dressIndex];
+    const map = LEVELS[state.mapIndex];
+
+    let html = '';
+
+    if (state.appState === 'menu') {
+        html = `
+          <div class="w-full h-full flex flex-col items-center justify-center bg-purple-900 text-white relative" style="background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.1)); background-size: 40px 40px;">
+            <h1 class="text-5xl md:text-7xl font-bold mb-8 text-center px-4 tracking-widest text-yellow-300 drop-shadow-[0_6px_0_rgba(0,0,0,1)] uppercase leading-tight z-10">
+              The Beauty<br />and the Cheese
+            </h1>
+            <div class="relative w-32 h-40 mb-12 z-10">
+               ${renderPixelCharacter(50, 0, 'forward', activeDress.bg, activeHat.id, '', activeDress.id, false)}
+            </div>
+            <div class="flex flex-col gap-4 z-10">
+              <button onclick="startGame()" class="px-8 py-4 bg-fuchsia-500 text-white text-2xl font-bold border-[6px] border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:bg-fuchsia-400 hover:-translate-y-1 hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-y-2 active:shadow-none transition-all uppercase">
+                Start Game
+              </button>
+              <button onclick="setAppState('dressup')" class="px-8 py-4 bg-sky-500 text-white text-2xl font-bold border-[6px] border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:bg-sky-400 hover:-translate-y-1 hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-y-2 active:shadow-none transition-all uppercase">
+                Dressing Room
+              </button>
+            </div>
+          </div>
+        `;
+    } 
+    else if (state.appState === 'dressup') {
+        const tabsHtml = `
+          <div class="flex w-full mb-4 shrink-0">
+            <button onclick="setDressUpTab('hats')" class="flex-1 py-3 text-xl font-bold uppercase border-[4px] border-black border-b-0 ${state.dressUpTab === 'hats' ? 'bg-zinc-800 text-white' : 'bg-gray-400 text-black shadow-[inset_0_-6px_0_rgba(0,0,0,0.2)] mt-2'}">Hats</button>
+            <button onclick="setDressUpTab('dresses')" class="flex-1 py-3 text-xl font-bold uppercase border-[4px] border-black border-b-0 border-l-0 ${state.dressUpTab === 'dresses' ? 'bg-zinc-800 text-white' : 'bg-gray-400 text-black shadow-[inset_0_-6px_0_rgba(0,0,0,0.2)] mt-2'}">Dresses</button>
+          </div>
+        `;
+
+        let gridHtml = '';
+        if (state.dressUpTab === 'hats') {
+            gridHtml = HATS.map((hat, idx) => `
+                <button onclick="setHatIndex(${idx})" class="p-3 border-[4px] border-black font-bold text-sm md:text-base uppercase transition-all ${state.hatIndex === idx ? 'bg-yellow-400 text-black shadow-[inset_0_0_0_4px_rgba(255,255,255,0.5)] scale-95' : 'bg-gray-300 text-black hover:bg-gray-200 shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none'}">${hat.name}</button>
+            `).join('');
+        } else {
+            gridHtml = DRESSES.map((dress, idx) => `
+                <button onclick="setDressIndex(${idx})" class="p-3 border-[4px] border-black font-bold text-sm md:text-base uppercase flex items-center justify-center gap-2 transition-all ${state.dressIndex === idx ? 'bg-yellow-400 text-black shadow-[inset_0_0_0_4px_rgba(255,255,255,0.5)] scale-95' : 'bg-gray-300 text-black hover:bg-gray-200 shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none'}">
+                    <div class="w-4 h-4 shrink-0 border-[2px] border-black ${dress.bg}"></div>
+                    <span class="truncate">${dress.name}</span>
+                </button>
+            `).join('');
+        }
+
+        html = `
+          <div class="w-full h-full flex flex-col items-center bg-pink-300 text-white relative" style="background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 40px, transparent 40px, transparent 80px);">
+            <h1 class="text-4xl md:text-5xl font-bold mt-4 mb-2 tracking-widest text-white drop-shadow-[0_4px_0_rgba(0,0,0,1)] uppercase z-10">Dressing Room</h1>
+            <div class="relative flex-none h-40 md:h-56 w-full flex items-center justify-center z-10 mt-2 mb-2">
+               <div class="relative w-40 h-40 md:w-56 md:h-56 flex justify-center items-end bg-pink-400/50 border-[6px] border-black pb-4 md:pb-6 shadow-[inset_0_-8px_0_rgba(0,0,0,0.2)]">
+                  ${renderPixelCharacter(50, 0, 'forward', activeDress.bg, activeHat.id, 'scale-[1.2] md:scale-[1.5]', activeDress.id, false)}
+               </div>
+            </div>
+            <div class="flex-1 w-full max-w-4xl bg-black border-t-[8px] border-black p-4 z-10 shadow-[0_-8px_0_rgba(0,0,0,0.2)] flex flex-col min-h-0">
+              ${tabsHtml}
+              <div class="flex-1 bg-zinc-800 border-[4px] border-black p-4 overflow-y-auto mb-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+                ${gridHtml}
+              </div>
+              <div class="flex justify-center shrink-0">
+                <button onclick="setAppState('menu')" class="px-8 py-3 w-full md:w-auto bg-red-500 text-white text-xl font-bold border-[4px] border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-red-400 hover:-translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-y-2 active:shadow-none uppercase">Save & Return</button>
+              </div>
+            </div>
+          </div>
+        `;
+    }
+    else if (state.appState === 'win') {
+        html = `
+          <div class="w-full h-full flex flex-col items-center justify-center bg-yellow-400 text-black relative" style="background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3)); background-size: 40px 40px;">
+            <h1 class="text-5xl md:text-7xl font-bold mb-4 text-center px-4 tracking-widest drop-shadow-[0_4px_0_rgba(255,255,255,1)] uppercase leading-tight z-10">YOU WON!</h1>
+            <p class="text-xl font-bold mb-8 uppercase z-10 bg-black text-white px-4 py-2 border-[4px] border-black">The Cheese is Yours.</p>
+            <div class="relative w-32 h-40 mb-12 z-10">
+               ${renderPixelCharacter(50, 0, 'forward', activeDress.bg, activeHat.id, '', activeDress.id, true)}
+            </div>
+            <button onclick="startGame(0)" class="z-10 px-8 py-4 bg-fuchsia-500 text-white text-2xl font-bold border-[6px] border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:bg-fuchsia-400 hover:-translate-y-1 hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-y-2 active:shadow-none transition-all uppercase">Play Again</button>
+          </div>
+        `;
+    }
+    else if (state.appState === 'game') {
+        
+        let inventoryHtml = state.inventoryKeys.map((c) => 
+            `<div class="w-4 h-4 md:w-6 md:h-6 ${KEY_COLORS[c].bg} border-[2px] border-black"></div>`
+        ).join('');
+
+        if (state.hasCheese) {
+            inventoryHtml += `<div class="w-4 h-4 md:w-6 md:h-6 bg-yellow-300 border-[2px] border-black"></div>`;
+        }
+
+        const uiHtml = `
+            <div class="absolute top-4 inset-x-4 sm:top-6 sm:inset-x-6 z-50 flex justify-between pointer-events-none">
+               <div class="bg-black/50 p-2 md:p-3 border-[4px] border-black flex items-center gap-4">
+                  <span class="text-white font-bold text-sm md:text-lg uppercase">Level ${map.name}</span>
+                  <div class="flex gap-2">${inventoryHtml}</div>
+               </div>
+              <button onclick="event.stopPropagation(); setAppState('menu')" class="pointer-events-auto flex flex-col gap-[4px] md:gap-[6px] p-2 md:p-3 bg-red-500 border-[4px] border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-red-400 active:translate-y-1 active:shadow-none transition-all">
+                <div class="w-6 h-1 md:w-8 md:h-1.5 bg-white border border-black"></div>
+                <div class="w-6 h-1 md:w-8 md:h-1.5 bg-white border border-black"></div>
+                <div class="w-6 h-1 md:w-8 md:h-1.5 bg-white border border-black"></div>
+              </button>
+            </div>
+        `;
+
+        const exitHtml = `
+            <div class="absolute w-16 h-20 md:w-20 md:h-24 bg-amber-900 border-[6px] border-black z-0 transition-colors ${state.hasCheese ? 'bg-amber-600 shadow-[0_0_20px_10px_rgba(251,191,36,0.5)]' : ''}" style="left: ${map.spawn.x}%; bottom: ${getFloorBottom(map.spawn.t)}%; transform: translateX(-50%);">
+               <div class="absolute bottom-0 left-[4px] md:left-[6px] w-10 h-16 md:w-14 md:h-20 bg-black"></div>
+               <div class="absolute top-2 left-1/2 -translate-x-1/2 text-[8px] font-bold px-1 border-2 border-black ${state.hasCheese ? 'bg-green-400 text-black' : 'bg-red-500 text-white'}">EXIT</div>
+            </div>
+        `;
+
+        const keysHtml = map.keys.filter(k => !state.pickedKeys.includes(k.id)).map(k => `
+            <div class="absolute z-20 pointer-events-none" style="left: ${k.x}%; bottom: ${getFloorBottom(k.t)}%; transform: translateX(-50%);">
+              <div class="animate-float-high flex items-center">
+                <div class="w-8 h-8 md:w-10 md:h-10 border-[4px] border-black ${KEY_COLORS[k.color].bg} flex items-center justify-center">
+                   <div class="w-2 h-2 bg-black"></div>
+                </div>
+                <div class="h-3 md:h-4 w-10 md:w-14 ${KEY_COLORS[k.color].bg} border-y-[4px] border-r-[4px] border-black relative">
+                   <div class="absolute top-full right-1 w-2 h-3 md:w-3 md:h-4 ${KEY_COLORS[k.color].bg} border-x-[4px] border-b-[4px] border-black"></div>
+                   <div class="absolute top-full right-4 w-2 h-3 md:w-3 md:h-4 ${KEY_COLORS[k.color].bg} border-x-[4px] border-b-[4px] border-black"></div>
+                </div>
+              </div>
+            </div>
+        `).join('');
+
+        const cheeseHtml = (map.cheese && !state.hasCheese) ? `
+            <div class="absolute z-20 pointer-events-none" style="left: ${map.cheese.x}%; bottom: ${getFloorBottom(map.cheese.t)}%; transform: translateX(-50%);">
+              <div class="animate-float-high w-16 h-12 md:w-24 md:h-16 bg-yellow-300 border-[4px] border-black flex justify-around items-center">
+                 <div class="w-2 h-2 md:w-3 md:h-3 bg-yellow-500"></div>
+                 <div class="w-3 h-3 md:w-4 md:h-4 bg-yellow-500"></div>
+                 <div class="w-2 h-2 md:w-3 md:h-3 bg-yellow-500"></div>
+              </div>
+            </div>
+        ` : '';
+
+        const doorsHtml = map.doors.filter(d => !state.unlockedDoors.includes(d.id)).map(d => `
+            <div onclick="handleDoorClick('${d.id}', '${d.color}', ${d.x}, ${d.t}, event)" class="absolute w-12 h-20 md:w-16 md:h-24 bg-stone-700 border-[6px] border-black z-30 flex flex-col items-center justify-center ${state.inventoryKeys.includes(d.color) ? 'cursor-pointer hover:bg-stone-500 hover:scale-105 transition-all' : 'cursor-not-allowed'}" style="left: ${d.x}%; bottom: ${getFloorBottom(d.t)}%; transform: translateX(-50%);">
+               <div class="w-4 h-6 md:w-6 md:h-8 bg-black flex justify-center pt-1">
+                  <div class="w-2 h-2 ${KEY_COLORS[d.color].bg}"></div>
+               </div>
+               ${state.inventoryKeys.includes(d.color) ? `
+                  <div class="absolute -top-10 text-[10px] md:text-xs font-bold bg-black ${KEY_COLORS[d.color].text} px-1 border-2 border-black animate-pulse whitespace-nowrap pointer-events-none">
+                     CLICK TO UNLOCK
+                  </div>
+               ` : ''}
+            </div>
+        `).join('');
+
+        const platformsHtml = map.platforms.map(p => `
+            <div class="absolute bg-amber-700 border-y-[4px] border-black z-10" style="left: ${p.l}%; width: ${p.w}%; bottom: ${getFloorBottom(p.t) - 4}%; height: 4%; background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 4px, transparent 4px, transparent 16px);"></div>
+        `).join('');
+
+        const laddersHtml = map.ladders.map(l => `
+            <div onclick="handleLadderClick(${l.x}, ${l.t}, event)" class="absolute border-x-[6px] md:border-x-[8px] border-amber-900 bg-amber-800/40 z-20 hover:bg-amber-700/60 cursor-pointer transition-colors w-16 md:w-20" style="left: ${l.x}%; bottom: ${getFloorBottom(l.t)}%; height: ${getFloorBottom(l.t + 1) - getFloorBottom(l.t)}%; transform: translateX(-50%); background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, #78350f 20px, #78350f 28px);"></div>
+        `).join('');
+
+        html = `
+          <div onclick="handleRoomClick(event)" class="relative w-full h-full cursor-pointer transition-colors duration-1000 bg-yellow-200" style="background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 40px, transparent 40px, transparent 80px);">
+            ${uiHtml}
+            ${renderPixelCharacter(state.charPos.x, state.charPos.t, state.facing, activeDress.bg, activeHat.id, '', activeDress.id, state.hasCheese)}
+            ${exitHtml}
+            ${keysHtml}
+            ${cheeseHtml}
+            ${doorsHtml}
+            ${platformsHtml}
+            ${laddersHtml}
+            <div class="absolute inset-x-0 bottom-0 h-[10%] bg-amber-700 border-t-[4px] border-black pointer-events-none z-10" style="background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 4px, transparent 4px, transparent 16px);"></div>
+          </div>
+        `;
+    }
+
+    appContainer.innerHTML = html;
+}
+
+// --- CONTROLLERS & ACTIONS ---
+
+window.setAppState = function(newState) {
+    state.appState = newState;
+    if(newState === 'game' && state.charPos.x === 10 && state.charPos.t === 0 && !state.isMoving) {
+        // Just entering game
+    }
+    render();
+};
+
+window.startGame = function(mapIdx = 0) {
+    loadLevel(mapIdx);
+    state.appState = 'game';
+    render();
+};
+
+window.setDressUpTab = function(tab) {
+    state.dressUpTab = tab;
+    render();
+};
+
+window.setHatIndex = function(idx) {
+    state.hatIndex = idx;
+    render();
+};
+
+window.setDressIndex = function(idx) {
+    state.dressIndex = idx;
+    render();
+};
+
+window.handleRoomClick = function(e) {
+    const percentX = (e.clientX / window.innerWidth) * 100;
+    processMove(percentX, state.charPos.t);
+};
+
+window.handleLadderClick = function(ladderX, ladderT, e) {
+    e.stopPropagation();
+    if (state.charPos.t === ladderT) processMove(ladderX, ladderT + 1);
+    else if (state.charPos.t === ladderT + 1) processMove(ladderX, ladderT);
+};
+
+window.handleDoorClick = async function(doorId, doorColor, doorX, doorT, e) {
+    e.stopPropagation();
+    if (state.isMoving) return;
+    if (!state.inventoryKeys.includes(doorColor) || state.charPos.t !== doorT) return;
+
+    const dist = Math.abs(state.charPos.x - doorX);
+    if (dist <= 12) {
+       unlockDoor(doorId, doorColor);
+    } else {
+       const targetX = state.charPos.x < doorX ? doorX - 8 : doorX + 8;
+       await processMove(targetX, state.charPos.t);
+       unlockDoor(doorId, doorColor);
+    }
+};
+
+function unlockDoor(doorId, color) {
+    state.unlockedDoors.push(doorId);
+    const idx = state.inventoryKeys.indexOf(color);
+    if (idx !== -1) {
+        state.inventoryKeys.splice(idx, 1);
+    }
+    render();
+}
+
+window.processMove = async function(targetX, targetT) {
+    if (state.isMoving || state.appState !== 'game') return;
+    state.isMoving = true;
+    
+    let currentX = state.charPos.x;
+    let currentT = state.charPos.t;
+    const map = LEVELS[state.mapIndex];
+
+    let minX = 4;
+    let maxX = 96; 
+    
+    if (currentT > 0) {
+      const plat = map.platforms.find(p => currentT === p.t && currentX >= p.l - 2 && currentX <= p.l + p.w + 2);
+      if (plat) {
+        minX = Math.max(minX, plat.l + 4);
+        maxX = Math.min(maxX, plat.l + plat.w - 4);
+      }
+    }
+    
+    let boundedTargetX = Math.max(minX, Math.min(maxX, targetX));
+    let finalX = boundedTargetX;
+
+    if (currentX !== boundedTargetX) {
+      const activeDoors = map.doors.filter(d => !state.unlockedDoors.includes(d.id) && d.t === currentT);
+      let hitDoor = null;
+
+      for (let d of activeDoors) {
+        if ((currentX <= d.x && boundedTargetX >= d.x) || (currentX >= d.x && boundedTargetX <= d.x)) {
+          hitDoor = d;
+          break; 
+        }
+      }
+
+      if (hitDoor) {
+        finalX = currentX < hitDoor.x ? hitDoor.x - 7 : hitDoor.x + 7;
+        targetT = currentT; 
+      }
+
+      state.facing = finalX > currentX ? 'right' : 'left';
+      state.charPos = { t: currentT, x: finalX };
+      render();
+      
+      const checkPickup = (x1, x2, itemX) => Math.abs(x2 - itemX) <= 15 || (x1 <= itemX && x2 >= itemX) || (x1 >= itemX && x2 <= itemX);
+
+      setTimeout(() => {
+        let changed = false;
+        
+        map.keys.forEach(k => {
+           if (!state.pickedKeys.includes(k.id) && currentT === k.t && checkPickup(currentX, finalX, k.x)) {
+              state.pickedKeys.push(k.id);
+              state.inventoryKeys.push(k.color);
+              changed = true;
+           }
+        });
+
+        if (map.cheese && !state.hasCheese && currentT === map.cheese.t) {
+            if (checkPickup(currentX, finalX, map.cheese.x)) {
+                state.hasCheese = true;
+                changed = true;
+            }
+        }
+        
+        if (currentT === map.spawn.t) {
+            const willHaveCheese = state.hasCheese || (map.cheese && currentT === map.cheese.t && checkPickup(currentX, finalX, map.cheese.x));
+            if (willHaveCheese && checkPickup(currentX, finalX, map.spawn.x)) {
+               if (state.mapIndex < LEVELS.length - 1) {
+                   loadLevel(state.mapIndex + 1);
+                   changed = true;
+               } else {
+                   state.appState = 'win';
+                   changed = true;
+               }
+            }
+        }
+
+        if (changed) render();
+
+      }, 350); 
+
+      await new Promise(r => setTimeout(r, 700));
+      currentX = finalX;
+    }
+
+    if (currentX === boundedTargetX && currentT !== targetT) {
+      state.facing = 'forward';
+      state.charPos = { t: targetT, x: currentX };
+      render();
+      await new Promise(r => setTimeout(r, 700));
+    }
+
+    state.facing = 'forward';
+    state.isMoving = false;
+    render();
+};
+
+// Initial Render
+render();
+
+</script>
+</body>
+</html>
