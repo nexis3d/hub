@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fantasy Deckbuilder</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Press Start 2P', monospace !important;
+            image-rendering: pixelated;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #F2E8D5;
+            overflow: hidden;
+            user-select: none;
+            touch-action: manipulation;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Centered Game Window for Responsive View */
+        #game-window {
+            width: 100%;
+            height: 100%;
+            max-width: 1024px;
+            background-color: #1e293b;
+            background-image: radial-gradient(#0b0f19 2px, transparent 2px);
+            background-size: 24px 24px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            --speed-mult: 1;
+        }
+
+        @media (min-width: 1024px) {
+            #game-window {
+                height: 95dvh;
+                border: 4px solid #000;
+                border-radius: 8px;
+                box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            }
+        }
+
+        .iso-container { perspective: 1200px; transform-style: preserve-3d; }
+        .iso-world { transform: rotateX(60deg) rotateZ(-45deg); transform-style: preserve-3d; box-shadow: 20px 20px 0px rgba(0,0,0,0.8); }
+        
+        .iso-sprite { 
+            transform: translateZ(48px) rotateZ(45deg) rotateX(-60deg); 
+            transform-style: preserve-3d; 
+            transition: transform calc(0.3s / var(--speed-mult)); 
+            filter: drop-shadow(-8px 12px 2px rgba(0,0,0,0.8)); 
+        }
+        
+        .claw-high { transform: translateZ(150px) rotateZ(45deg) rotateX(-60deg); filter: drop-shadow(-20px 30px 5px rgba(0,0,0,0.4)); }
+
+        /* Classic Retro UI Components */
+        .pixel-border { border: 4px solid #000000; box-shadow: 4px 4px 0px #000000; }
+        .pixel-border-sm { border: 2px solid #000000; box-shadow: 2px 2px 0px #000000; }
+        
+        .pixel-button { transition: transform 0.1s, box-shadow 0.1s, filter 0.1s; cursor: pointer; }
+        .pixel-button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #000000; filter: brightness(0.8); }
+        .pixel-button:disabled { opacity: 0.5; cursor: not-allowed; transform: translate(4px, 4px); box-shadow: 0px 0px 0px #000000; }
+
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #111; border: 1px solid #000; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #51555C; border: 1px solid #000; }
+
+        /* Dynamic JRPG Floating Animations */
+        @keyframes hover {
+            0%, 100% { 
+                transform: translateZ(48px) rotateZ(45deg) rotateX(-60deg) translateY(0px) rotate(0deg); 
+                filter: drop-shadow(-8px 12px 2px rgba(0,0,0,0.8));
+            }
+            50% { 
+                transform: translateZ(48px) rotateZ(45deg) rotateX(-60deg) translateY(-14px) rotate(-3deg); 
+                filter: drop-shadow(-14px 22px 5px rgba(0,0,0,0.4));
+            }
+        }
+        .anim-hover { animation: hover calc(3s / var(--speed-mult, 1)) ease-in-out infinite; }
+        .delay-0 { animation-delay: 0s; }
+        .delay-1 { animation-delay: -1s; }
+        .delay-2 { animation-delay: -2s; }
+
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50% { transform: translateY(-15px) rotate(-2deg); }
+        }
+        .anim-float { animation: floatAnim 6s ease-in-out infinite steps(4); }
+        
+        @keyframes floatAnim2 {
+            0%, 100% { transform: translateY(0) rotate(4deg); }
+            50% { transform: translateY(-15px) rotate(6deg); }
+        }
+        .anim-float-delayed { animation: floatAnim2 6s ease-in-out infinite steps(4) 3s; }
+
+        @keyframes enemyLunge {
+            0%, 100% { transform: translateZ(48px) rotateZ(45deg) rotateX(-60deg) translate(0, 0); }
+            50% { transform: translateZ(48px) rotateZ(45deg) rotateX(-60deg) translate(-40px, 40px); }
+        }
+        .anim-lunge { animation: enemyLunge calc(0.3s / var(--speed-mult, 1)) cubic-bezier(.36,.07,.19,.97); }
+
+        @keyframes clawDrop {
+            0% { transform: translateZ(150px) rotateZ(45deg) rotateX(-60deg); filter: drop-shadow(-20px 30px 5px rgba(0,0,0,0.4)); }
+            50% { transform: translateZ(48px) rotateZ(45deg) rotateX(-60deg); filter: drop-shadow(-8px 12px 2px rgba(0,0,0,0.8)); }
+            100% { transform: translateZ(150px) rotateZ(45deg) rotateX(-60deg); filter: drop-shadow(-20px 30px 5px rgba(0,0,0,0.4)); }
+        }
+        .anim-claw-drop { animation: clawDrop calc(1s / var(--speed-mult, 1)) ease-in-out forwards; }
+
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(6px, -6px) rotate(2deg); }
+            50% { transform: translate(-6px, 6px) rotate(-2deg); }
+            75% { transform: translate(6px, 6px) rotate(1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shake { animation: shake calc(0.2s / var(--speed-mult, 1)) cubic-bezier(.36,.07,.19,.97) both; }
+
+        @keyframes floatUp {
+            0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50px) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { transform: scale(1); box-shadow: 4px 4px 0px #000; filter: brightness(1); }
+            50% { transform: scale(1.02); box-shadow: 6px 6px 0px #000; filter: brightness(1.2); }
+        }
+        .btn-pulse { animation: pulse-btn 1.5s infinite steps(2); }
+
+        @keyframes particleBurst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0.1); opacity: 0; }
+        }
+        .particle {
+            position: absolute;
+            top: 50%; left: 50%;
+            animation: particleBurst calc(0.6s / var(--speed-mult, 1)) cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 2px 2px 0 currentColor;
+        }
+
+        .holo-bg {
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.1) 0,
+                rgba(255, 255, 255, 0.1) 4px,
+                transparent 4px,
+                transparent 12px
+            );
+        }
+
+        @keyframes portalSpin { 100% { transform: rotate(360deg); } }
+        .anim-portal { animation: portalSpin 10s linear infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const { useState, useEffect, useRef } = React;
+
+        // --- AUDIO ENGINE ---
+        let audioCtx = null;
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                const now = audioCtx.currentTime;
+                if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now); osc.stop(now + 0.3);
+                } else if (type === 'heal' || type === 'block') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.linearRampToValueAtTime(600, now + 0.4);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                } else if (type === 'draw' || type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now); osc.stop(now + 0.05);
+                } else if (type === 'enemyHit') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(80, now);
+                    osc.frequency.exponentialRampToValueAtTime(20, now + 0.5);
+                    gain.gain.setValueAtTime(0.5, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now); osc.stop(now + 0.5);
+                } else if (type === 'endTurn') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(100, now + 0.4);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(100, now);
+                    osc.frequency.linearRampToValueAtTime(80, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now); osc.stop(now + 0.2);
+                }
+            } catch(e) {}
+        }
+
+        // Custom Rich Fantasy RPG Palette
+        const PICO8_PALETTE = {
+            '0': '#141013', // Deep Void Black
+            '1': '#2B2B45', // Slate Night Blue
+            '2': '#692434', // Rich Burgundy
+            '3': '#23493E', // Forest Pine
+            '4': '#5C3826', // Warm Leather
+            '5': '#51555C', // Tarnished Iron
+            '6': '#8A92A3', // Worn Silver
+            '7': '#F2E8D5', // Old Parchment
+            '8': '#D93E46', // Crimson Blood
+            '9': '#D9762E', // Ember Orange
+            'A': '#E0B53A', // Antique Gold
+            'B': '#53A846', // Venom Green
+            'C': '#3978A8', // Royal Blue
+            'D': '#70518C', // Mystic Purple
+            'E': '#C9768B', // Flesh / Rose
+            'F': '#F0CCA8', // Light Flesh
+        };
+
+        // HD JRPG Posed Hover Sprites (16x16)
+        const SPRITES = {
+            knight: `
+......000.......
+.....0C60.......
+....08C660......
+...088C6C00.....
+..088065560A0...
+..00.06556A60...
+.....0566560....
+....06655660....
+...067755660....
+...06775560.....
+...06655660.....
+....000550......
+......0550......
+......0660......
+......000.......
+................
+`,
+            mage: `
+......0220......
+.....02DD20.....
+....0D2DD2D0....
+....0F8FF8F0....
+...000FFFF000...
+..0C0011110A0...
+..0C0011110A0...
+..0C0.0110.0A0..
+..00.011110.00..
+.....011110.....
+....01111110....
+...0221111220...
+...0222222220...
+...0002222000...
+......0000......
+................
+`,
+            juggernaut: `
+....00000000....
+...0555555550...
+..054455554450..
+..04A455554A40..
+..055555555550..
+.00554444445500.
+.05544555544550.
+.05554444445550.
+.01555555555510.
+..011555555110..
+...0111551110...
+...0550..0550...
+..04450..05440..
+..00000..00000..
+................
+................
+`,
+            rogue: `
+......0000......
+.....031130.....
+....031F1130....
+....031FF130....
+...0011111100...
+..060133331060..
+..070033330070..
+..00.044440.00..
+....04444440....
+....04444440....
+....04444440....
+....04400440....
+.....040040.....
+.....040040.....
+.....000000.....
+................
+`,
+            paladin: `
+......0000......
+.....0AAAA0.....
+....0A7777A0....
+...00A7A77A00...
+..0A70677607A0..
+..0A70677607A0..
+..00.067760.00..
+.....067760.....
+....00666600....
+...0666006660...
+...0660..0660...
+...000....000...
+................
+................
+................
+................
+`,
+            ranger: `
+......0000......
+.....033330.....
+....033B3330....
+...003F44F300...
+..030034430030..
+..030333333030..
+..00.033330.00..
+.....014410.....
+....01144110....
+....01100110....
+...0440..0440...
+...000....000...
+................
+................
+................
+................
+`,
+            cleric: `
+......0000......
+.....077770.....
+....07F77F70....
+...007FFFF700...
+..07000FF00070..
+..070077770070..
+..00.07AA70.00..
+.....07AA70.....
+....00777700....
+...0A077770A0...
+...0AA7777AA0...
+...0007777000...
+.....0660660....
+.....0000000....
+................
+................
+`,
+            slime: `
+................
+................
+................
+......000.......
+.....0B3B0......
+....0B373B0.....
+...0B37F73B0....
+..0B3377333B0...
+..0B3333333B0...
+.0B33C3C3333B0..
+.0B3C3C3C333B0..
+.0BB3333333BB0..
+..00BBBBBBB00...
+....0000000.....
+................
+................
+`,
+            goblin: `
+.......0........
+...00.0B0.......
+..0B300B0.......
+..0B33B0........
+..0B080B0.......
+..0B333BB0......
+...0B77B0.......
+....0BB0........
+...044440.......
+..04411440......
+...0110110......
+...010.010......
+...040.040......
+...00...00......
+................
+................
+`,
+            orc: `
+.....00000......
+....0B8BB8B0....
+...00BBBBBB00...
+..040444444040..
+..00.044440.00..
+....00444400....
+...044A44A440...
+...044A55A440...
+...0005555000...
+.....050050.....
+.....050050.....
+....05500550....
+....05500550....
+....000..000....
+................
+................
+`,
+            golem: `
+......0000......
+.....055550.....
+....05C55C50....
+...0055555500...
+..050555555050..
+..050555555050..
+..00.055550.00..
+....00555500....
+...0550000550...
+...0550..0550...
+...000....000...
+................
+................
+................
+................
+................
+`,
+            summon_portal: `
+........................
+......000000000000......
+....001DCCCCD100....
+...01DCC77FFFF77CCD10...
+..01DC77FF7777FF77CD10..
+.01DC7FF77CCCC77FF7CD10.
+.0DC7FF7CC1111CC7FF7CD0.
+01C7FF7C11000011C7FF7C10
+0D7FF7C1000000001C7FF7D0
+0C7FF7C100EE00001C7FF7C0
+0C7FF7C10E77E0001C7FF7C0
+0C7FF7C10E77E0001C7FF7C0
+0C7FF7C100EE0EE01C7FF7C0
+0C7FF7C10000E77E1C7FF7C0
+0D7FF7C10000E77E1C7FF7D0
+01C7FF7C11000EE01C7FF7C1
+.0DC7FF7CC1111CC7FF7CD0.
+.01DC7FF77CCCC77FF7CD10.
+..01DC77FF7777FF77CD10..
+...01DCC77FFFF77CCD10...
+....001DCC7777CCD100....
+......001DCCCCD100......
+........00000000........
+........................
+`,
+            capsule: `
+................
+................
+................
+................
+......0000......
+.....088880.....
+....08888880....
+....00000000....
+....07777770....
+.....077770.....
+......0000......
+................
+................
+................
+................
+................
+`,
+            claw: `
+................
+......5555......
+......5555......
+.....555555.....
+....56555565....
+...565....565...
+...565....565...
+...565....565...
+...55......55...
+................
+................
+................
+................
+................
+................
+................
+`,
+            potion: `
+.......00.......
+......0770......
+......0660......
+.....067660.....
+....06EE7660....
+....06EE7660....
+...06EEEE7660...
+...06EEEE7660...
+...06EEEEEE60...
+...06EEEEEE60...
+....06666660....
+.....000000.....
+................
+................
+................
+................
+`,
+            heart: `
+................
+...000....000...
+..08880..08880..
+.08888800888880.
+.088F8888888880.
+.08888888888880.
+..088888888880..
+...0888888880...
+....08888880....
+.....088880.....
+......0880......
+.......00.......
+................
+................
+................
+................
+`,
+            sword: `
+.......00.......
+......0770......
+.....067760.....
+.....067760.....
+.....067760.....
+.....067760.....
+.....067760.....
+.....067760.....
+.....067760.....
+..000067760000..
+.0A9906776099A0.
+.00A00055000A00.
+...0..0440..0...
+......0440......
+.....0A88A0.....
+......0000......
+`,
+            axe: `
+.......00.......
+......0660......
+.....066660.....
+....0466660.....
+....040660......
+...044000.......
+...0440.........
+..0440..........
+..0440..........
+.0440...........
+.0440...........
+0440............
+000.............
+................
+................
+................
+`,
+            dagger: `
+................
+................
+........0.......
+.......060......
+......07760.....
+......07760.....
+......07760.....
+.....07760......
+.....07760......
+....07760.......
+...000700.......
+..0AA040........
+..0000A0........
+......0.........
+................
+................
+`,
+            scroll: `
+................
+...0000000......
+..0777777700....
+.077777777770...
+.070000000070...
+.077777777770...
+.070000000070...
+.077777777770...
+.070000000070...
+.077777777770...
+..0777777700....
+...0000000......
+................
+................
+................
+................
+`,
+            aura: `
+.......00.......
+.....00AA00.....
+....0A7777A0....
+...0A777777A0...
+..0A777FF777A0..
+.0A777FFFF777A0.
+.0A77FFFFFF77A0.
+0A777FFFFFF777A0
+0A777FFFFFF777A0
+.0A77FFFFFF77A0.
+.0A777FFFF777A0.
+..0A777FF777A0..
+...0A777777A0...
+....0A7777A0....
+.....00AA00.....
+.......00.......
+`,
+            staff: `
+.......00.......
+......0CC0......
+.....0C77C0.....
+.....0C77C0.....
+......0CC0......
+.......040......
+......0440......
+......0440......
+.....0440.......
+.....0440.......
+....0440........
+....0440........
+...0440.........
+...000..........
+................
+................
+`,
+            hammer: `
+.....00000......
+....0666660.....
+...066666660....
+...066666660....
+...066666660....
+....0666660.....
+.....00400......
+.......040......
+......0440......
+......0440......
+.....0440.......
+.....0440.......
+....0440........
+....000.........
+................
+................
+`,
+            armor: `
+.....00000......
+....0888880.....
+...088888880....
+..06888888860...
+..06888888860...
+..06688888660...
+..06668886660...
+...066666660....
+...006666600....
+.....00000......
+................
+................
+................
+................
+................
+................
+`,
+            shield: `
+....00000000....
+...0677777760...
+..067666666760..
+.0676C7777C6760.
+.06767CCCC76760.
+.06767CCCC76760.
+.0676C7777C6760.
+..067666666760..
+...0676666760...
+...0667777660...
+....06677660....
+.....066660.....
+......0000......
+................
+................
+................
+`,
+            coin: `
+................
+......0000......
+....009AA900....
+...09AA77AA90...
+..09A779977A90..
+..0AA79AA97AA0..
+..0AA79AA97AA0..
+..09A779977A90..
+...09AA77AA90...
+....009AA900....
+......0000......
+................
+................
+................
+................
+................
+`,
+            blood: `
+................
+.......0........
+......080.......
+.....08880......
+....0888880.....
+....088F880.....
+...088888880....
+...088888880....
+...088888880....
+....0888880.....
+.....08880......
+......000.......
+................
+................
+................
+................
+`,
+            loot: `
+................
+................
+....00000000....
+...0A7A7A7A70...
+..0A7A7A7A7A70..
+..000000000000..
+..049446644940..
+..049446644940..
+..049444444940..
+...0000000000...
+................
+................
+................
+................
+................
+................
+`,
+            card_back: `
+....00000000....
+...0111111110...
+..011111111110..
+..011C1111C110..
+..011111111110..
+..0111C11C1110..
+..01111CC11110..
+..0111C11C1110..
+..011111111110..
+..011C1111C110..
+..011111111110...
+...0111111110...
+....00000000....
+................
+................
+................
+`
+        };
+
+        const PixelArt = ({ art, scale = 4, className = "" }) => {
+            if (!art) return <svg className={className} width={16*scale} height={16*scale}></svg>; 
+            const rows = art.trim().split('\n').map(r => r.trim()).filter(r => r.length > 0);
+            if (!rows.length) return null;
+            const h = rows.length;
+            const w = rows[0].length;
+            return (
+                <svg className={className} width={w * scale} height={h * scale} viewBox={`0 0 ${w} ${h}`} shapeRendering="crispEdges">
+                    {rows.map((row, y) => row.split('').map((char, x) => {
+                        if (char === '.') return null;
+                        const fill = PICO8_PALETTE[char] || '#000000';
+                        return <rect key={`${x}-${y}`} x={x} y={y} width="1.05" height="1.05" fill={fill} />
+                    }))}
+                </svg>
+            )
+        };
+
+        function stableShuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // --- Master Game Data ---
+        // ALL heroes grant 1 Energy per turn!
+        const ALL_CHARS = {
+            KNIGHT: { id: 'KNIGHT', name: 'KNIGHT', hp: 45, maxHp: 45, energy: 1, spriteId: 'knight' },
+            MAGE: { id: 'MAGE', name: 'MAGE', hp: 25, maxHp: 25, energy: 1, spriteId: 'mage' },
+            JUGGERNAUT: { id: 'JUGGERNAUT', name: 'TANK', hp: 70, maxHp: 70, energy: 1, spriteId: 'juggernaut' },
+            ROGUE: { id: 'ROGUE', name: 'ROGUE', hp: 30, maxHp: 30, energy: 1, spriteId: 'rogue' },
+            PALADIN: { id: 'PALADIN', name: 'PALADIN', hp: 55, maxHp: 55, energy: 1, spriteId: 'paladin' },
+            RANGER: { id: 'RANGER', name: 'RANGER', hp: 35, maxHp: 35, energy: 1, spriteId: 'ranger' },
+            CLERIC: { id: 'CLERIC', name: 'CLERIC', hp: 40, maxHp: 40, energy: 1, spriteId: 'cleric' }
+        };
+
+        // All cards cost 1 Energy except Execution (2) and Focus (0)
+        const ALL_CARDS = {
+            STRIKE: { id: 'STRIKE', name: 'SLASH', type: 'attack', val: 5, cost: 1, color: PICO8_PALETTE['8'], artId: 'sword', desc: 'Deal 5 DMG' },
+            HEAVY_STRIKE: { id: 'HEAVY_STRIKE', name: 'CLEAVE', type: 'attack', val: 10, cost: 1, color: PICO8_PALETTE['8'], artId: 'axe', desc: 'Deal 10 DMG' },
+            ASSASSINATE: { id: 'ASSASSINATE', name: 'ASSASSINATE', type: 'attack', val: 15, cost: 1, color: PICO8_PALETTE['2'], artId: 'dagger', desc: 'Deal 15 DMG' },
+            SNIPE: { id: 'SNIPE', name: 'SNIPE', type: 'attack', val: 8, cost: 1, color: PICO8_PALETTE['3'], artId: 'dagger', desc: '8 DMG. Draw 1.' },
+            BLESSED_STRIKE: { id: 'BLESSED_STRIKE', name: 'BLESSED STRIKE', type: 'attack', val: 6, cost: 1, color: PICO8_PALETTE['A'], artId: 'sword', desc: '6 DMG. Heal 3.' },
+            VAMPIRISM: { id: 'VAMPIRISM', name: 'VAMPIRISM', type: 'attack', val: 5, cost: 1, color: PICO8_PALETTE['2'], artId: 'blood', desc: '5 DMG. Heal 5.' },
+            EXECUTE: { id: 'EXECUTE', name: 'EXECUTE', type: 'attack', val: 20, cost: 2, color: PICO8_PALETTE['0'], artId: 'axe', desc: 'Deal 20 DMG' },
+            BLOCK: { id: 'BLOCK', name: 'SHIELD', type: 'skill', val: 5, cost: 1, color: PICO8_PALETTE['C'], artId: 'shield', desc: 'Gain 5 BLK' },
+            DEFLECT: { id: 'DEFLECT', name: 'BARRICADE', type: 'skill', val: 8, cost: 1, color: PICO8_PALETTE['C'], artId: 'armor', desc: 'Gain 8 BLK' },
+            FORTIFY: { id: 'FORTIFY', name: 'FORTIFY', type: 'skill', val: 12, cost: 1, color: PICO8_PALETTE['1'], artId: 'armor', desc: 'Gain 12 BLK' },
+            GREED: { id: 'GREED', name: 'LOOT', type: 'power', val: 0, cost: 1, color: PICO8_PALETTE['A'], artId: 'coin', desc: 'Gain 5 Gold' },
+            WARCRY: { id: 'WARCRY', name: 'WARCRY', type: 'skill', val: 2, cost: 1, color: PICO8_PALETTE['9'], artId: 'scroll', desc: 'Gain 2 NRG' },
+            FOCUS: { id: 'FOCUS', name: 'FOCUS', type: 'skill', val: 0, cost: 0, color: PICO8_PALETTE['D'], artId: 'aura', desc: 'Draw 2 Cards' },
+            FIREBALL: { id: 'FIREBALL', name: 'FIREBALL', type: 'attack', val: 8, cost: 1, color: PICO8_PALETTE['9'], artId: 'staff', desc: 'Spell: 8 DMG' },
+            POISON: { id: 'POISON', name: 'ENVENOM', type: 'attack', val: 4, cost: 1, color: PICO8_PALETTE['3'], artId: 'potion', desc: '4 DMG, Draw 1' },
+            REPAIR: { id: 'REPAIR', name: 'HEAL', type: 'skill', val: 6, cost: 1, color: PICO8_PALETTE['B'], artId: 'potion', desc: 'Spell: 6 HP' },
+            REGENERATE: { id: 'REGENERATE', name: 'REGENERATE', type: 'skill', val: 12, cost: 1, color: PICO8_PALETTE['B'], artId: 'heart', desc: 'Spell: 12 HP' },
+            AURA: { id: 'AURA', name: 'DIVINE AURA', type: 'skill', val: 12, cost: 1, color: PICO8_PALETTE['A'], artId: 'aura', desc: 'Spell: 12 HP' },
+            BASH: { id: 'BASH', name: 'SMITE', type: 'attack', val: 7, cost: 1, color: PICO8_PALETTE['8'], artId: 'hammer', desc: 'Deal 7 DMG' },
+            FAMILIAR: { id: 'FAMILIAR', name: 'FAMILIAR', type: 'attack', val: 6, cost: 1, color: PICO8_PALETTE['3'], artId: 'slime', desc: 'Pet: 6 DMG' },
+            GUARD: { id: 'GUARD', name: 'GUARD', type: 'skill', val: 7, cost: 1, color: PICO8_PALETTE['3'], artId: 'golem', desc: 'Pet: 7 BLK' },
+            MERCENARY: { id: 'MERCENARY', name: 'MERCENARY', type: 'attack', val: 10, cost: 1, color: PICO8_PALETTE['5'], artId: 'orc', desc: 'Summon: 10 DMG' }
+        };
+
+        const ENEMIES = [
+            { name: "Slime", hp: 40, maxHp: 40, intent: {type: 'attack', val: 6}, spriteId: 'slime', reward: 15 },
+            { name: "Goblin", hp: 60, maxHp: 60, intent: {type: 'attack', val: 9}, spriteId: 'goblin', reward: 20 },
+            { name: "Orc Brute", hp: 100, maxHp: 100, intent: {type: 'attack', val: 15}, spriteId: 'orc', reward: 35 },
+            { name: "Golem", hp: 140, maxHp: 140, intent: {type: 'attack', val: 20}, spriteId: 'golem', reward: 50 }
+        ];
+
+        function getEnemyForFloor(floor) {
+            const base = ENEMIES[(floor - 1) % ENEMIES.length];
+            const multiplier = 1 + Math.floor((floor - 1) / ENEMIES.length) * 0.4;
+            return {
+                ...base,
+                hp: Math.floor(base.hp * multiplier),
+                maxHp: Math.floor(base.maxHp * multiplier),
+                intent: { ...base.intent, val: Math.floor(base.intent.val * multiplier) },
+                reward: Math.floor(base.reward * multiplier)
+            };
+        }
+
+        // --- SUB-COMPONENTS ---
+        const Card = ({ card, onClick, disabled }) => {
+            const typeColor = card.type === 'attack' ? PICO8_PALETTE['8'] : card.type === 'skill' ? PICO8_PALETTE['C'] : PICO8_PALETTE['A'];
+            
+            return (
+            <div 
+                onClick={disabled ? null : onClick}
+                className={`pixel-border rounded-none flex flex-col p-1 select-none relative
+                    ${disabled ? 'opacity-50 grayscale cursor-not-allowed border-slate-700' : 'cursor-pointer pixel-button z-20'}
+                    w-28 h-40 md:w-36 md:h-52 bg-[#111]`}
+                style={{ borderColor: disabled ? undefined : typeColor }}
+            >
+                <div className="bg-[#000] px-1 md:px-2 py-1 md:py-2 border-b-[2px] border-white flex justify-between items-center shrink-0">
+                    <span className="text-[6px] md:text-[8px] text-white font-bold truncate mr-1" style={{textShadow: `1px 1px 0 ${typeColor}`}}>{card.name}</span>
+                    <div className="bg-white text-black pixel-border-sm w-4 h-4 md:w-6 md:h-6 flex items-center justify-center text-[8px] md:text-[10px] font-bold shrink-0">
+                        {card.cost}
+                    </div>
+                </div>
+                <div className={`h-16 md:h-24 w-full border-b-[2px] border-white flex items-center justify-center relative overflow-hidden shrink-0 holo-bg`} style={{ backgroundColor: typeColor }}>
+                    <PixelArt art={SPRITES[card.artId]} scale={3} className="z-10 drop-shadow-[2px_2px_0_rgba(0,0,0,1)]" />
+                </div>
+                <div className="flex-grow flex flex-col items-center justify-center p-2 bg-[#222]">
+                    <span className="text-[6px] md:text-[8px] leading-relaxed text-center font-bold text-white uppercase">{card.desc}</span>
+                </div>
+            </div>
+        )};
+
+        const DrawPile = ({ count }) => (
+            <div className="relative w-16 h-24 md:w-24 md:h-32 bg-[#111] pixel-border flex flex-col items-center justify-center overflow-hidden">
+               <div className="absolute inset-1 border-2 border-white border-dashed opacity-50"></div>
+               {count > 0 && <PixelArt art={SPRITES.card_back} scale={1.5} className="mb-2 opacity-80" />}
+               <span className="bg-black text-white text-[8px] md:text-[10px] px-2 py-1 pixel-border-sm z-10 font-bold w-[90%] text-center">DRAW<br/>{count}</span>
+            </div>
+        );
+        
+        const DiscardPile = ({ count, isDiscarding, onClick }) => (
+            <div onClick={onClick} className={`relative w-16 h-24 md:w-24 md:h-32 bg-[#111] pixel-border flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden ${isDiscarding ? 'scale-105 border-[color:var(--pico-red)]' : ''}`}>
+               <div className="absolute inset-1 border-2 border-white opacity-50 bg-black/20"></div>
+               <span className={`text-[20px] md:text-[32px] opacity-30 text-white font-sans mb-2 ${isDiscarding ? 'text-[color:var(--pico-red)] opacity-100' : ''}`}>✖</span>
+               <span className="bg-black text-[color:var(--pico-red)] text-[8px] md:text-[10px] px-2 py-1 pixel-border-sm z-10 font-bold w-[90%] text-center">DISCARD<br/>{count}</span>
+            </div>
+        );
+
+        const FloatingTextContainer = ({ texts }) => (
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50">
+                {texts.map(t => (
+                    <div key={t.id} className="absolute text-[10px] md:text-[12px] font-black"
+                            style={{ 
+                                left: `${t.offsetX}px`,
+                                color: t.color,
+                                textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000',
+                                animation: 'floatUp 1s ease-out forwards'
+                            }}>
+                        {t.text}
+                    </div>
+                ))}
+            </div>
+        );
+
+        const Header = ({ title, tokens, onBack }) => (
+            <div className="flex justify-between items-center px-4 md:px-8 py-3 md:py-4 bg-black border-b-[4px] border-[color:var(--pico-darkGrey)] shrink-0 z-10 w-full pixel-border">
+                <button onClick={() => { playSound('click'); onBack(); }} className="text-white hover:text-white bg-[color:var(--pico-darkGrey)] pixel-button pixel-border-sm px-4 py-2 text-[8px] md:text-[10px] flex items-center gap-2">
+                    <span>❮</span> <span className="hidden sm:inline">RETURN</span>
+                </button>
+                <span className="text-white text-[12px] md:text-[16px] font-bold tracking-widest drop-shadow-[2px_2px_0_var(--pico-red)]">{title}</span>
+                <span className="text-[color:var(--pico-yellow)] bg-[#111] pixel-border-sm px-4 py-2 flex items-center gap-2 text-[8px] md:text-[12px] font-bold">
+                    <PixelArt art={SPRITES.coin} scale={1} />
+                    {tokens}
+                </span>
+            </div>
+        );
+
+        // --- VIEWS ---
+
+        const RunView = ({ loadout, onEndRun, hasSeenTutorial, completeTutorial }) => {
+            const [gameState, setGameState] = useState('combat'); 
+            const [floor, setFloor] = useState(1);
+            const [turnPhase, setTurnPhase] = useState('player'); // player -> discard -> enemy -> player
+            const [turnNumber, setTurnNumber] = useState(1);
+            
+            const [tutorialStep, setTutorialStep] = useState(hasSeenTutorial ? -1 : 0);
+            
+            const [isProcessing, setIsProcessing] = useState(false);
+            const isTurnEnding = useRef(false);
+            
+            const [autoPlay, setAutoPlay] = useState(false);
+            const [gameSpeed, setGameSpeed] = useState(1);
+            const speedRef = useRef(1);
+            useEffect(() => { speedRef.current = gameSpeed; }, [gameSpeed]);
+            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms / speedRef.current));
+
+            const [party, setParty] = useState(() => 
+                loadout.chars.map((charId) => ({
+                    ...ALL_CHARS[charId],
+                    currentHp: ALL_CHARS[charId].maxHp,
+                    isDead: false
+                }))
+            );
+            const [partyBlock, setPartyBlock] = useState(0);
+            const [partyEnergy, setPartyEnergy] = useState(0);
+            const [runScrap, setRunScrap] = useState(0);
+
+            const [deckState, setDeckState] = useState({ fullDeck: [], draw: [], hand: [], discard: [] });
+            const [discardMode, setDiscardMode] = useState(false);
+            
+            const [enemy, setEnemy] = useState({...ENEMIES[0]});
+            const [enemyAnim, setEnemyAnim] = useState('');
+            const [screenShake, setScreenShake] = useState(false);
+            const [particles, setParticles] = useState([]);
+
+            const [clawGrid, setClawGrid] = useState([]);
+            const [clawPos, setClawPos] = useState({x: 2, y: 2}); 
+            const [isClawing, setIsClawing] = useState(false);
+            const CLAW_COST = 10;
+
+            const [partyFloating, setPartyFloating] = useState([]);
+            const [enemyFloating, setEnemyFloating] = useState([]);
+            const [systemFloating, setSystemFloating] = useState([]);
+            const [floorTitle, setFloorTitle] = useState('');
+
+            // On initial load, safely build the deck and start combat
+            useEffect(() => {
+                const safeDeck = (loadout && loadout.deck && loadout.deck.length > 0) ? loadout.deck : ['STRIKE', 'BLOCK', 'STRIKE', 'BLOCK'];
+                const initialFullDeck = [];
+                for (let i = 0; i < 40; i++) {
+                    const cardId = safeDeck[i % safeDeck.length];
+                    if (ALL_CARDS[cardId]) {
+                        initialFullDeck.push({ ...ALL_CARDS[cardId], _uid: `init_${i}_${Date.now()}` });
+                    }
+                }
+                
+                // Immediately start the first floor
+                setEnemy({...getEnemyForFloor(1)});
+                setPartyBlock(0);
+                setPartyEnergy(calculateMaxEnergy(party));
+                
+                const shuffledDeck = stableShuffle(initialFullDeck);
+                const { draw, hand, discard } = drawCardsFromDeck(3, { fullDeck: initialFullDeck, draw: shuffledDeck, hand: [], discard: [] });
+                
+                setDeckState({ fullDeck: initialFullDeck, draw, hand, discard });
+                setGameState('combat');
+                setTurnPhase('player');
+                setTurnNumber(1);
+                
+                setFloorTitle(`FLOOR 1`);
+                setTimeout(() => setFloorTitle(''), 2000 / speedRef.current);
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+            }, []);
+
+            // AUTO PLAY LOGIC
+            useEffect(() => {
+                if (autoPlay && turnPhase === 'player' && !isProcessing && !isTurnEnding.current && tutorialStep === -1) {
+                    const timer = setTimeout(() => {
+                        const playableCards = deckState.hand.map((c, i) => ({card: c, idx: i})).filter(c => c.card.cost <= partyEnergy);
+                        if (playableCards.length > 0) {
+                            // Smart AI logic: Priority blocking if enemy attacks, else attack
+                            playableCards.sort((a, b) => {
+                                if (a.card.type === 'skill' && enemy.intent.val > partyBlock) return -1;
+                                if (b.card.type === 'skill' && enemy.intent.val > partyBlock) return 1;
+                                if (a.card.val > b.card.val) return -1;
+                                return 1;
+                            });
+                            handleCardClick(playableCards[0].card, playableCards[0].idx);
+                        } else if (partyEnergy >= 1 && deckState.hand.length < 6 && (deckState.draw.length > 0 || deckState.discard.length > 0)) {
+                            manualDraw();
+                        } else {
+                            endTurn();
+                        }
+                    }, 400 / speedRef.current);
+                    return () => clearTimeout(timer);
+                }
+            }, [autoPlay, turnPhase, partyEnergy, deckState.hand.length, deckState.draw.length, deckState.discard.length, tutorialStep, partyBlock, enemy.intent.val, isProcessing]);
+
+            // AUTO END TURN (If 0 Energy)
+            useEffect(() => {
+                if (turnPhase === 'player' && partyEnergy === 0 && !isTurnEnding.current && !isProcessing && tutorialStep === -1 && !autoPlay) {
+                    const t = setTimeout(() => {
+                        endTurn();
+                    }, 1000 / speedRef.current);
+                    return () => clearTimeout(t);
+                }
+            }, [turnPhase, partyEnergy, tutorialStep, autoPlay, isProcessing]);
+
+            // OVER MAXIMUM HAND SIZE LISTENER (LIMIT is 6!)
+            useEffect(() => {
+                if (turnPhase === 'player' && deckState.hand.length > 6) {
+                    setTurnPhase('discard');
+                } else if (turnPhase === 'discard' && deckState.hand.length <= 6) {
+                    setTurnPhase('player');
+                    // Check if energy is 0 after returning to player phase
+                    if (partyEnergy === 0) {
+                        endTurn();
+                    }
+                }
+            }, [deckState.hand.length, turnPhase, partyEnergy]);
+
+            // AUTOPLAY DISCARD (Discards cheapest cards to get below limit)
+            useEffect(() => {
+                if (autoPlay && turnPhase === 'discard' && !isProcessing) {
+                    const timer = setTimeout(() => {
+                        if (deckState.hand.length > 6) {
+                            handleCardClick(deckState.hand[0], 0);
+                        }
+                    }, 300 / speedRef.current);
+                    return () => clearTimeout(timer);
+                }
+            }, [autoPlay, turnPhase, deckState.hand.length, isProcessing]);
+
+            const triggerShake = () => {
+                setScreenShake(true);
+                setTimeout(() => setScreenShake(false), 200 / speedRef.current);
+            };
+
+            const spawnParticles = (target, color, count) => {
+                const newParticles = Array.from({ length: count }).map(() => ({
+                    id: Math.random(),
+                    target,
+                    color,
+                    dx: (Math.random() - 0.5) * 100 + 'px',
+                    dy: (Math.random() - 0.5) * 100 - 50 + 'px',
+                    size: Math.random() * 6 + 4 + 'px'
+                }));
+                setParticles(prev => [...prev, ...newParticles]);
+                setTimeout(() => {
+                    setParticles(prev => prev.filter(p => !newParticles.find(n => n.id === p.id)));
+                }, 600 / speedRef.current);
+            };
+
+            const addFloatingText = (setter, text, color) => {
+                const id = Date.now() + Math.random();
+                const offsetX = (Math.random() - 0.5) * 40;
+                setter(prev => [...prev, { id, text, color, offsetX }]);
+                setTimeout(() => setter(prev => prev.filter(t => t.id !== id)), 1000 / speedRef.current);
+            };
+
+            function calculateMaxEnergy(currentParty) {
+                return currentParty.filter(c => !c.isDead).reduce((sum, c) => sum + c.energy, 0);
+            }
+
+            function drawCardsFromDeck(amount, currentState) {
+                let draw = [...currentState.draw];
+                let hand = [...currentState.hand];
+                let discard = [...currentState.discard];
+
+                for (let i = 0; i < amount; i++) {
+                    if (hand.length >= 6) break; // Limit of 6
+                    
+                    if (draw.length === 0) {
+                        if (discard.length === 0) break; 
+                        draw = stableShuffle(discard);
+                        discard = [];
+                    }
+                    const card = draw.pop();
+                    if (card) hand.push(card);
+                }
+                return { ...currentState, draw, hand, discard };
+            }
+
+            const manualDraw = () => {
+                playSound('click');
+                if (turnPhase !== 'player' || partyEnergy < 1 || isProcessing) return;
+                if (deckState.draw.length === 0 && deckState.discard.length === 0) { playSound('error'); return; }
+                
+                setIsProcessing(true);
+                playSound('draw');
+                setPartyEnergy(e => e - 1);
+                setDeckState(prev => drawCardsFromDeck(1, prev));
+                setTimeout(() => { setIsProcessing(false); }, 100 / speedRef.current);
+            };
+
+            const handleCardClick = (cardToPlay, index) => {
+                if (discardMode || turnPhase === 'discard') {
+                    playSound('draw'); 
+                    setIsProcessing(true);
+                    setDeckState(prev => {
+                        const newHand = [...prev.hand];
+                        newHand.splice(index, 1);
+                        return { ...prev, hand: newHand, discard: [...prev.discard, cardToPlay] };
+                    });
+                    setTimeout(() => { setIsProcessing(false); }, 100 / speedRef.current);
+                    return;
+                }
+
+                if (turnPhase !== 'player' || enemy.hp <= 0 || isProcessing) return;
+                if (!cardToPlay || partyEnergy < cardToPlay.cost) { playSound('error'); return; }
+
+                setIsProcessing(true);
+                if (tutorialStep === 1) setTutorialStep(2);
+                
+                setPartyEnergy(e => e - cardToPlay.cost);
+                
+                setDeckState(prev => {
+                    const newHand = [...prev.hand];
+                    newHand.splice(index, 1);
+                    return {
+                        ...prev,
+                        hand: newHand,
+                        discard: [...prev.discard, cardToPlay]
+                    };
+                });
+
+                if (cardToPlay.type === 'attack') {
+                    playSound('hit');
+                    setEnemyAnim('anim-damage');
+                    triggerShake();
+                    spawnParticles('enemy', PICO8_PALETTE['8'], 15);
+                    setTimeout(() => setEnemyAnim(''), 300 / speedRef.current);
+                    
+                    addFloatingText(setEnemyFloating, `-${cardToPlay.val}`, PICO8_PALETTE['8']);
+                    
+                    if (cardToPlay.id === 'VAMPIRISM') {
+                        playSound('heal');
+                        spawnParticles('party', PICO8_PALETTE['B'], 10);
+                        addFloatingText(setPartyFloating, `+5 HP`, PICO8_PALETTE['B']);
+                        setParty(prevParty => {
+                            const newParty = [...prevParty];
+                            let lowest = null;
+                            let lowestIdx = -1;
+                            newParty.forEach((c, i) => {
+                                if (!c.isDead && (lowest === null || c.currentHp < lowest.currentHp)) {
+                                    lowest = c; lowestIdx = i;
+                                }
+                            });
+                            if (lowestIdx !== -1) {
+                                newParty[lowestIdx].currentHp = Math.min(newParty[lowestIdx].maxHp, newParty[lowestIdx].currentHp + 5);
+                            }
+                            return newParty;
+                        });
+                    }
+                    
+                    setEnemy(e => ({...e, hp: Math.max(0, e.hp - cardToPlay.val)}));
+                } else if (cardToPlay.type === 'skill') {
+                    if (cardToPlay.id === 'REPAIR' || cardToPlay.id === 'AURA' || cardToPlay.id === 'REGENERATE' || cardToPlay.id === 'BLESSED_STRIKE') {
+                        playSound('heal');
+                        spawnParticles('party', PICO8_PALETTE['B'], 15);
+                        let healVal = cardToPlay.val;
+                        if(cardToPlay.id === 'BLESSED_STRIKE') healVal = 3;
+                        addFloatingText(setPartyFloating, `+${healVal} HP`, PICO8_PALETTE['B']);
+                        setParty(prevParty => {
+                            const newParty = [...prevParty];
+                            let lowest = null;
+                            let lowestIdx = -1;
+                            newParty.forEach((c, i) => {
+                                if (!c.isDead && (lowest === null || c.currentHp < lowest.currentHp)) {
+                                    lowest = c; lowestIdx = i;
+                                }
+                            });
+                            if (lowestIdx !== -1) {
+                                newParty[lowestIdx].currentHp = Math.min(newParty[lowestIdx].maxHp, newParty[lowestIdx].currentHp + healVal);
+                            }
+                            return newParty;
+                        });
+                        
+                        if(cardToPlay.id === 'BLESSED_STRIKE') {
+                            setEnemyAnim('anim-damage');
+                            triggerShake();
+                            spawnParticles('enemy', PICO8_PALETTE['8'], 15);
+                            addFloatingText(setEnemyFloating, `-${cardToPlay.val}`, PICO8_PALETTE['8']);
+                            setEnemy(e => ({...e, hp: Math.max(0, e.hp - cardToPlay.val)}));
+                        }
+                        
+                    } else if (cardToPlay.id === 'FOCUS') {
+                        playSound('draw');
+                        spawnParticles('party', PICO8_PALETTE['D'], 10);
+                        setDeckState(prev => drawCardsFromDeck(2, prev));
+                    } else {
+                        playSound('block');
+                        spawnParticles('party', PICO8_PALETTE['C'], 15);
+                        addFloatingText(setPartyFloating, `+${cardToPlay.val} BLK`, PICO8_PALETTE['C']);
+                        setPartyBlock(b => b + cardToPlay.val);
+                    }
+                } else if (cardToPlay.id === 'GREED') {
+                    playSound('heal');
+                    spawnParticles('party', PICO8_PALETTE['A'], 10);
+                    addFloatingText(setPartyFloating, `+5 GOLD`, PICO8_PALETTE['A']);
+                    setRunScrap(s => s + 5);
+                } else if (cardToPlay.id === 'WARCRY') {
+                    playSound('heal');
+                    spawnParticles('party', PICO8_PALETTE['9'], 15);
+                    addFloatingText(setPartyFloating, `+2 NRG`, PICO8_PALETTE['9']);
+                    setPartyEnergy(e => e + cardToPlay.val);
+                }
+
+                if (cardToPlay.id === 'POISON' || cardToPlay.id === 'SNIPE') {
+                    const drawCount = cardToPlay.id === 'POISON' ? 2 : 1;
+                    setDeckState(prev => drawCardsFromDeck(drawCount, prev));
+                }
+                
+                setTimeout(() => { setIsProcessing(false); }, 300 / speedRef.current);
+            };
+
+            useEffect(() => {
+                if (gameState === 'combat' && enemy.hp <= 0) {
+                    addFloatingText(setEnemyFloating, `+${enemy.reward} GOLD`, PICO8_PALETTE['A']);
+                    setRunScrap(s => s + enemy.reward);
+                    setTimeout(initClawMachine, 1000 / speedRef.current);
+                }
+            }, [enemy.hp, gameState]);
+
+            const endTurn = async () => {
+                if ((turnPhase !== 'player' && turnPhase !== 'discard') || enemy.hp <= 0 || isTurnEnding.current) return;
+                playSound('endTurn');
+                
+                isTurnEnding.current = true;
+                setTurnPhase('enemy');
+                setDiscardMode(false);
+                if (tutorialStep === 2) setTutorialStep(-1);
+
+                await delay(600);
+
+                let dmg = enemy.intent.val;
+                
+                setEnemyAnim('anim-lunge');
+                playSound('enemyHit');
+                await delay(150);
+
+                triggerShake();
+                spawnParticles('party', PICO8_PALETTE['8'], 20);
+                
+                let unblockedDmg = dmg;
+                let currentBlock = partyBlock;
+
+                if (currentBlock >= dmg) {
+                    currentBlock -= dmg;
+                    unblockedDmg = 0;
+                    addFloatingText(setPartyFloating, `BLOCKED`, PICO8_PALETTE['C']);
+                } else {
+                    unblockedDmg = dmg - currentBlock;
+                    if (currentBlock > 0) addFloatingText(setPartyFloating, `BLOCKED ${currentBlock}`, PICO8_PALETTE['C']);
+                    setTimeout(() => addFloatingText(setPartyFloating, `-${unblockedDmg}`, PICO8_PALETTE['8']), 100 / speedRef.current);
+                    currentBlock = 0;
+                }
+                setPartyBlock(currentBlock);
+
+                let isGameOver = false;
+                let nextParty = [...party];
+
+                if (unblockedDmg > 0) {
+                    nextParty = nextParty.map(c => ({...c}));
+                    let remainingDmg = unblockedDmg;
+                    for (let i = 0; i < nextParty.length; i++) {
+                        if (remainingDmg <= 0) break;
+                        if (!nextParty[i].isDead) {
+                            if (nextParty[i].currentHp <= remainingDmg) {
+                                remainingDmg -= nextParty[i].currentHp;
+                                nextParty[i].currentHp = 0;
+                                nextParty[i].isDead = true;
+                            } else {
+                                nextParty[i].currentHp -= remainingDmg;
+                                remainingDmg = 0;
+                            }
+                        }
+                    }
+                    setParty(nextParty);
+                    if (nextParty.every(c => c.isDead)) isGameOver = true;
+                }
+
+                await delay(300);
+                setEnemyAnim(''); 
+
+                if (isGameOver) {
+                    setTimeout(() => setGameState('gameover'), 500 / speedRef.current);
+                    isTurnEnding.current = false;
+                    return;
+                }
+
+                await delay(600);
+
+                if (gameState === 'combat') {
+                    setEnemy(e => ({
+                        ...e, 
+                        intent: { type: 'attack', val: Math.max(1, e.intent.val + Math.floor(Math.random() * 5) - 2) }
+                    }));
+                    
+                    setTurnNumber(prev => prev + 1);
+                    setPartyBlock(0);
+                    
+                    setPartyEnergy(calculateMaxEnergy(nextParty));
+                    
+                    // Draw exactly 1 card at the start of the turn
+                    setDeckState(prev => drawCardsFromDeck(1, prev));
+                    
+                    setTurnPhase('player');
+                }
+                
+                isTurnEnding.current = false;
+            };
+
+            const startCombat = (enemyData) => {
+                setEnemy({...enemyData});
+                setPartyBlock(0);
+                setPartyEnergy(calculateMaxEnergy(party));
+                
+                setDeckState(prev => {
+                    const allCards = [...prev.draw, ...prev.hand, ...prev.discard];
+                    const deckToShuffle = allCards.length > 0 ? allCards : [...prev.fullDeck];
+                    const shuffledDeck = stableShuffle(deckToShuffle);
+                    return drawCardsFromDeck(3, { ...prev, draw: shuffledDeck, hand: [], discard: [] });
+                });
+                
+                setGameState('combat');
+                setTurnPhase('player');
+                setTurnNumber(1);
+                
+                setFloorTitle(`FLOOR ${floor}`);
+                setTimeout(() => setFloorTitle(''), 2000 / speedRef.current);
+            };
+
+            const initClawMachine = () => {
+                if (tutorialStep !== -1) {
+                    setTutorialStep(3);
+                    completeTutorial();
+                }
+
+                const grid = Array(25).fill(null);
+                const lootOptions = [ALL_CARDS.HEAVY_STRIKE, ALL_CARDS.DEFLECT, ALL_CARDS.GREED, 'HP_POTION'];
+                
+                const numItems = 6 + Math.floor(Math.random() * 3);
+                for(let i=0; i<numItems; i++) {
+                    let idx;
+                    do { idx = Math.floor(Math.random() * 25); } while(grid[idx] !== null);
+                    grid[idx] = lootOptions[Math.floor(Math.random() * lootOptions.length)];
+                }
+                
+                setClawGrid(grid);
+                setClawPos({x: 2, y: 2});
+                setGameState('claw');
+            };
+
+            const moveClaw = (dx, dy) => {
+                if (isClawing) return;
+                playSound('click');
+                setClawPos(prev => ({
+                    x: Math.max(0, Math.min(4, prev.x + dx)),
+                    y: Math.max(0, Math.min(4, prev.y + dy))
+                }));
+            };
+
+            const dropClaw = () => {
+                if (isClawing || runScrap < CLAW_COST) return;
+                playSound('click');
+                setRunScrap(s => s - CLAW_COST);
+                setIsClawing(true);
+                if (tutorialStep === 3) setTutorialStep(-1);
+
+                setTimeout(() => {
+                    const idx = clawPos.y * 5 + clawPos.x;
+                    const item = clawGrid[idx];
+                    
+                    if (item) {
+                        playSound('heal');
+                        if (item === 'HP_POTION') {
+                            setParty(prevParty => {
+                                const newParty = [...prevParty];
+                                newParty.forEach(c => {
+                                    if (!c.isDead) c.currentHp = Math.min(c.maxHp, c.currentHp + 15);
+                                });
+                                return newParty;
+                            });
+                            addFloatingText(setSystemFloating, `PARTY +15 HP`, PICO8_PALETTE['B']);
+                        } else {
+                            setDeckState(prev => ({
+                                ...prev,
+                                fullDeck: [...prev.fullDeck, { ...item, _uid: `loot_${Date.now()}` }],
+                                discard: [...prev.discard, { ...item, _uid: `loot_${Date.now()}` }]
+                            }));
+                            addFloatingText(setSystemFloating, `GOT CARD`, PICO8_PALETTE['A']);
+                        }
+                        const newGrid = [...clawGrid];
+                        newGrid[idx] = null;
+                        setClawGrid(newGrid);
+                    } else {
+                        playSound('error');
+                        addFloatingText(setSystemFloating, `MISS`, PICO8_PALETTE['6']);
+                    }
+                    setIsClawing(false);
+                }, 500 / speedRef.current);
+            };
+
+            const leaveClaw = () => {
+                playSound('click');
+                const nextFloor = floor + 1;
+                setFloor(nextFloor);
+                startCombat(getEnemyForFloor(nextFloor));
+            };
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (gameState !== 'claw') return;
+                    switch(e.key.toLowerCase()) {
+                        case 'w': case 'arrowup': moveClaw(0, -1); break;
+                        case 's': case 'arrowdown': moveClaw(0, 1); break;
+                        case 'a': case 'arrowleft': moveClaw(-1, 0); break;
+                        case 'd': case 'arrowright': moveClaw(1, 0); break;
+                        case 'enter': case ' ': dropClaw(); break;
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [gameState, clawPos, isClawing, runScrap]);
+
+            const TILE_SIZE = 64;
+            const renderGrid = () => {
+                const tiles = [];
+                for (let y = 0; y < 5; y++) {
+                    for (let x = 0; x < 5; x++) {
+                        const isTarget = gameState === 'claw' && clawPos.x === x && clawPos.y === y;
+                        const isLight = (x+y)%2 === 0;
+                        tiles.push(
+                            <div key={`${x}-${y}`} className="absolute flex items-center justify-center"
+                                style={{
+                                    width: TILE_SIZE, height: TILE_SIZE,
+                                    left: x * TILE_SIZE, top: y * TILE_SIZE,
+                                    backgroundColor: isLight ? PICO8_PALETTE['1'] : '#141013',
+                                    border: `1px solid ${PICO8_PALETTE['0']}`,
+                                    boxShadow: isTarget ? `inset 0 0 0 4px ${PICO8_PALETTE['A']}` : `inset 0 0 0 1px ${PICO8_PALETTE['5']}`,
+                                    transition: `all ${0.1 / speedRef.current}s`
+                                }}
+                            >
+                                <div className="w-[4px] h-[4px] bg-black opacity-30" />
+                            </div>
+                        );
+                    }
+                }
+                return tiles;
+            };
+
+            const handleExit = () => {
+                playSound('click');
+                const earnedTokens = Math.floor(floor * 5 + runScrap);
+                onEndRun(earnedTokens);
+            };
+
+            const partyPositions = [
+                { left: 64, top: 192, z: 40 }, 
+                { left: 0, top: 128, z: 30 },  
+                { left: 128, top: 128, z: 30 } 
+            ];
+
+            const renderClawControls = () => (
+                <div className="w-full flex flex-col md:flex-row justify-center items-center gap-6 h-full p-4">
+                    <div className="bg-black p-4 flex flex-col items-center pixel-border shadow-[4px_4px_0_#000]">
+                        <h2 className="text-[color:var(--pico-yellow)] mb-3 text-[10px] md:text-[12px] font-bold tracking-widest text-center">D-PAD PROTOCOL</h2>
+                        <div className="grid grid-cols-3 gap-2 w-28 md:w-36 mx-auto">
+                            <div></div>
+                            <button onClick={() => moveClaw(0,-1)} className="pixel-button bg-[color:var(--pico-darkGrey)] w-full aspect-square flex items-center justify-center text-[10px] md:text-[14px] text-white pixel-border-sm">W</button>
+                            <div></div>
+                            <button onClick={() => moveClaw(-1,0)} className="pixel-button bg-[color:var(--pico-darkGrey)] w-full aspect-square flex items-center justify-center text-[10px] md:text-[14px] text-white pixel-border-sm">A</button>
+                            <button onClick={() => moveClaw(0,1)} className="pixel-button bg-[color:var(--pico-darkGrey)] w-full aspect-square flex items-center justify-center text-[10px] md:text-[14px] text-white pixel-border-sm">S</button>
+                            <button onClick={() => moveClaw(1,0)} className="pixel-button bg-[color:var(--pico-darkGrey)] w-full aspect-square flex items-center justify-center text-[10px] md:text-[14px] text-white pixel-border-sm">D</button>
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-3 md:gap-4 h-full justify-center w-full md:w-auto min-w-[220px]">
+                        <button onClick={dropClaw} disabled={isClawing || runScrap < CLAW_COST} className={`w-full py-4 md:py-5 pixel-button pixel-border bg-[color:var(--pico-red)] text-[10px] md:text-[14px] flex flex-col items-center justify-center gap-1 ${isClawing || runScrap < CLAW_COST ? 'opacity-50' : 'hover:bg-[color:var(--pico-orange)]'} text-white shadow-[4px_4px_0_#000]`}>
+                            <span className="font-bold tracking-widest">DROP CLAW</span>
+                            <span className="text-[8px] md:text-[10px] bg-black px-2 py-1 pixel-border-sm text-[color:var(--pico-yellow)]">COST: {CLAW_COST} GOLD</span>
+                        </button>
+                        <button onClick={leaveClaw} className="pixel-button bg-black pixel-border py-3 md:py-4 text-[color:var(--pico-yellow)] font-bold text-[10px] md:text-[12px] tracking-wider hover:bg-[color:var(--pico-darkGrey)] hover:text-white shadow-[4px_4px_0_#000]">NEXT FLOOR ➔</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="h-full w-full flex flex-col relative bg-[color:var(--pico-darkBlue)]" style={{ '--speed-mult': gameSpeed }}>
+                    
+                    {/* TUTORIAL OVERLAYS */}
+                    {tutorialStep === 0 && (
+                        <div className="absolute inset-0 z-[100] bg-black/80 flex flex-col items-center justify-center p-6 md:p-8 text-center backdrop-blur-md">
+                            <h2 className="text-[color:var(--pico-yellow)] text-[16px] md:text-[24px] mb-8 drop-shadow-[2px_2px_0_#000]">TUTORIAL: COMBAT</h2>
+                            <p className="text-white text-[10px] md:text-[12px] leading-loose mb-12 max-w-xl bg-black p-6 pixel-border">
+                                Welcome! Your heroes are on the left. Each living hero grants you <span className="text-[color:var(--pico-green)] font-bold">1 NRG (Energy)</span> to spend per turn.<br/><br/>
+                                If your heroes take damage, they will fall one by one. Keep them alive!
+                            </p>
+                            <button onClick={() => { playSound('click'); setTutorialStep(1); }} className="pixel-button bg-[color:var(--pico-blue)] pixel-border px-8 py-4 text-[12px] md:text-[16px] font-bold text-white hover:bg-white hover:text-black">NEXT ➔</button>
+                        </div>
+                    )}
+                    {tutorialStep === 1 && (
+                        <div className="absolute inset-0 z-[100] bg-black/60 flex flex-col items-center justify-end pb-[250px] md:pb-[350px] p-6 md:p-8 text-center pointer-events-none backdrop-blur-sm">
+                            <div className="bg-black pixel-border p-6 md:p-8 pointer-events-auto max-w-lg shadow-[8px_8px_0_#000]">
+                                <h2 className="text-[color:var(--pico-yellow)] text-[12px] md:text-[16px] mb-4">PLAY CARDS</h2>
+                                <p className="text-white text-[8px] md:text-[10px] leading-loose mb-6">
+                                    Click a card in your hand to play it. All cards cost 1 NRG.<br/>Once you are out of NRG, the turn will automatically end. Your hand limit is 6.
+                                </p>
+                                <button onClick={() => { playSound('click'); setTutorialStep(-1); }} className="pixel-button bg-[color:var(--pico-green)] text-white pixel-border px-8 py-3 text-[10px] md:text-[12px] font-bold w-full hover:bg-white hover:text-black">GOT IT</button>
+                            </div>
+                        </div>
+                    )}
+                    {tutorialStep === 3 && gameState === 'claw' && (
+                        <div className="absolute inset-0 z-[100] bg-black/60 flex flex-col items-center justify-center pb-[250px] p-6 md:p-8 text-center pointer-events-none backdrop-blur-sm">
+                            <div className="bg-black p-6 md:p-8 pixel-border pointer-events-auto max-w-lg shadow-[8px_8px_0_#000]">
+                                <h2 className="text-[color:var(--pico-yellow)] text-[16px] md:text-[24px] mb-4">CLAW MACHINE</h2>
+                                <p className="text-white text-[10px] md:text-[12px] leading-loose mb-8">
+                                    Spend Gold you earned to fish for new cards and healing potions!<br/>Use the D-PAD below to drop the claw.
+                                </p>
+                                <button onClick={() => { playSound('click'); setTutorialStep(-1); }} className="pixel-button bg-[color:var(--pico-green)] text-white pixel-border px-8 py-4 text-[12px] md:text-[16px] font-bold w-full hover:bg-white hover:text-black">START GRABBING</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TOP BAR */}
+                    <div className="flex flex-col sm:flex-row justify-between items-center px-4 md:px-8 py-3 bg-black border-b-[4px] border-[color:var(--pico-darkGrey)] z-10 shrink-0">
+                        <div className="flex gap-3 md:gap-4 items-center justify-center w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                            {party.map((char, idx) => (
+                                <div key={idx} className={`flex items-center gap-2 bg-[#111] px-2 py-2 pixel-border-sm shrink-0 ${char.isDead ? 'opacity-30 grayscale' : ''}`}>
+                                    <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-[#222]">
+                                        <PixelArt art={SPRITES[char.spriteId]} scale={1.5} />
+                                    </div>
+                                    <div className="flex flex-col w-16 md:w-20">
+                                        <div className="w-full bg-black h-2 md:h-3 pixel-border-sm overflow-hidden p-[1px]">
+                                            <div className="h-full bg-[color:var(--pico-red)] transition-all duration-300" style={{width: `${(char.currentHp/char.maxHp)*100}%`}}></div>
+                                        </div>
+                                        <span className="text-white font-bold text-[6px] md:text-[8px] mt-1 text-center">{char.currentHp} / {char.maxHp} HP</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="flex gap-4 md:gap-8 items-center shrink-0 w-full sm:w-auto justify-center bg-[#111] px-4 py-2 pixel-border-sm">
+                            {partyBlock > 0 && <span className="text-[color:var(--pico-blue)] flex items-center gap-2 font-bold text-[10px] md:text-[12px]">
+                                <PixelArt art={SPRITES.shield} scale={1.2} /> 
+                                {partyBlock}
+                            </span>}
+                            <span className="text-[color:var(--pico-yellow)] flex items-center gap-2 font-bold text-[10px] md:text-[12px]">
+                                <PixelArt art={SPRITES.coin} scale={1.2} /> 
+                                {runScrap}
+                            </span>
+                            {gameState === 'combat' && <span className="text-[color:var(--pico-green)] font-bold text-[10px] md:text-[12px]">
+                                NRG {partyEnergy}/{calculateMaxEnergy(party)}
+                            </span>}
+                            {gameState === 'combat' && (
+                                <span className={`font-bold text-[10px] md:text-[12px] tracking-wider ${turnPhase === 'player' || turnPhase === 'discard' ? 'text-white' : 'text-[color:var(--pico-red)]'}`}>
+                                    TURN {turnNumber}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={`flex-grow flex items-center justify-center overflow-hidden relative ${screenShake ? 'shake' : ''}`}>
+                        
+                        {/* SPEED AND AUTO BUTTONS */}
+                        {gameState === 'combat' && (
+                            <div className="absolute top-6 right-6 z-50 flex flex-col gap-3">
+                                <button onClick={() => { playSound('click'); setAutoPlay(!autoPlay); }} className={`pixel-button px-4 py-2 text-[8px] md:text-[10px] font-bold tracking-wider pixel-border-sm ${autoPlay ? 'bg-[color:var(--pico-green)] text-black' : 'bg-[#111] text-white hover:bg-[color:var(--pico-darkGrey)]'}`}>
+                                    AUTO {autoPlay ? 'ON' : 'OFF'}
+                                </button>
+                                <button onClick={() => { playSound('click'); setGameSpeed(s => s === 1 ? 2 : 1); }} className="pixel-button px-4 py-2 text-[8px] md:text-[10px] font-bold tracking-wider bg-[#111] text-white hover:bg-[color:var(--pico-darkGrey)] pixel-border-sm">
+                                    {gameSpeed === 1 ? '1X SPEED' : '2X SPEED'}
+                                </button>
+                            </div>
+                        )}
+
+                        {gameState === 'gameover' && (
+                            <div className="absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-center backdrop-blur-sm">
+                                <div className="bg-[#111] pixel-border p-8 md:p-12 text-center flex flex-col items-center shadow-[12px_12px_0_#000]">
+                                    <h1 className="text-[20px] md:text-[32px] text-[color:var(--pico-red)] mb-6 font-black leading-loose">SYSTEM<br/>FAILURE</h1>
+                                    <p className="text-[color:var(--pico-yellow)] text-[10px] md:text-[14px] mb-8 font-bold">Total Loot Secured: {Math.floor(floor * 5 + runScrap)} Gold</p>
+                                    <button onClick={handleExit} className="pixel-button bg-[color:var(--pico-blue)] pixel-border px-8 py-4 text-[10px] md:text-[14px] font-bold w-full max-w-xs text-white hover:bg-white hover:text-black">RETURN TO CAMP</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {floorTitle && (
+                            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 z-50 text-[16px] md:text-[24px] text-[color:var(--pico-yellow)] font-bold pointer-events-none drop-shadow-[4px_4px_0_#000]"
+                                 style={{ animation: `floatUp ${2/gameSpeed}s ease-in forwards` }}>
+                                {floorTitle}
+                            </div>
+                        )}
+
+                        {gameState === 'combat' && turnPhase === 'enemy' && !floorTitle && (
+                            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-50 text-[12px] md:text-[16px] text-[color:var(--pico-red)] font-bold pointer-events-none bg-black px-6 py-3 pixel-border shadow-[4px_4px_0_#000]">
+                                ENEMY TURN
+                            </div>
+                        )}
+                        
+                        {gameState === 'combat' && turnPhase === 'discard' && !floorTitle && (
+                            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-50 text-[10px] md:text-[14px] font-bold tracking-widest text-white pointer-events-none bg-[color:var(--pico-red)] px-6 py-3 pixel-border shadow-[4px_4px_0_#000] animate-pulse">
+                                OVER LIMIT: DISCARD CARDS
+                            </div>
+                        )}
+
+                        <div className="iso-container w-[320px] h-[320px] scale-[0.6] sm:scale-[0.8] md:scale-110">
+                            <div className="iso-world w-full h-full relative">
+                                {renderGrid()}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 iso-sprite pointer-events-none">
+                                    <FloatingTextContainer texts={systemFloating} />
+                                </div>
+
+                                {gameState === 'combat' && (
+                                    <div style={{ transformStyle: 'preserve-3d', position: 'absolute', inset: 0 }}>
+                                        {/* Player Party */}
+                                        <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: 'preserve-3d' }}>
+                                            {party.map((char, idx) => (
+                                                !char.isDead && (
+                                                    <div key={idx} className={`absolute w-16 h-16 flex items-center justify-center iso-sprite anim-hover delay-${idx}`} 
+                                                         style={{ left: partyPositions[idx].left, top: partyPositions[idx].top, zIndex: partyPositions[idx].z }}>
+                                                        <PixelArt art={SPRITES[char.spriteId]} scale={6} />
+                                                    </div>
+                                                )
+                                            ))}
+                                            <div className="absolute top-[130px] left-[70px] w-16 h-16 iso-sprite flex items-center justify-center z-50">
+                                                <FloatingTextContainer texts={partyFloating} />
+                                            </div>
+                                            {/* Party Particles */}
+                                            <div className="absolute inset-0 z-50 iso-sprite" style={{ transformStyle: 'preserve-3d' }}>
+                                                {particles.filter(p => p.target === 'party').map(p => (
+                                                    <div key={p.id} className="particle" style={{ color: p.color, width: p.size, height: p.size, '--dx': p.dx, '--dy': p.dy, left: '96px', top: '224px', backgroundColor: p.color }} />
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Enemy Sprite & UI Floating Above Head */}
+                                        <div className={`absolute top-[64px] left-[192px] w-16 h-16 flex items-center justify-center iso-sprite ${turnPhase === 'player' || turnPhase === 'discard' ? 'anim-hover delay-1' : ''} ${enemyAnim} z-50`}>
+                                            <PixelArt art={SPRITES[enemy.spriteId]} scale={6} />
+                                            <FloatingTextContainer texts={enemyFloating} />
+                                            {/* Enemy Particles */}
+                                            {particles.filter(p => p.target === 'enemy').map(p => (
+                                                <div key={p.id} className="particle" style={{ color: p.color, width: p.size, height: p.size, '--dx': p.dx, '--dy': p.dy, backgroundColor: p.color }} />
+                                            ))}
+
+                                            {/* Floating Enemy Status */}
+                                            <div className="absolute -top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-10 w-28 bg-black p-2 pixel-border shadow-[4px_4px_0_#000]">
+                                                <div className="flex gap-2 items-center text-[8px] md:text-[10px] font-bold">
+                                                    {enemy.intent.type === 'attack' ? 
+                                                        <PixelArt art={SPRITES.sword} scale={1.5} /> : 
+                                                        <PixelArt art={SPRITES.shield} scale={1.5} />}
+                                                    <span className="text-[color:var(--pico-red)] drop-shadow-md">{enemy.intent.val} DMG</span>
+                                                </div>
+                                                <div className="w-full bg-[#111] p-[2px] relative h-3 flex items-center justify-center pixel-border-sm overflow-hidden">
+                                                    <div className="absolute left-0 top-0 bottom-0 bg-[color:var(--pico-red)] transition-all duration-300" style={{width: `${(enemy.hp/enemy.maxHp)*100}%`}}></div>
+                                                    <span className="relative z-10 text-[6px] md:text-[8px] text-white font-bold">{enemy.hp} / {enemy.maxHp} HP</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {gameState === 'claw' && (
+                                    <>
+                                        {clawGrid.map((item, idx) => {
+                                            if (!item) return null;
+                                            const x = idx % 5;
+                                            const y = Math.floor(idx / 5);
+                                            const isPotion = item === 'HP_POTION';
+                                            const artId = isPotion ? 'potion' : 'loot';
+                                            return (
+                                                <div key={`loot-${idx}`} className="absolute w-16 h-16 flex items-center justify-center iso-sprite drop-shadow-[-4px_4px_0_rgba(0,0,0,0.8)]" style={{ left: x * TILE_SIZE, top: y * TILE_SIZE, zIndex: x+y }}>
+                                                    <PixelArt art={SPRITES[artId]} scale={4} className="anim-hover" />
+                                                </div>
+                                            );
+                                        })}
+                                        <div className="absolute bg-[color:var(--pico-blue)] pointer-events-none transition-all duration-200 opacity-30 border-[2px] border-white" style={{ width: TILE_SIZE, height: TILE_SIZE, left: clawPos.x * TILE_SIZE, top: clawPos.y * TILE_SIZE }}/>
+                                        <div className={`absolute w-16 h-16 flex items-center justify-center pointer-events-none ${isClawing ? 'anim-claw-drop' : 'claw-high'}`} style={{ left: clawPos.x * TILE_SIZE, top: clawPos.y * TILE_SIZE, zIndex: 100 }}>
+                                            <PixelArt art={SPRITES.claw} scale={6} className="drop-shadow-[-8px_8px_0_rgba(0,0,0,0.6)]" />
+                                            <div className="absolute bottom-[90%] left-1/2 w-[4px] bg-[color:var(--pico-darkGrey)] border-l-[1px] border-white" style={{height: '500px', transform: 'translateX(-50%)'}}></div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* BOTTOM CARD / CLAW BAR */}
+                    <div className={`h-48 sm:h-56 md:h-72 bg-black border-t-[4px] border-[color:var(--pico-darkGrey)] flex relative p-3 md:p-6 shrink-0 justify-between items-center z-20 overflow-hidden w-full ${turnPhase === 'discard' || discardMode ? 'bg-[#220000] border-t-[color:var(--pico-red)]' : ''} transition-colors duration-500`}>
+                        {gameState === 'combat' ? (
+                            <>
+                                {/* Left Actions */}
+                                <div className="w-16 sm:w-20 md:w-32 flex-shrink-0 flex flex-col gap-3 md:gap-5 items-center justify-center z-10">
+                                    <DrawPile count={deckState.draw.length} />
+                                    <button 
+                                        onClick={manualDraw}
+                                        disabled={turnPhase !== 'player' || partyEnergy < 1 || deckState.hand.length >= 6 || (deckState.draw.length === 0 && deckState.discard.length === 0) || isProcessing || discardMode || autoPlay}
+                                        className="pixel-button bg-[color:var(--pico-blue)] pixel-border w-full py-2 text-[6px] md:text-[8px] font-bold tracking-wider leading-tight text-white hover:bg-white hover:text-black"
+                                    >
+                                        DRAW<br/><span className="text-[6px]">(-1 NRG)</span>
+                                    </button>
+                                </div>
+
+                                {/* Hand */}
+                                <div className="flex-grow flex gap-3 md:gap-5 overflow-x-auto overflow-y-visible h-full items-center justify-start md:justify-center px-4 custom-scrollbar snap-x pt-8 pb-4" style={{ scrollBehavior: 'smooth' }}>
+                                    {deckState.hand.map((card, i) => (
+                                        <div className={`snap-center ${turnPhase === 'discard' || discardMode ? 'animate-pulse cursor-crosshair' : ''}`} key={`${card._uid}-${i}`}>
+                                            <Card card={card} disabled={(partyEnergy < card.cost && turnPhase !== 'discard' && !discardMode) || (turnPhase !== 'player' && turnPhase !== 'discard') || isProcessing || autoPlay} onClick={() => handleCardClick(card, i)} />
+                                        </div>
+                                    ))}
+                                    {deckState.hand.length === 0 && (turnPhase === 'player' || turnPhase === 'discard') && <div className="text-white font-bold text-[10px] md:text-[12px] tracking-widest bg-[#111] px-6 py-4 pixel-border whitespace-nowrap shadow-[4px_4px_0_#000]">HAND EMPTY</div>}
+                                    {turnPhase === 'enemy' && <div className="text-[color:var(--pico-red)] font-bold text-[10px] md:text-[12px] tracking-widest bg-black px-6 py-4 pixel-border whitespace-nowrap shadow-[4px_4px_0_#000] flex items-center gap-3"><PixelArt art={SPRITES.sword} scale={2} /> ENEMY ATTACKING</div>}
+                                </div>
+
+                                {/* Right Actions */}
+                                <div className="w-16 sm:w-20 md:w-32 flex-shrink-0 flex flex-col gap-3 md:gap-5 items-center justify-center z-10">
+                                    <DiscardPile count={deckState.discard.length} isDiscarding={discardMode || turnPhase === 'discard'} onClick={() => { if (turnPhase === 'player' && !autoPlay) { playSound('click'); setDiscardMode(!discardMode); }}} />
+                                    <button 
+                                        onClick={endTurn} 
+                                        disabled={turnPhase !== 'player' || isTurnEnding.current || discardMode || autoPlay} 
+                                        className={`pixel-button pixel-border w-full py-2 text-[6px] md:text-[8px] font-bold tracking-wider leading-tight text-white hover:bg-white hover:text-black ${turnPhase === 'player' && !isTurnEnding.current && !discardMode && !autoPlay ? (partyEnergy === 0 ? 'bg-[color:var(--pico-red)] btn-pulse' : 'bg-[color:var(--pico-orange)]') : 'bg-[color:var(--pico-darkGrey)]'}`}
+                                    >
+                                        END TURN
+                                    </button>
+                                </div>
+                            </>
+                        ) : renderClawControls()}
+                    </div>
+                </div>
+            );
+        };
+
+        const InventoryView = ({ unlockedChars, unlockedCards, loadout, setLoadout, tokens, setView }) => {
+            const toggleCardInDeck = (cardId) => {
+                playSound('click');
+                setLoadout(prev => {
+                    const deck = [...prev.deck];
+                    const idx = deck.indexOf(cardId);
+                    if (idx > -1) {
+                        if (deck.length <= 5) return prev; 
+                        deck.splice(idx, 1);
+                    } else {
+                        deck.push(cardId);
+                    }
+                    return { ...prev, deck };
+                });
+            };
+
+            const toggleCharInLoadout = (charId) => {
+                playSound('click');
+                setLoadout(prev => {
+                    const chars = [...prev.chars];
+                    const idx = chars.indexOf(charId);
+                    if (idx > -1) {
+                        if (chars.length <= 1) return prev; 
+                        chars.splice(idx, 1);
+                    } else {
+                        if (chars.length >= 3) return prev; 
+                        chars.push(charId);
+                    }
+                    return { ...prev, chars };
+                });
+            };
+
+            return (
+                <div className="h-full w-full flex flex-col relative bg-[#050814]">
+                    <Header title="BARRACKS & ARMORY" tokens={tokens} onBack={() => setView('menu')} />
+                    <div className="flex flex-col md:flex-row gap-6 md:gap-8 flex-grow min-h-0 w-full p-4 md:p-8">
+                        
+                        {/* Char Select */}
+                        <div className="w-full md:w-1/3 bg-black pixel-border p-5 md:p-8 flex flex-col gap-4 overflow-y-auto custom-scrollbar flex-1 md:flex-none md:h-auto shadow-[8px_8px_0_#000]">
+                            <h2 className="text-[color:var(--pico-yellow)] text-[10px] md:text-[14px] text-center border-b-[4px] border-[color:var(--pico-darkGrey)] pb-3 shrink-0 font-bold tracking-widest">HEROES (MAX 3)</h2>
+                            <div className="flex flex-col gap-3 pt-2">
+                                {unlockedChars.map(charId => {
+                                    const char = ALL_CHARS[charId];
+                                    const isActive = loadout.chars.includes(charId);
+                                    return (
+                                        <div key={charId} onClick={() => toggleCharInLoadout(charId)}
+                                                className={`relative p-3 md:p-4 pixel-border cursor-pointer flex items-center gap-5 transition-all duration-200 pixel-button ${isActive ? 'bg-[#111] border-[color:var(--pico-green)]' : 'bg-black hover:bg-[#111]'}`}>
+                                            {isActive && <div className="absolute top-3 right-3 text-[10px] md:text-[14px] text-[color:var(--pico-green)] drop-shadow-md">✓</div>}
+                                            <div className="bg-[#111] p-2 pixel-border-sm shrink-0">
+                                                <PixelArt art={SPRITES[char.spriteId]} scale={3} />
+                                            </div>
+                                            <div className="flex flex-col gap-2 text-[8px] md:text-[10px] font-bold tracking-wide">
+                                                <span className={isActive ? "text-[color:var(--pico-green)] font-black tracking-widest" : "text-white"}>{char.name}</span>
+                                                <span className="text-[color:var(--pico-red)]">HP: {char.maxHp}</span>
+                                                <span className="text-[color:var(--pico-blue)]">ENERGY: {char.energy}</span>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Deck Builder */}
+                        <div className="w-full md:w-2/3 bg-black pixel-border p-5 md:p-8 flex flex-col gap-4 overflow-y-auto custom-scrollbar flex-1 md:flex-none md:h-auto shadow-[8px_8px_0_#000]">
+                            <div className="flex flex-col gap-1 border-b-[4px] border-[color:var(--pico-darkGrey)] pb-3 shrink-0">
+                                <h2 className="text-[color:var(--pico-yellow)] text-[10px] md:text-[14px] text-center font-bold tracking-widest">
+                                    BATTLE DECK ({loadout.deck.length} CARDS)
+                                </h2>
+                                <p className="text-[6px] md:text-[8px] text-[color:var(--pico-lightGrey)] text-center font-medium tracking-wide">Click to equip/unequip cards (Minimum 5 required)</p>
+                            </div>
+                            <div className="flex flex-wrap gap-4 justify-center overflow-y-auto pb-4 pt-4 custom-scrollbar">
+                                {Object.keys(ALL_CARDS).filter(id => unlockedCards.includes(id)).map(cardId => {
+                                    const card = ALL_CARDS[cardId];
+                                    const isEquipped = loadout.deck.includes(cardId);
+                                    return (
+                                        <div key={cardId} className="relative transform transition-transform duration-200">
+                                            {isEquipped && <div className="absolute -top-3 -right-3 z-30 text-[12px] md:text-[16px] text-[color:var(--pico-green)] bg-black pixel-border p-1 shadow-[2px_2px_0_#000] font-black pb-1">✓</div>}
+                                            <Card card={card} onClick={() => toggleCardInDeck(cardId)} disabled={!isEquipped && loadout.deck.length >= 15} />
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const PrizeMachineView = ({ tokens, setTokens, unlockedChars, setUnlockedChars, unlockedCards, setUnlockedCards, setView }) => {
+            const [crafting, setCrafting] = useState(false);
+            const [reward, setReward] = useState(null);
+            
+            const CARD_COST = 25;
+            const CHAR_COST = 100;
+
+            const getAvailableCards = () => Object.keys(ALL_CARDS).filter(c => !unlockedCards.includes(c));
+            const getAvailableChars = () => Object.keys(ALL_CHARS).filter(c => !unlockedChars.includes(c));
+
+            const handleCraft = (type) => {
+                const cost = type === 'card' ? CARD_COST : CHAR_COST;
+                if (tokens < cost || crafting) return;
+
+                const available = type === 'card' ? getAvailableCards() : getAvailableChars();
+                if (available.length === 0) return;
+                playSound('click');
+
+                setTokens(t => t - cost);
+                setCrafting(true);
+                setReward(null);
+
+                const itemToUnlock = available[0];
+
+                setTimeout(() => {
+                    playSound('heal');
+                    if (type === 'card') {
+                        setUnlockedCards(p => [...p, itemToUnlock]);
+                        setReward({ type: 'card', item: ALL_CARDS[itemToUnlock] });
+                    } else {
+                        setUnlockedChars(p => [...p, itemToUnlock]);
+                        setReward({ type: 'char', item: ALL_CHARS[itemToUnlock] });
+                    }
+                    setCrafting(false);
+                }, 1500);
+            };
+
+            return (
+                <div className="h-full w-full flex flex-col items-center relative overflow-hidden bg-[#050814]">
+                    <Header title="SUMMONING PORTAL" tokens={tokens} onBack={() => setView('menu')} />
+                    
+                    <div className={`mt-8 md:mt-16 w-[220px] h-[220px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] flex items-center justify-center relative bg-black pixel-border ${crafting ? 'shake' : ''}`}>
+                         
+                         {crafting && <div className="absolute inset-0 border-[8px] border-dashed border-[color:var(--pico-blue)] opacity-60 rounded-full anim-portal m-4 md:m-8"></div>}
+                         
+                         <div className="z-10 scale-[0.8] md:scale-110">
+                             <PixelArt art={SPRITES.summon_portal} scale={8} className="drop-shadow-[4px_4px_0_var(--pico-purple)]" />
+                         </div>
+                    </div>
+
+                    {reward && (
+                        <div className="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-6 backdrop-blur-sm">
+                            <div className="bg-black pixel-border p-8 md:p-12 flex flex-col items-center text-center shadow-[12px_12px_0_#000] animate-[floatUp_0.4s_ease-out_reverse]">
+                                <h3 className="text-[color:var(--pico-yellow)] mb-8 text-[12px] md:text-[18px] font-black drop-shadow-[2px_2px_0_#000]">SUMMONING COMPLETE!</h3>
+                                {reward.type === 'char' ? (
+                                    <div className="flex flex-col items-center gap-6 bg-[#111] p-8 pixel-border shadow-inner">
+                                        <div className="bg-black p-4 pixel-border-sm shadow-lg">
+                                            <PixelArt art={SPRITES[reward.item.spriteId]} scale={8} className="drop-shadow-[4px_4px_0_#000]" />
+                                        </div>
+                                        <span className="text-[color:var(--pico-green)] text-[12px] md:text-[16px] font-black tracking-widest">{reward.item.name}</span>
+                                        <span className="text-[8px] text-white font-bold uppercase tracking-widest bg-black px-4 py-2 pixel-border-sm">New Hero Unlocked!</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center gap-6">
+                                        <div className="scale-110 md:scale-125 mb-4 drop-shadow-[8px_8px_0_#000]">
+                                            <Card card={reward.item} />
+                                        </div>
+                                        <span className="text-[8px] text-white font-bold uppercase tracking-widest bg-black px-4 py-2 pixel-border-sm shadow-inner">New Card Forged!</span>
+                                    </div>
+                                )}
+                                <button onClick={() => { playSound('click'); setReward(null); }} className="mt-10 px-10 py-4 pixel-button bg-[color:var(--pico-green)] text-[10px] md:text-[14px] tracking-widest font-black w-full max-w-xs text-white hover:bg-white hover:text-black pixel-border">CLAIM</button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-auto mb-10 w-full flex flex-col md:flex-row gap-4 md:gap-8 justify-center px-6">
+                        <button 
+                            onClick={() => handleCraft('card')} 
+                            disabled={tokens < CARD_COST || crafting || getAvailableCards().length === 0}
+                            className={`px-6 py-6 md:py-8 pixel-button flex flex-col items-center gap-3 w-full md:w-64 pixel-border ${tokens >= CARD_COST && !crafting && getAvailableCards().length > 0 ? 'bg-[color:var(--pico-blue)] hover:bg-white hover:text-black text-white' : 'bg-[color:var(--pico-darkGrey)] text-white opacity-50 cursor-not-allowed'}`}
+                        >
+                            <span className="font-bold tracking-widest text-[10px] md:text-[14px]">SUMMON CARD</span>
+                            <span className="text-[8px] md:text-[10px] bg-black text-[color:var(--pico-yellow)] px-4 py-2 font-bold pixel-border-sm">COST: {CARD_COST} GOLD</span>
+                        </button>
+                        
+                        <button 
+                            onClick={() => handleCraft('char')} 
+                            disabled={tokens < CHAR_COST || crafting || getAvailableChars().length === 0}
+                            className={`px-6 py-6 md:py-8 pixel-button flex flex-col items-center gap-3 w-full md:w-64 pixel-border ${tokens >= CHAR_COST && !crafting && getAvailableChars().length > 0 ? 'bg-[color:var(--pico-purple)] hover:bg-white hover:text-black text-white' : 'bg-[color:var(--pico-darkGrey)] text-white opacity-50 cursor-not-allowed'}`}
+                        >
+                            <span className="font-bold tracking-widest text-[10px] md:text-[14px]">SUMMON HERO</span>
+                            <span className="text-[8px] md:text-[10px] bg-black text-[color:var(--pico-yellow)] px-4 py-2 font-bold pixel-border-sm">COST: {CHAR_COST} GOLD</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const SaveView = ({ tokens, unlockedChars, unlockedCards, loadout, setTokens, setUnlockedChars, setUnlockedCards, setLoadout, setView, user, db, appId, setHasSeenTutorial }) => {
+            const [importCode, setImportCode] = useState('');
+            const [statusMsg, setStatusMsg] = useState('');
+            const [showWipeConfirm, setShowWipeConfirm] = useState(false);
+
+            const generateCode = () => {
+                playSound('click');
+                const data = { tokens, unlockedChars, unlockedCards, loadout };
+                const json = JSON.stringify(data);
+                const b64 = window.btoa(unescape(encodeURIComponent(json)));
+                
+                const textArea = document.createElement("textarea");
+                textArea.value = b64;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setStatusMsg('Save code copied to clipboard!');
+                } catch (err) {
+                    setStatusMsg('Failed to copy. Check console.');
+                    console.log("SAVE CODE:", b64);
+                }
+                document.body.removeChild(textArea);
+            };
+
+            const loadCode = () => {
+                playSound('click');
+                try {
+                    const cleanCode = importCode.trim().replace(/\s/g, '');
+                    const json = decodeURIComponent(escape(window.atob(cleanCode)));
+                    const data = JSON.parse(json);
+                    
+                    if (data.tokens !== undefined && data.unlockedChars && data.unlockedCards && data.loadout) {
+                        if (!data.loadout.chars && data.loadout.char) {
+                            data.loadout.chars = [data.loadout.char];
+                        }
+                        
+                        setTokens(data.tokens);
+                        setUnlockedChars(data.unlockedChars);
+                        setUnlockedCards(data.unlockedCards);
+                        setLoadout(data.loadout);
+                        setStatusMsg('Save loaded successfully!');
+                    } else {
+                        setStatusMsg('Invalid code format.');
+                    }
+                } catch (e) {
+                    setStatusMsg('Failed to load. Invalid code.');
+                }
+            };
+
+            const wipeSave = async () => {
+                playSound('error');
+                const defaults = {
+                    tokens: 0,
+                    unlockedChars: ['KNIGHT'],
+                    unlockedCards: ['STRIKE', 'BLOCK', 'GREED', 'BASH', 'REPAIR'],
+                    loadout: { chars: ['KNIGHT'], deck: ['STRIKE', 'STRIKE', 'BLOCK', 'BLOCK', 'BASH', 'REPAIR'] },
+                    hasSeenTutorial: false
+                };
+
+                setTokens(defaults.tokens);
+                setUnlockedChars(defaults.unlockedChars);
+                setUnlockedCards(defaults.unlockedCards);
+                setLoadout(defaults.loadout);
+                setHasSeenTutorial(false);
+
+                if (user && db) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'saveData', 'main');
+                        await setDoc(docRef, defaults);
+                    } catch(e) { console.error(e); }
+                }
+
+                setShowWipeConfirm(false);
+                setStatusMsg('Save data wiped clean!');
+            };
+
+            return (
+                <div className="h-full w-full flex flex-col relative bg-[#050814]">
+                    <Header title="SYSTEM DATA" tokens={tokens} onBack={() => setView('menu')} />
+                    
+                    {showWipeConfirm && (
+                        <div className="absolute inset-0 bg-black/90 z-50 flex items-center justify-center p-6 backdrop-blur-sm">
+                            <div className="bg-black p-8 md:p-10 text-center max-w-sm shadow-[12px_12px_0_#000] pixel-border flex flex-col items-center">
+                                <h3 className="text-[color:var(--pico-red)] mb-6 text-[14px] md:text-[18px] font-black drop-shadow-md">CRITICAL WARNING</h3>
+                                <p className="text-white text-[8px] md:text-[10px] mb-8 leading-loose font-bold">Are you certain you wish to purge all operational data? This sequence is irreversible.</p>
+                                <div className="flex gap-4 w-full">
+                                    <button onClick={() => { playSound('click'); setShowWipeConfirm(false); }} className="pixel-button bg-[color:var(--pico-darkGrey)] text-white pixel-border w-1/2 py-3 text-[8px] md:text-[10px] font-bold tracking-widest hover:bg-white hover:text-black">CANCEL</button>
+                                    <button onClick={wipeSave} className="pixel-button bg-[color:var(--pico-red)] text-white pixel-border w-1/2 py-3 text-[8px] md:text-[10px] font-bold tracking-widest hover:bg-white hover:text-black">PURGE</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex-grow flex flex-col items-center p-4 md:p-8 overflow-y-auto custom-scrollbar">
+                        <div className="bg-[#111] p-6 md:p-10 max-w-2xl w-full flex flex-col gap-8 md:gap-10 shadow-[8px_8px_0_#000] pixel-border">
+                            
+                            <div className="flex flex-col gap-3 border-b-[4px] border-[color:var(--pico-darkGrey)] pb-8">
+                                <h2 className="text-[color:var(--pico-blue)] text-[12px] md:text-[16px] font-bold tracking-widest">CLOUD UPLINK</h2>
+                                <p className="text-[8px] md:text-[10px] text-white leading-loose font-medium">
+                                    Network Status: <span className={user ? "text-[color:var(--pico-green)] font-bold" : "text-[color:var(--pico-red)] font-bold"}>{user ? "Secured & Auto-Saving" : "Offline / Unauthenticated"}</span><br/>
+                                    Your progress automatically syncs to Firebase while the uplink is active.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col gap-4 border-b-[4px] border-[color:var(--pico-darkGrey)] pb-8">
+                                <div className="flex flex-col gap-1">
+                                    <h2 className="text-[color:var(--pico-yellow)] text-[12px] md:text-[16px] font-bold tracking-widest">DATA EXPORT</h2>
+                                    <p className="text-[8px] md:text-[10px] text-white font-medium leading-loose">Generate a raw data string to manually back up or transfer your state.</p>
+                                </div>
+                                <button onClick={generateCode} className="pixel-button bg-[color:var(--pico-blue)] text-white pixel-border py-4 text-[8px] md:text-[10px] font-bold tracking-widest w-full md:w-auto self-start px-8 shadow-lg hover:bg-white hover:text-black">
+                                    COPY EXPORT CODE TO CLIPBOARD
+                                </button>
+                            </div>
+
+                            <div className="flex flex-col gap-4 border-b-[4px] border-[color:var(--pico-darkGrey)] pb-8">
+                                <div className="flex flex-col gap-1">
+                                    <h2 className="text-[color:var(--pico-green)] text-[12px] md:text-[16px] font-bold tracking-widest">DATA IMPORT</h2>
+                                    <p className="text-[8px] md:text-[10px] text-white font-medium leading-loose">Paste a previously generated data string to restore your state.</p>
+                                </div>
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    <input 
+                                        type="text" 
+                                        value={importCode}
+                                        onChange={(e) => setImportCode(e.target.value)}
+                                        placeholder="Paste encrypted string here..."
+                                        className="w-full p-4 bg-black text-white pixel-border-sm text-[8px] md:text-[10px] outline-none transition-all font-mono"
+                                    />
+                                    <button onClick={loadCode} className="pixel-button bg-[color:var(--pico-green)] text-white pixel-border py-4 px-8 text-[8px] md:text-[10px] font-bold tracking-widest shadow-lg shrink-0 hover:bg-white hover:text-black">
+                                        INITIATE RESTORE
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col md:flex-row gap-4 pt-2">
+                                <button onClick={() => { playSound('click'); setHasSeenTutorial(false); setStatusMsg('Tutorial Module Reset!'); }} className="pixel-button bg-[color:var(--pico-orange)] text-white pixel-border py-4 w-full text-[8px] md:text-[10px] font-bold tracking-widest shadow-lg hover:bg-white hover:text-black">
+                                    REBOOT TUTORIAL
+                                </button>
+                                <button onClick={() => { playSound('click'); setShowWipeConfirm(true); }} className="pixel-button bg-[color:var(--pico-red)] text-white pixel-border py-4 w-full text-[8px] md:text-[10px] font-bold tracking-widest shadow-lg hover:bg-white hover:text-black">
+                                    PURGE ALL DATA
+                                </button>
+                            </div>
+
+                            {statusMsg && (
+                                <div className="text-center text-[8px] md:text-[10px] text-[color:var(--pico-green)] font-bold bg-[#111] py-3 pixel-border-sm animate-[floatUp_3s_ease-out_forwards]">
+                                    {statusMsg}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const MainApp = () => {
+            const [view, setView] = useState('menu'); 
+            
+            // Meta-Progression State
+            const [tokens, setTokens] = useState(0);
+            
+            const [unlockedChars, setUnlockedChars] = useState(['KNIGHT']);
+            const [unlockedCards, setUnlockedCards] = useState(['STRIKE', 'BLOCK', 'GREED', 'BASH', 'REPAIR']);
+            const [loadout, setLoadout] = useState({
+                chars: ['KNIGHT'],
+                deck: ['STRIKE', 'STRIKE', 'BLOCK', 'BLOCK', 'BASH', 'REPAIR']
+            });
+            
+            const [hasSeenTutorial, setHasSeenTutorial] = useState(false);
+
+            // Firebase State
+            const [user, setUser] = useState(null);
+            const [db, setDb] = useState(null);
+            const [appId, setAppId] = useState('dungeon-clawler');
+            const [dataLoaded, setDataLoaded] = useState(false);
+
+            useEffect(() => {
+                let currentApp, currentAuth, currentDb;
+                try {
+                    if (typeof __firebase_config !== 'undefined') {
+                        const firebaseConfig = JSON.parse(__firebase_config);
+                        currentApp = initializeApp(firebaseConfig);
+                        currentAuth = getAuth(currentApp);
+                        currentDb = getFirestore(currentApp);
+                        setDb(currentDb);
+                    }
+                    if (typeof __app_id !== 'undefined') {
+                        setAppId(__app_id);
+                    }
+                } catch(e) { console.warn("Firebase not initialized", e); }
+
+                if (!currentAuth) {
+                    setDataLoaded(true);
+                    return;
+                }
+
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(currentAuth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(currentAuth);
+                        }
+                    } catch (error) {
+                        console.error("Auth error", error);
+                        setDataLoaded(true);
+                    }
+                };
+                initAuth();
+
+                const unsubscribe = onAuthStateChanged(currentAuth, (currentUser) => {
+                    setUser(currentUser);
+                    if (!currentUser) setDataLoaded(true);
+                });
+                return () => unsubscribe();
+            }, []);
+
+            useEffect(() => {
+                if (!user || !db) return;
+                const loadCloudSave = async () => {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'saveData', 'main');
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            if (data.tokens !== undefined) setTokens(data.tokens);
+                            if (data.unlockedChars) setUnlockedChars(data.unlockedChars);
+                            if (data.unlockedCards) setUnlockedCards(data.unlockedCards);
+                            if (data.loadout) setLoadout(data.loadout);
+                            if (data.hasSeenTutorial !== undefined) setHasSeenTutorial(data.hasSeenTutorial);
+                        }
+                    } catch(e) { console.error("Load save error:", e); }
+                    setDataLoaded(true);
+                };
+                loadCloudSave();
+            }, [user, db, appId]);
+
+            useEffect(() => {
+                if (!user || !db || !dataLoaded) return;
+                const timer = setTimeout(() => {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'saveData', 'main');
+                        setDoc(docRef, { tokens, unlockedChars, unlockedCards, loadout, hasSeenTutorial }, { merge: true });
+                    } catch(e) { console.error("Auto-save error:", e); }
+                }, 1500);
+                return () => clearTimeout(timer);
+            }, [tokens, unlockedChars, unlockedCards, loadout, hasSeenTutorial, user, db, appId, dataLoaded]);
+
+            const handleEndRun = (earned) => {
+                setTokens(t => t + earned);
+                setView('menu');
+            };
+
+            const completeTutorial = () => {
+                setHasSeenTutorial(true);
+            };
+
+            if (!dataLoaded) {
+                return <div className="h-[100dvh] w-screen bg-[#141013] flex flex-col gap-6 items-center justify-center text-[color:var(--pico-yellow)] text-[12px] md:text-[16px] font-black tracking-widest">INITIALIZING SECURE CONNECTION...</div>;
+            }
+
+            const menuCards = [
+                { artId: 'sword', color: PICO8_PALETTE['8'], floatClass: 'anim-float', top: '10%', left: '5%' },
+                { artId: 'shield', color: PICO8_PALETTE['C'], floatClass: 'anim-float-delayed', top: '50%', right: '5%' },
+                { artId: 'potion', color: PICO8_PALETTE['B'], floatClass: 'anim-float', bottom: '10%', left: '15%' }
+            ];
+
+            return (
+                <div className="min-h-[100dvh] w-screen bg-[#000] flex items-center justify-center">
+                    <div id="game-window">
+                        {view === 'menu' && (
+                            <div className="h-full w-full flex flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden bg-[#1B1E34]" onClick={() => playSound('click')}>
+                                <div className="absolute opacity-20 pointer-events-none anim-portal z-0" style={{ transform: 'scale(15)' }}>
+                                    <PixelArt art={SPRITES.summon_portal} scale={4} />
+                                </div>
+                                
+                                {/* Decorative floating menu cards */}
+                                {menuCards.map((mc, i) => (
+                                    <div key={i} className={`absolute ${mc.floatClass} opacity-50 pointer-events-none scale-75 md:scale-110 z-0 drop-shadow-[8px_8px_0_#000]`} style={{ top: mc.top, left: mc.left, right: mc.right, bottom: mc.bottom }}>
+                                        <div className="pixel-border bg-[#111]" style={{ borderColor: mc.color, width: '96px', height: '144px' }}>
+                                            <div className="h-[60%] w-full border-b-[4px] border-black flex items-center justify-center relative holo-bg" style={{ backgroundColor: mc.color }}>
+                                                <PixelArt art={SPRITES[mc.artId]} scale={3} className="drop-shadow-[4px_4px_0_#000]" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div className="bg-[#141013] p-8 md:p-14 pixel-border flex flex-col items-center gap-10 md:gap-14 z-10 max-w-lg w-full shadow-[16px_16px_0_#000]">
+                                    <div className="text-center relative w-full flex justify-center">
+                                        <h1 className="text-[20px] sm:text-[28px] md:text-[36px] text-[color:var(--pico-yellow)] leading-[1.4] font-black drop-shadow-[4px_4px_0_var(--pico-red)] text-center">DUNGEON<br/>CLAWLER</h1>
+                                        <div className="absolute -bottom-8 right-2 md:-right-6 bg-[color:var(--pico-red)] text-white text-[6px] sm:text-[8px] md:text-[10px] px-4 py-2 pixel-border-sm transform rotate-[-6deg] shadow-[4px_4px_0_#000] font-bold tracking-widest uppercase">FANTASY EDITION</div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-4 md:gap-5 w-full mt-4">
+                                        <button onClick={() => { playSound('click'); setView('run'); }} className="w-full py-5 md:py-6 pixel-button bg-[color:var(--pico-blue)] text-white text-[12px] md:text-[16px] font-black tracking-widest shadow-[4px_4px_0_#000] pixel-border hover:bg-white hover:text-black">
+                                            ENTER DUNGEON
+                                        </button>
+                                        <div className="flex gap-4 md:gap-5 w-full">
+                                            <button onClick={() => { playSound('click'); setView('inventory'); }} className="w-1/2 py-4 md:py-5 pixel-button bg-[color:var(--pico-darkGrey)] text-white text-[8px] md:text-[12px] font-bold tracking-widest shadow-[4px_4px_0_#000] pixel-border hover:bg-white hover:text-black">
+                                                LOADOUT
+                                            </button>
+                                            <button onClick={() => { playSound('click'); setView('forge'); }} className="w-1/2 py-4 md:py-5 pixel-button bg-[color:var(--pico-purple)] text-white text-[8px] md:text-[12px] font-bold tracking-widest shadow-[4px_4px_0_#000] pixel-border flex flex-col justify-center items-center gap-2 hover:bg-white hover:text-black">
+                                                <span>SUMMON</span>
+                                                <span className="text-[6px] md:text-[8px] bg-black px-3 py-1 text-[color:var(--pico-yellow)] font-bold pixel-border-sm">{tokens} GOLD</span>
+                                            </button>
+                                        </div>
+                                        <button onClick={() => { playSound('click'); setView('save'); }} className="w-full py-4 bg-transparent border-[2px] border-[color:var(--pico-darkGrey)] hover:border-white text-[color:var(--pico-lightGrey)] hover:text-white transition-all text-[8px] md:text-[12px] font-bold tracking-widest pixel-button">
+                                            SYSTEM SETTINGS
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {view === 'run' && <RunView loadout={loadout} onEndRun={handleEndRun} hasSeenTutorial={hasSeenTutorial} completeTutorial={completeTutorial} />}
+                        {view === 'inventory' && <InventoryView unlockedChars={unlockedChars} unlockedCards={unlockedCards} loadout={loadout} setLoadout={setLoadout} tokens={tokens} setView={setView} />}
+                        {view === 'forge' && <PrizeMachineView tokens={tokens} setTokens={setTokens} unlockedChars={unlockedChars} setUnlockedChars={setUnlockedChars} unlockedCards={unlockedCards} setUnlockedCards={setUnlockedCards} setView={setView} />}
+                        {view === 'save' && <SaveView tokens={tokens} unlockedChars={unlockedChars} unlockedCards={unlockedCards} loadout={loadout} setTokens={setTokens} setUnlockedChars={setUnlockedChars} setUnlockedCards={setUnlockedCards} setLoadout={setLoadout} setView={setView} user={user} db={db} appId={appId} setHasSeenTutorial={setHasSeenTutorial} />}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MainApp />);
+    </script>
+</body>
+</html>
