@@ -4,7 +4,7 @@ on:
   push:
     branches: ['main'] # Or 'master', depending on your default branch name
 
-# Sets permissions to allow the robot to push to your website
+
 permissions:
   contents: read
   pages: write
