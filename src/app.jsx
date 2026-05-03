@@ -1,0 +1,1884 @@
+import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+  signOut, onAuthStateChanged, updateProfile, signInAnonymously, 
+  signInWithCustomToken, sendPasswordResetEmail, sendEmailVerification
+} from 'firebase/auth';
+import { 
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, 
+  collection, onSnapshot, enableIndexedDbPersistence 
+} from 'firebase/firestore';
+
+// --- ICONS ---
+const HomeIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor" fillOpacity="0.2"/><polyline points="9 22 9 12 15 12 15 22"/></svg>);
+const UserIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" fill="currentColor" fillOpacity="0.2"/><circle cx="12" cy="7" r="4" fill="currentColor" fillOpacity="0.2"/></svg>);
+const SettingsIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" fillOpacity="0.2"/><circle cx="12" cy="12" r="3"/></svg>);
+const TrophyIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" fill="currentColor" fillOpacity="0.2"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0z" fill="currentColor" fillOpacity="0.2"/></svg>);
+const SearchIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8" fill="currentColor" fillOpacity="0.15"/><path d="m21 21-4.3-4.3"/></svg>);
+const PlayIcon = ({ size = 24, className = "", fill = "none" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>);
+const Gamepad2Icon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="12" x="2" y="6" rx="2" fill="currentColor" fillOpacity="0.2"/><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/></svg>);
+const ChevronLeftIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>);
+const Maximize2Icon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>);
+const Minimize2Icon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>);
+const XIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>);
+const MenuIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>);
+const UploadIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="currentColor" fillOpacity="0.2"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>);
+const EyeIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" fill="currentColor" fillOpacity="0.15"/><circle cx="12" cy="12" r="3"/></svg>);
+const EyeOffIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" fill="currentColor" fillOpacity="0.15"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" fill="currentColor" fillOpacity="0.15"/><line x1="2" y1="2" x2="22" y2="22"/></svg>);
+const StarIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>);
+const InfoIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>);
+const HeartIcon = ({ size = 24, className = "", fill = "none" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>);
+const SurpriseIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" fill="currentColor" fillOpacity="0.2"/><path d="M5 3v4M7 5H3"/><path d="M19 17v4M21 19h-4"/></svg>);
+const ShieldIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.2"/></svg>);
+const BanIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><path d="m4.9 4.9 14.2 14.2"/></svg>);
+const ClockIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/><polyline points="12 6 12 12 16 14"/></svg>);
+const WifiOffIcon = ({ size = 24, className = "" }) => (<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/></svg>);
+
+// --- GAME ICONS ---
+const ShaddoCraftIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'15px', boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%', height:'100%', objectFit:'contain', filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e => {e.target.onerror=null; e.target.src='[https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game](https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game)';}}/></div>));
+const VoidStalkerIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='[https://placehold.co/200x200/312e81/ffffff?text=Spooky](https://placehold.co/200x200/312e81/ffffff?text=Spooky)';}}/></div>));
+const VBrawlIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#1e1b4b"/><stop offset="100%" stopColor="#0f172a"/></linearGradient><filter id="brawlImpactGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#bBg)" /><g transform="translate(100, 135)"><path d="M0 0L75 -37.5L0 -75L-75 -37.5Z" fill="#334155" stroke="#475569" strokeWidth="3" strokeLinejoin="round"/><path d="M-75 -37.5L0 0L0 25L-75 -12.5Z" fill="#0f172a" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/><path d="M75 -37.5L0 0L0 25L75 -12.5Z" fill="#1e293b" stroke="#334155" strokeWidth="2" strokeLinejoin="round"/></g><g filter="url(#brawlImpactGlow)"><path d="M90 80L110 100M110 80L90 100M100 70L100 110M80 90L120 90" stroke="#facc15" strokeWidth="4" strokeLinecap="round" /><circle cx="100" cy="90" r="15" fill="#fef08a" opacity="0.6" /></g><g filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.6))"><g transform="translate(75, 90)"><path d="M-15 0Q-25 -5 -35 0Q-25 5 -15 0" fill="#fca5a5" opacity="0.8"/><circle cx="0" cy="0" r="14" fill="#ef4444" /><path d="M3 -4L8 0L3 4" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></g><g transform="translate(125, 90)"><path d="M15 0Q25 -5 35 0Q25 5 15 0" fill="#93c5fd" opacity="0.8"/><circle cx="0" cy="0" r="14" fill="#3b82f6" /><path d="M-3 -4L-8 0L-3 4" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></g><g transform="translate(100, 45)"><path d="M0 -15L-5 -30L5 -30Z" fill="#86efac" opacity="0.8"/><circle cx="0" cy="0" r="14" fill="#22c55e" /><path d="M-4 2L0 6L4 2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></g><g transform="translate(145, 55)"><circle cx="0" cy="0" r="14" fill="#a855f7" /><path d="M-4 -2L4 -2M-4 2L4 2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round"/><path d="M-15 15Q-20 25 -30 35" stroke="#d8b4fe" strokeWidth="3" strokeDasharray="4 4" fill="none"/></g></g></svg>));
+const PigeonIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#4c1d95"/><stop offset="100%" stopColor="#be185d"/></linearGradient><filter id="pGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#pGrad)" /><g transform="translate(100, 115)"><path d="M-45 0C-45 30,-25 50,0 50C25 50,45 30,45 0C45 -40,25 -50,0 -50C-25 -50,-45 -40,-45 0Z" fill="#94a3b8" stroke="#334155" strokeWidth="4"/><path d="M-30 5C-30 25,-15 40,0 40C15 40,30 25,30 5Z" fill="#cbd5e1" /></g><g transform="translate(100, 60)"><circle cx="0" cy="0" r="35" fill="#94a3b8" stroke="#334155" strokeWidth="4"/><path d="M-12 8L12 8L0 28Z" fill="#f59e0b" stroke="#b45309" strokeWidth="3" strokeLinejoin="round"/><path d="M-28 -8L-5 0L-15 12Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/><path d="M28 -8L5 0L15 12Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/><circle cx="-12" cy="2" r="3.5" fill="#ef4444" /><circle cx="12" cy="2" r="3.5" fill="#ef4444" /></g><g transform="translate(50, 130)" filter="url(#pGlow)"><circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" /><path d="M-12 -15Q8 -22 18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/><rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/></g><g transform="translate(150, 130)" filter="url(#pGlow)"><circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" /><path d="M12 -15Q-8 -22 -18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/><rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/></g></svg>));
+const BurgerIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="burgerBg" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#b45309"/></linearGradient><filter id="glowSteam"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#burgerBg)" /><g transform="translate(100, 105) scale(1.15)"><ellipse cx="0" cy="35" rx="65" ry="15" fill="#fef3c7" stroke="#d97706" strokeWidth="3"/><ellipse cx="0" cy="35" rx="45" ry="8" fill="#fde68a" /><path d="M-25 -65Q-15 -80 -25 -95M0 -70Q10 -85 0 -100M25 -65Q35 -80 25 -95" stroke="#fde68a" strokeWidth="4" strokeLinecap="round" fill="none" filter="url(#glowSteam)" opacity="0.7"/><path d="M-50 20C-50 40,50 40,50 20Z" fill="#fbbf24" stroke="#d97706" strokeWidth="4"/><rect x="-55" y="0" width="110" height="20" rx="10" fill="#78350f" stroke="#451a03" strokeWidth="4"/><path d="M-60 -5L-50 5L-40 -5L-30 10L-20 -5L-10 5L0 -5L10 10L20 -5L30 5L40 -5L50 10L60 -5Z" fill="#facc15" stroke="#ca8a04" strokeWidth="3" strokeLinejoin="round"/><rect x="-52" y="-12" width="104" height="8" rx="4" fill="#ef4444" stroke="#b91c1c" strokeWidth="2"/><path d="M-55 -20C-40 -35,-30 -5,-15 -20C0 -35,10 -5,25 -20C40 -35,50 -5,55 -20C60 0,-60 0,-55 -20Z" fill="#4ade80" stroke="#16a34a" strokeWidth="4" strokeLinejoin="round"/><path d="M-50 -25C-50 -65,50 -65,50 -25Z" fill="#fbbf24" stroke="#d97706" strokeWidth="4"/><ellipse cx="-20" cy="-45" rx="4" ry="2" fill="#ddd6fe" transform="rotate(15 -20 -45)"/><ellipse cx="0" cy="-52" rx="4" ry="2" fill="#ddd6fe" /><ellipse cx="20" cy="-45" rx="4" ry="2" fill="#ddd6fe" transform="rotate(-15 20 -45)"/></g></svg>));
+const RealmIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="realmGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#0284c7"/><stop offset="100%" stopColor="#1e3a8a"/></linearGradient><filter id="shardGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#realmGrad)" /><g transform="translate(100, 100)" filter="url(#shardGlow)"><path d="M0 -60L30 10L0 50L-30 10Z" fill="#e0f2fe" opacity="0.9"/><path d="M0 -60L30 10L0 80L0 50Z" fill="#bae6fd" opacity="0.7"/><path d="M-40 -10L-10 20L-20 40Z" fill="#7dd3fc" opacity="0.8"/><path d="M40 0L15 30L30 45Z" fill="#38bdf8" opacity="0.8"/></g></svg>));
+const ScaryMazeIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Maze.png" alt="Scary Maze" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='[https://placehold.co/200x200/0f172a/ffffff?text=Scary+Maze](https://placehold.co/200x200/0f172a/ffffff?text=Scary+Maze)';}}/></div>));
+const TheSpookyMazeIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="spokGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#4c1d95"/><stop offset="100%" stopColor="#000000"/></linearGradient><filter id="spokGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#spokGrad)" /><g filter="url(#spokGlow)"><path d="M40 40H160V160H40V40Z" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/><path d="M40 80H120V120H80V160" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/><path d="M160 100H100V40" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="140" cy="140" r="10" fill="#ef4444"/><path d="M60 140 Q 70 120 80 140" stroke="#ef4444" strokeWidth="4" fill="none" /></g></svg>));
+const GSwitchIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="gsGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#3b82f6"/><stop offset="100%" stopColor="#1e3a8a"/></linearGradient><filter id="gsGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#gsGrad)" /><g filter="url(#gsGlow)"><path d="M70 140 L70 60 L40 90 M70 60 L100 90" stroke="#93c5fd" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/><path d="M130 60 L130 140 L100 110 M130 140 L160 110" stroke="#60a5fa" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/></g></svg>));
+const PolyBitIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="polyGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#8b5cf6"/><stop offset="100%" stopColor="#d946ef"/></linearGradient><filter id="polyGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#polyGrad)" /><g filter="url(#polyGlow)"><path d="M100 40 L160 140 L40 140 Z" fill="#fbcfe8" opacity="0.8"/><path d="M100 40 L160 140 L100 120 Z" fill="#fdf4ff" opacity="0.9"/><polygon points="100,120 160,140 100,160 40,140" fill="#f0abfc" opacity="0.6"/><path d="M100 80 L120 120 L80 120 Z" fill="#d946ef" /></g></svg>));
+const DungeonCrawlerIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="dungGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#27272a"/><stop offset="100%" stopColor="#09090b"/></linearGradient><filter id="swordGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#dungGrad)" /><g filter="url(#swordGlow)" transform="translate(100, 100) rotate(45)"><path d="M-10 -40 L0 -90 L10 -40 L10 20 L-10 20 Z" fill="#e4e4e7" stroke="#a1a1aa" strokeWidth="2"/><path d="M0 -90 L10 -40 L10 20 L0 20 Z" fill="#71717a" /><rect x="-30" y="20" width="60" height="12" rx="4" fill="#fbbf24" stroke="#b45309" strokeWidth="2"/><rect x="-10" y="20" width="20" height="16" rx="2" fill="#f59e0b" /><rect x="-8" y="32" width="16" height="35" rx="4" fill="#78350f" stroke="#451a03" strokeWidth="2"/><circle cx="0" cy="70" r="10" fill="#fbbf24" stroke="#b45309" strokeWidth="2"/><circle cx="0" cy="70" r="4" fill="#ef4444" /></g></svg>));
+const ArchitectIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="archGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#1e293b"/><stop offset="100%" stopColor="#020617"/></linearGradient><filter id="archGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="200" height="200" rx="40" fill="url(#archGrad)" /><g filter="url(#archGlow)"><path d="M50 150 L150 150 L100 50 Z" fill="none" stroke="#2dd4bf" strokeWidth="8" /><circle cx="100" cy="110" r="15" fill="#14b8a6" /><path d="M85 110 Q 100 90 115 110" stroke="#020617" strokeWidth="4" fill="none" /></g></svg>));
+const BlackjackIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="bjGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#166534"/><stop offset="100%" stopColor="#064e3b"/></linearGradient><filter id="bjDrop"><feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.5" /></filter></defs><rect width="200" height="200" rx="40" fill="url(#bjGrad)" /><g filter="url(#bjDrop)"><g transform="translate(60, 60) rotate(-15)"><rect width="60" height="90" rx="6" fill="#ddd6fe" /><path d="M25 35 L30 45 L35 35 A 5 5 0 0 0 25 35" fill="#ef4444" /><text x="10" y="25" fill="#ef4444" fontSize="16" fontFamily="Arial" fontWeight="bold">A</text></g><g transform="translate(100, 70) rotate(10)"><rect width="60" height="90" rx="6" fill="#ddd6fe" /><path d="M30 35 C 35 25, 45 45, 30 55 C 15 45, 25 25, 30 35" fill="#0f172a" /><text x="10" y="25" fill="#0f172a" fontSize="16" fontFamily="Arial" fontWeight="bold">J</text></g></g></svg>));
+const CheeseIcon = memo(() => (<svg width="100%" height="100%" viewBox="0 0 200 200" fill="none"><defs><linearGradient id="cheeseGrad" x1="0" y1="0" x2="200" y2="200"><stop offset="0%" stopColor="#fef08a"/><stop offset="100%" stopColor="#eab308"/></linearGradient><filter id="cheeseDrop"><feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.3" /></filter></defs><rect width="200" height="200" rx="40" fill="url(#cheeseGrad)" /><g filter="url(#cheeseDrop)" transform="translate(50, 60)"><path d="M0 0 L100 -20 L80 60 L-20 80 Z" fill="#fde047" stroke="#ca8a04" strokeWidth="6" strokeLinejoin="round" /><path d="M0 0 L-20 80 L-20 100 L0 20 Z" fill="#facc15" stroke="#ca8a04" strokeWidth="6" strokeLinejoin="round" /><path d="M80 60 L-20 80 L-20 100 L80 80 Z" fill="#eab308" stroke="#ca8a04" strokeWidth="6" strokeLinejoin="round" /><circle cx="30" cy="30" r="12" fill="#ca8a04" /><circle cx="65" cy="15" r="8" fill="#ca8a04" /><circle cx="10" cy="50" r="10" fill="#ca8a04" /></g></svg>));
+
+    // --- ADSENSE WIDGET COMPONENT ---
+    const AdSenseWidget = memo(() => {
+      useEffect(() => {
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+          console.warn("AdSense push error:", e);
+        }
+      }, []);
+      return (
+        <div className="w-full flex justify-center mt-8 min-h-[100px] relative z-50 bg-obsidian-900/50 backdrop-blur-md rounded-2xl overflow-hidden border border-violet-500/10 shadow-inner">
+          <ins className="adsbygoogle"
+               style={{ display: 'block', width: '100%' }}
+               data-ad-client="ca-pub-9729951455444854"
+               data-ad-slot="1373555364"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
+      );
+    });
+
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = { 
+      apiKey: "AIzaSyBZsza33A9WhqSaywN3XJ4CsTa5lon8VPg", 
+      authDomain: "nexis-games.firebaseapp.com", 
+      projectId: "nexis-games", 
+      storageBucket: "nexis-games.firebasestorage.app", 
+      messagingSenderId: "291409336146", 
+      appId: "1:291409336146:web:adf717a48f75469c44cc8b" 
+    };
+
+    let auth, db; 
+    const APP_ID = 'nexis-games-production';
+    try { 
+      const app = initializeApp(firebaseConfig); 
+      auth = getAuth(app); 
+      db = getFirestore(app); 
+      enableIndexedDbPersistence(db).catch(() => {}); 
+    } catch (e) {}
+
+    // --- SECURITY UTILITIES ---
+    const sanitizeUsername = (name) => {
+        const regex = /^[a-zA-Z0-9_]{3,16}$/;
+        return regex.test(name);
+    };
+
+    // --- UTILS ---
+    const getStreakDateString = (dateObj = new Date()) => { 
+      const utc = dateObj.getTime() + (dateObj.getTimezoneOffset() * 60000); 
+      const gmt7 = utc - (3600000 * 7); 
+      const rolloverShift = new Date(gmt7 - (3600000 * 8)); 
+      return rolloverShift.getFullYear() + '-' + String(rolloverShift.getMonth() + 1).padStart(2, '0') + '-' + String(rolloverShift.getDate()).padStart(2, '0'); 
+    };
+
+    const getDaysDifference = (d1, d2) => { 
+      if (!d1 || !d2) return 999; 
+      return Math.floor((new Date(d1 + 'T00:00:00Z') - new Date(d2 + 'T00:00:00Z')) / 86400000); 
+    };
+
+    const getEffectiveStreak = (p) => { 
+      if (!p.lastPlayedDate || !p.currentStreak) return 0; 
+      return getDaysDifference(getStreakDateString(), p.lastPlayedDate) <= 1 ? p.currentStreak : 0; 
+    };
+
+    const isEligibleForLeaderboard = (d) => {
+      return d.status !== 'banned' && (getEffectiveStreak(d) > 0 || getDaysDifference(getStreakDateString(), d.lastPlayedDate) < 2);
+    };
+
+    const processImageFile = (file, maxWidth, maxHeight, callback, isBanner = false) => {
+      if (file.size > 5000000) { alert("Image is too large (max 5MB)."); return; }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+         const img = new Image();
+         img.onload = () => {
+           const canvas = document.createElement('canvas'); 
+           let width = img.width; 
+           let height = img.height;
+           if (width > height) { 
+             if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; } 
+           } else { 
+             if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; } 
+           }
+           canvas.width = width; 
+           canvas.height = height; 
+           const ctx = canvas.getContext('2d');
+           if (isBanner) { 
+             ctx.drawImage(img, 0, 0, width, height); 
+             const grd = ctx.createLinearGradient(0, height - 100, 0, height); 
+             grd.addColorStop(0, "transparent"); 
+             grd.addColorStop(1, "rgba(0,0,0,0.5)"); 
+             ctx.fillStyle = grd; 
+             ctx.fillRect(0, height - 100, width, 100); 
+           } else { 
+             ctx.drawImage(img, 0, 0, width, height); 
+           }
+           callback(canvas.toDataURL('image/jpeg', 0.85));
+         }; 
+         img.src = reader.result;
+      }; 
+      reader.readAsDataURL(file);
+    };
+
+    // --- GAME DATA ---
+    const GAMES = [
+      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-600 to-orange-900', tags: ['Cooking', 'Action'] },
+      { id: 'beauty-and-the-cheese', title: 'Beauty and the Cheese', developer: 'Jam', src: 'games/Che.html', icon: CheeseIcon, theme: 'from-yellow-500 to-amber-700', tags: ['Adventure', 'Arcade'] },
+      { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: '[https://gswitch.io/g-switch-3.embed](https://gswitch.io/g-switch-3.embed)', icon: GSwitchIcon, theme: 'from-blue-700 to-indigo-950', tags: ['Action', 'Arcade'] },
+      { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', icon: ArchitectIcon, theme: 'from-teal-900 to-black', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
+      { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', icon: BlackjackIcon, theme: 'from-green-800 to-emerald-950', tags: ['Arcade', 'Table'] },
+      { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-fuchsia-700 to-purple-950', tags: ['Action', 'Arcade'] },
+      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Unknown', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-800 to-black', tags: ['RPG', 'Adventure'], isPublicBeta: true },
+      { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-red-950 to-black', tags: ['Spooky', 'Action'] },
+      { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Unknown', src: 'games/Spok.html', icon: TheSpookyMazeIcon, theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
+      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', src: '[https://pigeron.edgeone.app](https://pigeron.edgeone.app)', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
+      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: '[https://shaddo24mc.github.io/3d-releases/](https://shaddo24mc.github.io/3d-releases/)', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'] },
+      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true }
+    ];
+
+    const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG', 'Arcade', 'Table'];
+
+    function App() {
+      // Basic States
+      const [activeView, setActiveView] = useState('discover'); 
+      const [activeGame, setActiveGame] = useState(null); 
+      const [searchQuery, setSearchQuery] = useState(''); 
+      const [activeCategory, setActiveCategory] = useState('All'); 
+      const [iframeLoading, setIframeLoading] = useState(true); 
+      const [adCountdown, setAdCountdown] = useState(0); 
+      const [isCssFullscreen, setIsCssFullscreen] = useState(false); 
+      const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+      const [toast, setToast] = useState(null); 
+      const [isOffline, setIsOffline] = useState(!navigator.onLine);
+      const [pendingFullscreen, setPendingFullscreen] = useState(false);
+      
+      // Auth & Profile States
+      const [user, setUser] = useState(null); 
+      const [currentUserTag, setCurrentUserTag] = useState(''); 
+      const [currentUserPhoto, setCurrentUserPhoto] = useState(''); 
+      const [currentUserBanner, setCurrentUserBanner] = useState(''); 
+      const [currentUserBio, setCurrentUserBio] = useState(''); 
+      const [favorites, setFavorites] = useState([]); 
+      const [userStatus, setUserStatus] = useState('active'); 
+      const [showAuthModal, setShowAuthModal] = useState(false); 
+      const [authMode, setAuthMode] = useState('login'); 
+      const [email, setEmail] = useState(''); 
+      const [password, setPassword] = useState(''); 
+      const [username, setUsername] = useState(''); 
+      const [authError, setAuthError] = useState(''); 
+      const [authLoading, setAuthLoading] = useState(false); 
+      const [authCooldown, setAuthCooldown] = useState(false);
+      const [showPassword, setShowPassword] = useState(false); 
+      const [resetMessage, setResetMessage] = useState(''); 
+      const [botCheck, setBotCheck] = useState({ num1: 1, num2: 1, answer: '' });
+      
+      const [profileUsername, setProfileUsername] = useState(''); 
+      const [profileUserTag, setProfileUserTag] = useState(''); 
+      const [profilePhotoUrl, setProfilePhotoUrl] = useState(''); 
+      const [profileBannerUrl, setProfileBannerUrl] = useState(''); 
+      const [profileBio, setProfileBio] = useState(''); 
+      const [isUpdatingProfile, setIsUpdatingProfile] = useState(false); 
+      
+      // Leaderboard States
+      const [currentUserStreak, setCurrentUserStreak] = useState(0); 
+      const [leaderboard, setLeaderboard] = useState([]); 
+      const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true); 
+      const [leaderboardError, setLeaderboardError] = useState(''); 
+      const [viewingPlayer, setViewingPlayer] = useState(null); 
+      
+      // Admin States
+      const [allUsers, setAllUsers] = useState([]); 
+      const [adminEditingUser, setAdminEditingUser] = useState(null); 
+      const [adminEditUsername, setAdminEditUsername] = useState(''); 
+      const [adminEditTag, setAdminEditTag] = useState(''); 
+      const [adminEditPhoto, setAdminEditPhoto] = useState(''); 
+      const [adminEditStreak, setAdminEditStreak] = useState(0); 
+      const [adminEditLevel, setAdminEditLevel] = useState(1); 
+      const [adminEditStatus, setAdminEditStatus] = useState('active'); 
+      const [adminActionLoading, setAdminActionLoading] = useState(false); 
+      
+      // Settings States
+      const [masterVolume, setMasterVolume] = useState(100); 
+      const [musicVolume, setMusicVolume] = useState(2); 
+      const [sfxVolume, setSfxVolume] = useState(100); 
+      const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+      const [authResolved, setAuthResolved] = useState(false);
+      
+      const playerContainerRef = useRef(null); 
+      const bgMusicRef = useRef(null);
+      
+      const isRegistered = user && !user.isAnonymous; 
+      const isDevUser = isRegistered && ['MOFU', 'DEV1', 'DEV2', 'DEV3', 'DEV4', 'DEV5'].includes(currentUserTag);
+      const isAdmin = isRegistered && currentUserTag === "MOFU"; 
+
+      const userLevel = 1 + Math.floor(currentUserStreak / 2); 
+      const levelProgress = ((currentUserStreak % 2) / 2) * 100;
+
+      const showToast = (message, type = 'success') => { 
+        setToast({ message, type }); 
+        setTimeout(() => setToast(null), 3500); 
+      };
+
+      // --- EFFECTS ---
+
+      useEffect(() => {
+        const timeout = setTimeout(() => {
+          setAuthResolved(true);
+        }, 800); 
+        return () => clearTimeout(timeout);
+      }, []);
+
+      useEffect(() => {
+        if (authMode === 'signup') {
+          setBotCheck({
+            num1: Math.floor(Math.random() * 10) + 1,
+            num2: Math.floor(Math.random() * 10) + 1,
+            answer: ''
+          });
+        }
+      }, [authMode]);
+
+      useEffect(() => {
+        if (!bgMusicRef.current) {
+          bgMusicRef.current = new Audio('assets/BG.mp3');
+          bgMusicRef.current.loop = true;
+          bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100);
+        }
+      }, []);
+
+      useEffect(() => { 
+        if (bgMusicRef.current) { 
+          if (activeGame || !isSoundEnabled) { 
+            bgMusicRef.current.pause(); 
+          } else { 
+            bgMusicRef.current.volume = (musicVolume / 100) * (masterVolume / 100); 
+            bgMusicRef.current.play().catch(e => {}); 
+          } 
+        } 
+      }, [musicVolume, masterVolume, activeGame, isSoundEnabled]);
+
+      useEffect(() => { 
+        const handleOnline = () => setIsOffline(false); 
+        const handleOffline = () => setIsOffline(true); 
+        window.addEventListener('online', handleOnline); 
+        window.addEventListener('offline', handleOffline); 
+        return () => { 
+          window.removeEventListener('online', handleOnline); 
+          window.removeEventListener('offline', handleOffline); 
+        }; 
+      }, []);
+
+      useEffect(() => { 
+        if (authResolved) { 
+          const loader = document.getElementById('nexis-global-loader'); 
+          if (loader) { 
+            loader.style.opacity = '0'; 
+            loader.style.visibility = 'hidden'; 
+            setTimeout(() => loader.remove(), 400); 
+          } 
+        } 
+      }, [authResolved]);
+
+      useEffect(() => {
+        if (!auth) {
+          setAuthResolved(true); 
+          return;
+        }
+        const initAuth = async () => { 
+          try { 
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { 
+              try { 
+                await signInWithCustomToken(auth, __initial_auth_token); 
+                return; 
+              } catch(e) {} 
+            } 
+            await signInAnonymously(auth); 
+          } catch(e) {} 
+        };
+        initAuth(); 
+        
+        return onAuthStateChanged(auth, u => { 
+          setUser(u); 
+          setAuthResolved(true); 
+          if (u && !u.isAnonymous) {
+            setProfileUsername(u.displayName || ''); 
+          }
+        });
+      }, []);
+
+      useEffect(() => {
+        if (!user || user.isAnonymous || !db) return;
+        
+        const userRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', user.uid);
+        
+        const updateStreak = async () => {
+          try {
+            const snap = await getDoc(userRef); 
+            const today = getStreakDateString(); 
+            let newStreak = 1; 
+            let cTag = user.uid.substring(0,4).toUpperCase(); 
+            let cUser = user.displayName; 
+            let cPhoto = ''; 
+            let cBanner = ''; 
+            let cBio = '';
+            
+            if (snap.exists()) { 
+              const data = snap.data(); 
+              cTag = data.userTag || cTag; 
+              setFavorites(data.favorites || []); 
+              setUserStatus(data.status || 'active'); 
+              cPhoto = data.photoURL || ''; 
+              cBanner = data.bannerURL || ''; 
+              cBio = data.bio || ''; 
+              cUser = data.username || cUser; 
+              
+              if (data.lastPlayedDate === today) {
+                newStreak = data.currentStreak || 1; 
+              } else { 
+                const yesterday = new Date(); 
+                yesterday.setDate(yesterday.getDate() - 1); 
+                newStreak = data.lastPlayedDate === getStreakDateString(yesterday) ? (data.currentStreak || 0) + 1 : 0; 
+              } 
+            }
+            
+            await setDoc(userRef, { 
+              uid: user.uid, 
+              username: cUser || 'Gamer', 
+              userTag: cTag, 
+              photoURL: cPhoto, 
+              bannerURL: cBanner, 
+              bio: cBio, 
+              currentStreak: newStreak, 
+              currentLevel: 1 + Math.floor(newStreak / 2), 
+              lastPlayedDate: today, 
+              status: snap.exists() && snap.data().status ? snap.data().status : 'active' 
+            }, { merge: true });
+            
+            setCurrentUserStreak(newStreak); 
+            setCurrentUserTag(cTag); 
+            setProfileUserTag(cTag); 
+            setCurrentUserPhoto(cPhoto); 
+            setProfilePhotoUrl(cPhoto); 
+            setCurrentUserBanner(cBanner); 
+            setProfileBannerUrl(cBanner); 
+            setCurrentUserBio(cBio); 
+            setProfileBio(cBio);
+          } catch(e) {}
+        };
+        
+        updateStreak();
+        
+        return onSnapshot(userRef, s => { 
+          if(s.exists()){ 
+            const d = s.data(); 
+            if(d.currentStreak !== undefined) setCurrentUserStreak(d.currentStreak); 
+            if(d.favorites) setFavorites(d.favorites); 
+            if(d.status) setUserStatus(d.status); 
+            if(d.userTag) { setCurrentUserTag(d.userTag); setProfileUserTag(d.userTag); } 
+            if(d.photoURL !== undefined) { setCurrentUserPhoto(d.photoURL); setProfilePhotoUrl(p => p.length > 500 ? p : d.photoURL); } 
+            if(d.bannerURL !== undefined) { setCurrentUserBanner(d.bannerURL); setProfileBannerUrl(p => p.length > 500 ? p : d.bannerURL); } 
+            if(d.bio !== undefined) { setCurrentUserBio(d.bio); setProfileBio(p => p !== d.bio && p !== '' ? p : d.bio); } 
+          } 
+        });
+      }, [user]);
+
+      useEffect(() => {
+        if (activeView === 'leaderboard' && db && authResolved) {
+          if (!user) { 
+            setIsLeaderboardLoading(false); 
+            setLeaderboardError("Please login to see the leaderboard"); 
+            return; 
+          }
+          setIsLeaderboardLoading(true);
+          
+          return onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'users'), snapshot => {
+            const arr = []; 
+            snapshot.forEach(doc => { 
+              const data = doc.data(); 
+              if (data.username && isEligibleForLeaderboard(data)) {
+                arr.push(data); 
+              }
+            });
+            arr.sort((a, b) => getEffectiveStreak(b) - getEffectiveStreak(a)); 
+            setLeaderboard(arr); 
+            setIsLeaderboardLoading(false); 
+            setLeaderboardError('');
+          }, err => { 
+            setIsLeaderboardLoading(false); 
+            if(err.message.includes("permission")) {
+              setLeaderboardError("Leaderboard access blocked. Set Firebase Firestore Rules to Test Mode."); 
+            }
+          });
+        }
+      }, [activeView, db, user, authResolved]);
+
+      useEffect(() => { 
+        if (activeView === 'admin' && isAdmin && db) {
+          return onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'users'), snapshot => { 
+            const usersArray = []; 
+            snapshot.forEach(doc => usersArray.push(doc.data())); 
+            usersArray.sort((a, b) => getEffectiveStreak(b) - getEffectiveStreak(a)); 
+            setAllUsers(usersArray); 
+          }); 
+        }
+      }, [activeView, isAdmin, db]);
+
+      useEffect(() => { 
+        if (adCountdown > 0) { 
+          const timer = setTimeout(() => setAdCountdown(c => c - 1), 1000); 
+          return () => clearTimeout(timer); 
+        } 
+      }, [adCountdown]);
+
+      useEffect(() => { 
+        const handleEsc = e => { 
+          if (e.key === 'Escape' && isCssFullscreen) setIsCssFullscreen(false); 
+        }; 
+        window.addEventListener('keydown', handleEsc); 
+        return () => window.removeEventListener('keydown', handleEsc); 
+      }, [isCssFullscreen]);
+
+
+      // --- EVENT HANDLERS ---
+
+      const handleSignup = async (e) => {
+        e.preventDefault(); 
+        if (authCooldown) return;
+
+        setAuthError(''); 
+        setAuthLoading(true);
+        setAuthCooldown(true);
+
+        try {
+          if (!sanitizeUsername(username)) {
+              throw new Error("Validation Error: Username must be 3-16 characters and contain only letters, numbers, and underscores.");
+          }
+          
+          if (parseInt(botCheck.answer) !== (botCheck.num1 + botCheck.num2)) {
+            throw new Error("Validation Error: Incorrect security math answer!");
+          }
+          
+          let tag = Math.random().toString(36).substring(2, 6).toUpperCase();
+          const tagRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', tag);
+          const snap = await getDoc(tagRef); 
+          
+          if (snap.exists()) throw new Error("Tag collision, try again.");
+          
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password); 
+          await updateProfile(userCredential.user, { displayName: username.trim() });
+          
+          try { 
+            await setDoc(tagRef, { uid: userCredential.user.uid, username: username.trim(), userTag: tag }); 
+            await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', userCredential.user.uid), { 
+              uid: userCredential.user.uid, 
+              username: username.trim(), 
+              userTag: tag, 
+              photoURL: '', 
+              bannerURL: '', 
+              bio: '', 
+              currentStreak: 1, 
+              currentLevel: 1, 
+              favorites: [], 
+              status: 'active', 
+              lastPlayedDate: getStreakDateString() 
+            }); 
+          } catch(e) {
+            console.warn("Profile creation delayed pending email verification.");
+          }
+          
+          await sendEmailVerification(userCredential.user);
+          await signOut(auth);
+          
+          setAuthMode('login');
+          showToast(`Account created! Please check your email inbox (or spam folder) to verify your account before logging in.`, 'success');
+        } catch (err) { 
+          if (err.message.includes("Validation Error") || err.message.includes("collision")) {
+              setAuthError(err.message);
+          } else if (err.code === 'auth/email-already-in-use') {
+              setAuthError("An account with that email already exists.");
+          } else {
+              setAuthError("Sign up failed. Please check your information and try again.");
+          }
+          setBotCheck({ num1: Math.floor(Math.random() * 10) + 1, num2: Math.floor(Math.random() * 10) + 1, answer: '' });
+        } finally { 
+          setAuthLoading(false); 
+          setTimeout(() => setAuthCooldown(false), 2000);
+        }
+      };
+
+      const handleLogin = async (e) => { 
+        e.preventDefault(); 
+        if (authCooldown) return;
+
+        setAuthError(''); 
+        setAuthLoading(true); 
+        setAuthCooldown(true);
+
+        try { 
+          const userCredential = await signInWithEmailAndPassword(auth, email, password); 
+          
+          if (!userCredential.user.emailVerified) {
+            await sendEmailVerification(userCredential.user);
+            await signOut(auth);
+            throw new Error("Security Error: Email not verified! We just sent a NEW verification link to your inbox/spam folder. Please click it to continue.");
+          }
+          
+          setShowAuthModal(false); 
+          showToast("Logged in!"); 
+        } catch (err) { 
+          if (err.message.includes("Security Error")) {
+              setAuthError(err.message);
+          } else {
+              setAuthError("Login failed. Invalid email or password.");
+          }
+        } finally { 
+          setAuthLoading(false); 
+          setTimeout(() => setAuthCooldown(false), 2000); 
+        } 
+      };
+
+      const handleLogout = async () => { 
+        if (auth) { 
+          await signOut(auth); 
+          setActiveView('discover'); 
+          setFavorites([]); 
+          setUserStatus('active'); 
+          showToast("Signed out."); 
+          try {
+            await signInAnonymously(auth);
+          } catch(e) {} 
+        } 
+      };
+
+      const handlePasswordReset = async (e) => { 
+        e.preventDefault(); 
+        setAuthError(''); 
+        setResetMessage(''); 
+        setAuthLoading(true); 
+        try { 
+          if (!email) throw new Error("Enter email."); 
+          await sendPasswordResetEmail(auth, email); 
+          setResetMessage('Reset email sent!'); 
+        } catch (err) { 
+          setAuthError(err.message.replace('Firebase: ', '')); 
+        } finally { 
+          setAuthLoading(false); 
+        } 
+      };
+
+      const handlePhotoChange = (e) => { 
+        const file = e.target.files[0]; 
+        if (file) processImageFile(file, 256, 256, setProfilePhotoUrl, false); 
+      };
+      
+      const handleBannerChange = (e) => { 
+        const file = e.target.files[0]; 
+        if (file) processImageFile(file, 800, 300, setProfileBannerUrl, true); 
+      };
+
+      const handleUpdateProfile = async (e) => {
+        e.preventDefault(); 
+        if (!user) return; 
+        setIsUpdatingProfile(true);
+        try {
+          if (!sanitizeUsername(profileUsername)) throw new Error("Username must be 3-16 characters and contain only letters/numbers/underscores."); 
+          if (profileUserTag.trim().length !== 4) throw new Error("Tag must be 4 chars.");
+          
+          const tag = profileUserTag.trim().toUpperCase();
+          if (tag !== currentUserTag) {
+            const tagRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', tag); 
+            const tagSnap = await getDoc(tagRef); 
+            if (tagSnap.exists() && tagSnap.data()?.uid !== user.uid) throw new Error(`Tag #${tag} is taken!`);
+            await setDoc(tagRef, { uid: user.uid, username: profileUsername.trim(), userTag: tag }); 
+            if (currentUserTag) {
+              try {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', currentUserTag));
+              } catch(e) {}
+            }
+          }
+          
+          await updateProfile(user, { displayName: profileUsername.trim() });
+          await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', user.uid), { 
+            username: profileUsername.trim(), 
+            userTag: tag, 
+            photoURL: profilePhotoUrl, 
+            bannerURL: profileBannerUrl, 
+            bio: profileBio.trim().slice(0, 160) 
+          }, { merge: true });
+          
+          setUser({ ...user, displayName: profileUsername.trim() }); 
+          setCurrentUserTag(tag); 
+          setCurrentUserPhoto(profilePhotoUrl); 
+          setCurrentUserBanner(profileBannerUrl); 
+          setCurrentUserBio(profileBio.trim()); 
+          showToast("Profile updated!");
+        } catch (err) { 
+          showToast(err.message.replace('Firebase: ', ''), 'error'); 
+        } finally { 
+          setIsUpdatingProfile(false); 
+        }
+      };
+
+      const openAdminModal = (userToEdit) => { 
+        setAdminEditingUser(userToEdit); 
+        setAdminEditUsername(userToEdit.username || ''); 
+        setAdminEditTag(userToEdit.userTag || ''); 
+        setAdminEditPhoto(userToEdit.photoURL || ''); 
+        setAdminEditStreak(getEffectiveStreak(userToEdit)); 
+        setAdminEditLevel(userToEdit.currentLevel || 1); 
+        setAdminEditStatus(userToEdit.status || 'active'); 
+      };
+
+      const submitAdminAction = async (e) => {
+        e.preventDefault(); 
+        if(!adminEditingUser) return; 
+        setAdminActionLoading(true);
+        try {
+          const t = adminEditTag.trim().toUpperCase();
+          if (t !== adminEditingUser.userTag) { 
+            const tagRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', t); 
+            const snap = await getDoc(tagRef); 
+            if (snap.exists() && snap.data().uid !== adminEditingUser.uid) throw new Error("Tag taken."); 
+            await setDoc(tagRef, { uid: adminEditingUser.uid, username: adminEditUsername.trim(), userTag: t }); 
+            if (adminEditingUser.userTag) {
+              await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', adminEditingUser.userTag)); 
+            }
+          }
+          await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', adminEditingUser.uid), { 
+            username: adminEditUsername.trim(), 
+            userTag: t, 
+            photoURL: adminEditPhoto.trim(), 
+            currentStreak: Number(adminEditStreak), 
+            currentLevel: Number(adminEditLevel), 
+            status: adminEditStatus 
+          });
+          showToast("Player updated"); 
+          setAdminEditingUser(null);
+        } catch (err) { 
+          showToast(err.message, 'error'); 
+        } finally { 
+          setAdminActionLoading(false); 
+        }
+      };
+
+      const deleteAdminUser = async () => {
+        if(!adminEditingUser) return;
+        if(!window.confirm(`Are you sure you want to permanently delete the account for ${adminEditingUser.username}? This cannot be undone.`)) return;
+        
+        setAdminActionLoading(true);
+        try {
+          if (adminEditingUser.userTag) {
+            await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', adminEditingUser.userTag)); 
+          }
+          await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', adminEditingUser.uid));
+          
+          showToast("Player deleted permanently.", "success"); 
+          setAdminEditingUser(null);
+        } catch (err) { 
+          showToast(err.message, 'error'); 
+        } finally { 
+          setAdminActionLoading(false); 
+        }
+      };
+
+      const handleLaunchGame = (game) => { 
+        setActiveGame(game); 
+        setIframeLoading(true); 
+        setIsCssFullscreen(false); 
+        setPendingFullscreen(false); 
+        if (!isDevUser) setAdCountdown(5); 
+        if (bgMusicRef.current) bgMusicRef.current.pause();
+      };
+
+      const handleCloseGame = () => { 
+        setActiveGame(null); 
+        setIsCssFullscreen(false); 
+        setAdCountdown(0); 
+        setPendingFullscreen(false); 
+        if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{});
+      };
+
+      const playRandomGame = () => { 
+        // SECURITY UPDATE: Filter out any Dev Beta games unless the user is logged in and has an admin tag
+        const pool = GAMES.filter(g => !g.isBeta || isDevUser);
+        if(pool.length === 0) return;
+        const randomIndex = Math.floor(Math.random() * pool.length); 
+        handleLaunchGame(pool[randomIndex]); 
+      };
+
+      const toggleFavorite = async (e, gid) => { 
+        e.stopPropagation(); 
+        if (!isRegistered) { 
+          showToast("Sign in required!", "error"); 
+          setShowAuthModal(true); 
+          return; 
+        } 
+        const favs = favorites.includes(gid) ? favorites.filter(id => id !== gid) : [...favorites, gid]; 
+        setFavorites(favs); 
+        try { 
+          await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'users', user.uid), { favorites: favs }); 
+          showToast(favorites.includes(gid) ? "Removed from favorites" : "Added to favorites!"); 
+        } catch(err) {} 
+      };
+
+      const handleCopyEmail = (e) => { 
+        e.preventDefault(); 
+        const textArea = document.createElement("textarea"); 
+        textArea.value = "mofawoyt@gmail.com"; 
+        document.body.appendChild(textArea); 
+        textArea.select(); 
+        try { 
+          document.execCommand('copy'); 
+          showToast("Email copied to clipboard!", 'success'); 
+        } catch (err) { 
+          showToast("Failed to copy email.", 'error'); 
+        } 
+        document.body.removeChild(textArea); 
+      };
+
+      const requestFullscreenSequence = () => { 
+        if (!document.fullscreenElement && !isCssFullscreen) { 
+          setPendingFullscreen(true); 
+          if (!isDevUser) setAdCountdown(5); 
+        } else { 
+          try { document.exitFullscreen(); } catch(e) {} 
+          setIsCssFullscreen(false); 
+        } 
+      };
+
+      const executeFullscreen = async () => { 
+        setPendingFullscreen(false); 
+        try { 
+          await playerContainerRef.current?.requestFullscreen(); 
+        } catch(e) { 
+          setIsCssFullscreen(true); 
+        } 
+      };
+
+      const filteredGames = React.useMemo(() => {
+        if (activeView !== 'discover') return [];
+        return GAMES.filter(g => { 
+          if (g.isBeta && !isDevUser) return false; 
+          const matchS = g.title.toLowerCase().includes(searchQuery.toLowerCase()) || g.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())); 
+          const matchC = activeCategory === 'All' ? true : activeCategory === 'Favorites' ? favorites.includes(g.id) : g.tags.includes(activeCategory); 
+          return matchS && matchC; 
+        });
+      }, [activeView, searchQuery, activeCategory, favorites, isDevUser]);
+
+      const FeaturedGame = GAMES[0]; 
+      const FeaturedIcon = FeaturedGame.icon; 
+      const ActiveIcon = activeGame ? activeGame.icon : null;
+
+      // --- RENDER EARLY RETURNS ---
+      if (userStatus === 'banned') {
+        return (
+          <div className="h-screen w-screen bg-black text-violet-200 flex flex-col items-center justify-center p-8 text-center">
+            <BanIcon size={80} className="text-rose-600 mb-6 animate-pulse" />
+            <h1 className="text-5xl font-black font-heading text-rose-500 mb-4 tracking-widest uppercase">Account Banned</h1>
+            <p className="text-xl text-violet-400 max-w-lg mb-8 font-ui">Your access to Nexis Games has been permanently revoked due to a violation of our community standards.</p>
+            <button onClick={handleLogout} className="px-8 py-3 bg-obsidian-800 text-violet-200 rounded-xl font-bold uppercase tracking-widest border border-violet-500/20 hover:bg-obsidian-700 transition-colors">Sign Out</button>
+          </div>
+        );
+      }
+
+      if (userStatus === 'suspended') {
+        return (
+          <div className="h-screen w-screen bg-obsidian-950 text-violet-200 flex flex-col items-center justify-center p-8 text-center">
+            <ClockIcon size={80} className="text-amber-500 mb-6 animate-bounce" />
+            <h1 className="text-5xl font-black font-heading text-amber-500 mb-4 tracking-widest uppercase">Account Suspended</h1>
+            <p className="text-xl text-violet-400 max-w-lg mb-8 font-ui">Your account is currently under review or temporarily suspended. Please check back later.</p>
+            <button onClick={handleLogout} className="px-8 py-3 bg-obsidian-800 text-violet-200 rounded-xl font-bold uppercase tracking-widest border border-violet-500/20 hover:bg-obsidian-700 transition-colors">Sign Out</button>
+          </div>
+        );
+      }
+
+      // --- MAIN RENDER ---
+      return (
+        <div className="h-screen w-screen bg-[#030008] text-violet-300 font-sans flex overflow-hidden relative">
+          
+          <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px]"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-fuchsia-600/10 blur-[120px]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-obsidian-800/50 via-[#030008] to-[#000000]"></div>
+          </div>
+          
+          {isOffline && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[200] bg-rose-600/90 backdrop-blur-md border border-rose-500/50 text-violet-100 px-6 py-2 rounded-full font-bold font-ui text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.5)] animate-in slide-in-from-top-4">
+              <WifiOffIcon size={16} /> Offline Mode - Playing locally
+            </div>
+          )}
+          
+          {isSidebarOpen && (
+            <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] animate-in fade-in duration-300" onClick={() => setIsSidebarOpen(false)}></div>
+          )}
+          
+          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen z-[100] flex flex-col flex-shrink-0 bg-[#050508]/60 backdrop-blur-2xl border-r border-violet-500/10 transition-[width,transform] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden whitespace-nowrap shadow-2xl ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-[88px]'}`}>
+            <div className="p-6 flex items-center justify-start h-24 border-b border-violet-500/10">
+              <div className="w-10 h-10 rounded-[12px] bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center flex-shrink-0 border border-violet-400/30 shadow-[0_0_15px_rgba(139,92,246,0.4)] relative z-10">
+                <span className="font-heading font-black text-violet-100">NG</span>
+              </div>
+              <h1 className={`text-xl font-bold tracking-widest text-violet-200 font-heading transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>
+                NEXIS GAMES
+              </h1>
+            </div>
+            
+            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
+              <button onClick={() => { setActiveView('discover'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'discover' ? 'bg-violet-500/10 border-violet-500/20 text-violet-300' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="Discover">
+                <HomeIcon size={22} className="flex-shrink-0" />
+                <span className={`font-semibold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Discover</span>
+              </button>
+              
+              <button onClick={() => { setActiveView('leaderboard'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'leaderboard' ? 'bg-violet-500/10 border-violet-500/20 text-violet-300' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="Leaderboard">
+                <TrophyIcon size={22} className="flex-shrink-0" />
+                <span className={`font-semibold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Leaderboard</span>
+              </button>
+              
+              <button onClick={() => { setActiveView('profile'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'profile' ? 'bg-violet-500/10 border-violet-500/20 text-violet-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="Profile">
+                <UserIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>My Profile</span>
+              </button>
+              
+              <button onClick={() => { setActiveView('about'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'about' ? 'bg-violet-500/10 border-violet-500/20 text-violet-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="About Us">
+                <InfoIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>About Us</span>
+              </button>
+              
+              {isAdmin && (
+                 <>
+                   <div className="h-px w-full bg-violet-500/20 my-2"></div>
+                   <button onClick={() => { setActiveView('admin'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="Admin Portal">
+                     <ShieldIcon size={24} className="flex-shrink-0" />
+                     <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Admin Portal</span>
+                   </button>
+                 </>
+              )}
+            </nav>
+            
+            <div className="p-4 border-t border-violet-500/10">
+              <button onClick={() => { setActiveView('settings'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-violet-500/10 border-violet-500/20 text-violet-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="Settings">
+                <SettingsIcon size={24} className="flex-shrink-0" />
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Settings</span>
+              </button>
+            </div>
+          </aside>
+
+          <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10 ml-0 md:ml-[88px]">
+            
+            <div className={`absolute inset-0 flex flex-col transition-all duration-500 ease-out ${activeGame ? 'opacity-0 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100 overflow-y-auto'}`}>
+              
+              <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-[#030008]/80 backdrop-blur-2xl border-b border-violet-500/10 shadow-sm">
+                <div className="flex items-center flex-1">
+                  <button onClick={() => setIsSidebarOpen(true)} className="mr-4 md:hidden p-3 bg-obsidian-900 rounded-xl text-violet-400/70 hover:text-violet-200 border border-violet-500/10 transition-all flex-shrink-0">
+                    <MenuIcon size={24} />
+                  </button>
+                  <div className="relative w-full max-w-md group hidden sm:block">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <SearchIcon size={18} className="text-violet-400/70 group-focus-within:text-violet-200 transition-colors" />
+                    </div>
+                    <input 
+                      type="text" 
+                      className="w-full bg-obsidian-900 border border-violet-500/10 text-violet-200 font-ui text-lg rounded-full py-2.5 pl-11 pr-4 focus:outline-none focus:ring-1 focus:ring-violet-500/30 transition-all placeholder-violet-400/50 shadow-inner" 
+                      placeholder="Search games..." 
+                      value={searchQuery} 
+                      onChange={(e) => setSearchQuery(e.target.value)} 
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-4 ml-4">
+                  {isRegistered ? (
+                    <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => setActiveView('profile')}>
+                      <div className="hidden sm:flex flex-col items-end">
+                        <div className="flex items-center gap-2">
+                           <span className="text-base font-bold font-heading text-violet-200 group-hover:text-violet-100 transition-colors">
+                             {user.displayName || 'Gamer'}
+                           </span>
+                           {currentUserStreak > 0 ? (
+                              <div className="flex items-center bg-obsidian-900 border border-orange-500/20 px-2 py-0.5 rounded-md shadow-[inset_0_0_10px_rgba(249,115,22,0.1)]">
+                                 <span className="text-orange-500 text-xs mr-1">🔥</span>
+                                 <span className="text-xs font-bold text-orange-400 font-ui">{currentUserStreak}</span>
+                              </div>
+                           ) : (
+                              <div className="flex items-center bg-obsidian-900 border border-violet-500/10 px-2 py-0.5 rounded-md">
+                                 <span className="text-slate-600 text-xs mr-1 grayscale">🔥</span>
+                                 <span className="text-xs font-bold text-violet-400/70 font-ui">0</span>
+                              </div>
+                           )}
+                        </div>
+                      </div>
+                      
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 border border-violet-400/30 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform shadow-lg">
+                        {currentUserPhoto ? (
+                           <img src={currentUserPhoto} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                           <span className="font-bold text-lg text-violet-100 font-heading">{(user.displayName || 'U').charAt(0).toUpperCase()}</span>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <button 
+                        onClick={() => setShowAuthModal(true)} 
+                        className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-violet-100 font-bold font-ui text-sm tracking-widest rounded-full transition-all whitespace-nowrap active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/20"
+                      >
+                        Sign In
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </header>
+
+              {!activeGame && (
+                <>
+                  {/* --- DISCOVER VIEW --- */}
+                  {activeView === 'discover' && (
+                    <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                      {!searchQuery && activeCategory === 'All' && (
+                        <div className="px-6 md:px-10 pb-8 pt-6 flex-shrink-0 relative z-10">
+                          <div className="relative w-full h-80 md:h-[420px] rounded-[2rem] overflow-hidden group cursor-pointer border border-violet-500/10 hover:border-violet-500/30 transition-all duration-500 shadow-2xl" onClick={() => handleLaunchGame(FeaturedGame)}>
+                            
+                            <div className="absolute inset-0 bg-obsidian-900"></div>
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-violet-900/30 via-transparent to-transparent"></div>
+                            
+                            <div className="absolute right-0 top-0 w-full md:w-1/2 h-full opacity-40 transform translate-x-10 md:translate-x-20 -translate-y-5 md:group-hover:scale-[1.03] transition-transform duration-700 ease-out drop-shadow-2xl">
+                              <FeaturedIcon />
+                            </div>
+                            
+                            <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/60 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-obsidian-950 via-obsidian-950/80 to-transparent"></div>
+                            
+                            <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 transform md:group-hover:-translate-y-1 transition-transform duration-500 ease-out z-10">
+                              <span className="px-3 py-1.5 text-[10px] font-black font-ui uppercase tracking-widest text-violet-200 bg-violet-600/30 border border-violet-500/40 rounded-md mb-4 inline-block backdrop-blur-sm shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+                                Featured Game
+                              </span>
+                              <h2 data-nosnippet="true" className="text-4xl md:text-6xl font-black font-heading text-violet-100 mb-6 tracking-tight drop-shadow-lg">
+                                {FeaturedGame.title}
+                              </h2>
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleLaunchGame(FeaturedGame); }} 
+                                className="flex items-center space-x-3 bg-violet-600 text-violet-100 px-8 py-3.5 rounded-xl font-bold font-ui text-lg tracking-wide hover:bg-violet-500 transition-colors active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/20"
+                              >
+                                <PlayIcon size={20} fill="currentColor" />
+                                <span>Play Now</span>
+                              </button>
+                            </div>
+                            
+                            <button 
+                              onClick={(e) => toggleFavorite(e, FeaturedGame.id)} 
+                              className={`absolute top-6 right-6 z-20 p-3 rounded-xl backdrop-blur-md transition-all active:scale-95 border ${favorites.includes(FeaturedGame.id) ? 'bg-violet-500/30 text-violet-200 border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-obsidian-900/40 text-violet-400/70 border-violet-500/10 hover:bg-obsidian-900/60 hover:text-violet-200'}`}
+                            >
+                              <HeartIcon size={20} fill={favorites.includes(FeaturedGame.id) ? "currentColor" : "none"} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="px-6 md:px-10 flex-shrink-0 relative z-0 pb-10">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                          <h3 className="text-2xl font-bold font-heading text-violet-200 tracking-wide">
+                            {activeCategory === 'Favorites' ? 'Your Favorites' : 'Library'}
+                          </h3>
+                          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0 sm:pb-0">
+                            {GAME_CATEGORIES.map(cat => (
+                              <button 
+                                key={cat} 
+                                onClick={() => setActiveCategory(cat)} 
+                                className={`px-4 py-2 rounded-lg font-ui font-semibold text-sm whitespace-nowrap transition-all flex items-center gap-2 border ${activeCategory === cat ? 'bg-violet-500/20 text-violet-200 border-violet-500/30 shadow-[0_0_10px_rgba(139,92,246,0.2)]' : 'bg-transparent text-violet-400/70 border-violet-500/10 hover:border-violet-500/30 hover:text-violet-200'}`}
+                              >
+                                {cat === 'Favorites' && <HeartIcon size={14} fill={activeCategory === 'Favorites' ? 'currentColor' : 'none'} className={activeCategory === 'Favorites' ? 'text-violet-300' : 'text-violet-400/70'} />}
+                                {cat}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                          {filteredGames.map((game) => {
+                            const GameIcon = game.icon; 
+                            const isFav = favorites.includes(game.id);
+                            return (
+                              <div 
+                                key={game.id} 
+                                className="group relative bg-obsidian-800/80 backdrop-blur-sm border border-violet-500/10 rounded-2xl overflow-hidden hover:border-violet-500/40 transition-all duration-300 hover:shadow-[0_8px_30px_-5px_rgba(139,92,246,0.3)] md:hover:-translate-y-1 cursor-pointer flex flex-col h-full" 
+                                onClick={() => handleLaunchGame(game)}
+                              >
+                                <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center overflow-hidden border-b border-violet-500/10`}>
+                                  <div className="absolute inset-0 bg-black/30 md:group-hover:bg-transparent transition-colors duration-500"></div>
+                                  <div className="w-28 h-28 transform md:group-hover:scale-[1.1] transition-transform duration-500 ease-out drop-shadow-xl">
+                                    <GameIcon />
+                                  </div>
+                                  
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] bg-obsidian-900/40">
+                                    <div className="w-14 h-14 bg-violet-600/90 border border-violet-400/50 rounded-full flex items-center justify-center transform scale-75 md:group-hover:scale-100 transition-transform duration-300 ease-out shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+                                      <PlayIcon size={24} className="ml-1 text-violet-100" fill="currentColor" />
+                                    </div>
+                                  </div>
+                                  
+                                  <button 
+                                    onClick={(e) => toggleFavorite(e, game.id)} 
+                                    className={`absolute top-3 right-3 z-20 p-2 rounded-lg backdrop-blur-md transition-all border ${isFav ? 'opacity-100 bg-violet-500/30 text-violet-200 border-violet-500/50 shadow-[0_0_10px_rgba(139,92,246,0.3)]' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-obsidian-900/40 text-violet-200 border-violet-500/10 hover:bg-obsidian-900/80'}`}
+                                  >
+                                    <HeartIcon size={16} fill={isFav ? "currentColor" : "none"} />
+                                  </button>
+                                </div>
+                                
+                                <div className="p-5 flex flex-col flex-1 relative z-10 bg-transparent">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 data-nosnippet="true" className="text-lg font-bold font-heading text-violet-200 line-clamp-1 group-hover:text-violet-100 transition-colors">
+                                      {game.title}
+                                    </h4>
+                                  </div>
+                                  
+                                  <p data-nosnippet="true" className="text-sm text-violet-400/70 mb-4 font-ui">
+                                    {game.developer}
+                                  </p>
+                                  
+                                  <div className="mt-auto flex flex-wrap items-center gap-2">
+                                    {game.tags.map(tag => (
+                                      <span key={tag} className="px-2 py-1 text-[10px] font-bold font-ui uppercase tracking-wider bg-obsidian-900 text-violet-300 rounded-md border border-violet-500/10 group-hover:border-violet-500/30 transition-colors shadow-inner">
+                                        {tag}
+                                      </span>
+                                    ))}
+                                    {game.isPublicBeta && (
+                                      <span className="ml-auto px-2 py-1 text-[9px] font-black uppercase tracking-widest bg-fuchsia-500/20 text-fuchsia-300 rounded border border-fuchsia-500/30 shadow-[inset_0_0_8px_rgba(217,70,239,0.2)]">
+                                        Public Beta
+                                      </span>
+                                    )}
+                                    {game.isBeta && (
+                                      <span className="ml-auto px-2 py-1 text-[9px] font-black uppercase tracking-widest bg-rose-500/20 text-rose-300 rounded border border-rose-500/30 shadow-[inset_0_0_8px_rgba(244,63,94,0.2)]" title="Developer Only">
+                                        Dev Beta
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                          
+                          {filteredGames.length === 0 && activeCategory !== 'Favorites' && (
+                            <div className="col-span-full py-32 flex flex-col items-center justify-center text-violet-400/50 animate-in fade-in">
+                              <Gamepad2Icon size={64} className="mb-6 opacity-30 drop-shadow-md" />
+                              <p className="text-2xl font-heading font-bold text-violet-300">No games found.</p>
+                            </div>
+                          )}
+                          
+                          {filteredGames.length === 0 && activeCategory === 'Favorites' && (
+                            <div className="col-span-full py-32 flex flex-col items-center justify-center text-violet-400/50 animate-in fade-in">
+                              <HeartIcon size={64} className="mb-6 opacity-30 text-rose-500 drop-shadow-md" />
+                              <p className="text-3xl font-heading font-black text-violet-200 mb-2 drop-shadow-md">No favorites yet.</p>
+                              <p className="text-xl font-ui text-violet-400/70">Click the heart icon on any game to save it here!</p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mt-16 flex flex-col items-center justify-center pt-10 border-t border-violet-500/20 pb-10">
+                           <p className="text-violet-300 font-ui text-lg mb-6 tracking-wide uppercase font-bold text-center">Can't decide what to play?</p>
+                           <button 
+                             onClick={playRandomGame} 
+                             className="flex items-center gap-4 px-10 py-5 bg-obsidian-900 hover:bg-obsidian-800 text-violet-200 hover:text-violet-100 font-black font-heading text-2xl sm:text-3xl tracking-widest rounded-3xl transition-all shadow-[0_0_30px_-5px_rgba(139,92,246,0.2)] hover:shadow-[0_0_40px_rgba(139,92,246,0.5)] active:scale-95 border border-violet-500/30 group hover:-translate-y-1"
+                           >
+                             <SurpriseIcon size={32} className="group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300 text-violet-300" />
+                             SURPRISE ME
+                           </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* --- LEADERBOARD VIEW --- */}
+                  {activeView === 'leaderboard' && (
+                    <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                      <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                        <div className="w-full max-w-4xl relative z-10">
+                          
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+                            <h2 className="text-4xl font-black font-heading text-violet-100 flex items-center gap-4 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">
+                              <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(234,179,8,0.6)] text-white border border-yellow-200/20">
+                                <TrophyIcon size={32} />
+                              </div>
+                              Global Rankings
+                            </h2>
+                          </div>
+                          
+                          {!isRegistered && (
+                            <div className="mb-8 bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-inner">
+                              <div>
+                                <h3 className="text-2xl font-bold font-heading text-violet-200 drop-shadow-sm mb-1">Want to get ranked?</h3>
+                                <p className="text-violet-300 font-ui text-sm sm:text-base">Create an account to start your streak and climb the leaderboard.</p>
+                              </div>
+                              <button
+                                onClick={() => setShowAuthModal(true)}
+                                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-violet-100 font-bold font-ui text-lg tracking-widest rounded-xl transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_-3px_rgba(139,92,246,0.6)] border border-violet-400/20"
+                              >
+                                Sign In
+                              </button>
+                            </div>
+                          )}
+                          
+                          <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                            {leaderboardError ? (
+                               <div className="p-16 text-center flex flex-col items-center justify-center">
+                                  <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 mb-6 shadow-inner">
+                                    <XIcon size={40} className="text-rose-400" />
+                                  </div>
+                                  <p className="text-rose-400 font-bold font-heading text-2xl mb-3">
+                                    {leaderboardError === "Please login to see the leaderboard" ? "Sign In Required" : "Database Access Denied"}
+                                  </p>
+                                  <p className="text-violet-300 font-ui text-xl max-w-lg">{leaderboardError}</p>
+                               </div>
+                            ) : isLeaderboardLoading ? (
+                               <div className="p-20 text-center flex flex-col items-center justify-center">
+                                  <div className="w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div>
+                                  <p className="text-violet-200 font-bold font-heading text-2xl animate-pulse drop-shadow-md">Syncing Ranks...</p>
+                               </div>
+                            ) : leaderboard.length === 0 ? (
+                               <div className="p-20 text-center flex flex-col items-center justify-center">
+                                  <TrophyIcon size={48} className="text-violet-500/50 mb-4 drop-shadow-md" />
+                                  <p className="text-violet-300 font-bold font-heading text-2xl">No players ranked yet.</p>
+                                  <p className="text-violet-400/70 font-ui text-lg mt-2">Be the first to start a streak!</p>
+                               </div>
+                            ) : (
+                               <div className="divide-y divide-violet-500/10 p-4">
+                                  {leaderboard.map((player, idx) => {
+                                     const activeStreak = getEffectiveStreak(player); 
+                                     const effectiveLevel = player.currentLevel || (1 + Math.floor(activeStreak / 2));
+                                     return (
+                                     <div 
+                                       key={player.uid} 
+                                       onClick={() => setViewingPlayer(player)} 
+                                       className={`cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl mb-2 hover:bg-obsidian-900/60 transition-all duration-300 border border-transparent ${player.uid === user?.uid ? 'bg-violet-600/10 border-violet-500/30 shadow-[inset_0_0_20px_rgba(139,92,246,0.15)]' : ''}`}
+                                     >
+                                        <div className="flex items-center gap-4 sm:gap-6">
+                                           <span className={`text-2xl sm:text-3xl font-black font-heading w-10 sm:w-12 text-center ${idx === 0 ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]' : idx === 1 ? 'text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.6)]' : idx === 2 ? 'text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]' : 'text-violet-500'}`}>
+                                             #{idx + 1}
+                                           </span>
+                                           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-obsidian-900 overflow-hidden flex-shrink-0 flex items-center justify-center border border-violet-500/20 shadow-lg">
+                                              {player.photoURL ? (
+                                                <img src={player.photoURL} alt="PFP" className="w-full h-full object-cover"/> 
+                                              ) : (
+                                                <span className="font-bold text-2xl text-violet-300 font-heading">{(player.username || 'U').charAt(0).toUpperCase()}</span>
+                                              )}
+                                           </div>
+                                           <div className="flex flex-col">
+                                             <div className="flex items-center gap-2">
+                                               <span className={`font-bold font-heading text-xl sm:text-2xl truncate max-w-[120px] sm:max-w-[250px] ${player.uid === user?.uid ? 'text-violet-200' : 'text-violet-100'} drop-shadow-sm`}>
+                                                 {player.username}
+                                               </span>
+                                               <span className="text-violet-400/70 text-sm font-ui mt-1 hidden sm:inline-block">
+                                                 #{player.userTag}
+                                              </span>
+                                             </div>
+                                             <div className="flex items-center gap-2 mt-1">
+                                               <span className="text-xs font-bold font-ui text-violet-300 bg-obsidian-950 px-2 py-0.5 rounded-md border border-violet-500/20 shadow-inner">
+                                                 Lvl {effectiveLevel}
+                                               </span>
+                                               {player.uid === user?.uid && (
+                                                 <span className="text-xs uppercase tracking-widest text-fuchsia-400 font-bold font-ui">Your Rank</span>
+                                               )}
+                                             </div>
+                                           </div>
+                                        </div>
+                                        <div className="flex items-center gap-4 ml-14 sm:ml-0">
+                                           <div className="flex items-center gap-3 bg-obsidian-950/80 px-6 py-3 rounded-2xl border border-violet-500/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 sm:flex-none justify-center">
+                                              <span className={`text-2xl ${activeStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse' : 'text-violet-500/50 grayscale'}`}>🔥</span>
+                                              <span className={`font-black font-heading text-3xl ${activeStreak > 0 ? 'text-violet-100 drop-shadow-md' : 'text-violet-500/50'}`}>{activeStreak}</span>
+                                            </div>
+                                        </div>
+                                     </div>
+                                  )})}
+                               </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* --- PROFILE VIEW --- */}
+                  {activeView === 'profile' && (
+                    <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                      <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                        <div className="w-full max-w-3xl relative z-10">
+                          <h2 className="text-4xl font-black font-heading text-violet-100 mb-10 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">User Profile</h2>
+                          
+                          {!isRegistered ? (
+                             <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] p-16 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                               <div className="w-24 h-24 bg-violet-600/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-violet-500/30 shadow-inner">
+                                 <UserIcon size={48} className="text-violet-300" />
+                               </div>
+                               <h3 className="text-3xl font-bold font-heading text-violet-100 mb-4 drop-shadow-sm">Sign in to edit your profile</h3>
+                               <p className="text-violet-300 text-lg font-ui mb-10 max-w-md mx-auto drop-shadow-sm">Create an account to customize your avatar, display name, and track your progress.</p>
+                               <button 
+                                 onClick={() => setShowAuthModal(true)} 
+                                 className="px-10 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-violet-100 font-bold font-ui text-2xl tracking-wide rounded-2xl transition-all shadow-[0_0_20px_-5px_rgba(139,92,246,0.6)] active:scale-95 border border-violet-400/20"
+                               >
+                                 Sign In Now
+                               </button>
+                             </div>
+                          ) : (
+                             <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                               
+                               <div className="relative w-full h-40 sm:h-52 bg-obsidian-900 group cursor-pointer border-b border-violet-500/20">
+                                 {profileBannerUrl ? ( 
+                                   <img src={profileBannerUrl} alt="Banner" className="w-full h-full object-cover" /> 
+                                 ) : ( 
+                                   <div className="w-full h-full bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50"></div> 
+                                 )}
+                                 <div className="absolute inset-0 bg-obsidian-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                   <UploadIcon size={28} className="text-violet-200 mr-3 drop-shadow-md" />
+                                   <span className="text-sm font-bold text-violet-200 font-ui uppercase tracking-widest drop-shadow-md">Change Banner</span>
+                                 </div>
+                                 <input type="file" accept="image/*" onChange={handleBannerChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload a custom profile banner" />
+                               </div>
+                               
+                               <div className="p-8 sm:p-10 pt-0 relative">
+                                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-10 pb-10 border-b border-violet-500/20">
+                                   
+                                   <div className="relative group w-32 h-32 sm:w-40 sm:h-40 rounded-[2.5rem] bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] overflow-hidden flex-shrink-0 cursor-pointer border-4 border-obsidian-900 -mt-16 sm:-mt-20 transition-all active:scale-95 z-10">
+                                     {profilePhotoUrl ? ( 
+                                       <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" /> 
+                                     ) : ( 
+                                       <span className="font-bold text-6xl text-violet-100 font-heading drop-shadow-md">{(profileUsername || 'U').charAt(0).toUpperCase()}</span> 
+                                     )}
+                                     <div className="absolute inset-0 bg-obsidian-950/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                       <UploadIcon size={32} className="text-violet-200 mb-2 drop-shadow-md" />
+                                       <span className="text-sm font-bold text-violet-200 font-ui uppercase tracking-widest drop-shadow-md">Change</span>
+                                     </div>
+                                     <input type="file" accept="image/*" onChange={handlePhotoChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload a custom profile picture" />
+                                   </div>
+                                   
+                                   <div className="text-center sm:text-left flex-1 w-full sm:pt-4">
+                                     <div className="flex items-end justify-center sm:justify-start gap-2 mb-2">
+                                       <h3 className="text-4xl font-black font-heading text-violet-100 tracking-wide truncate drop-shadow-md">{user.displayName || 'Gamer'}</h3>
+                                       <span className="text-violet-400 font-ui text-xl mb-1 drop-shadow-sm">#{currentUserTag}</span>
+                                     </div>
+                                     <p className="text-violet-300 font-medium truncate font-ui text-xl mb-6 drop-shadow-sm">{user.email}</p>
+                                     
+                                     <div className="bg-obsidian-950/80 p-6 rounded-2xl border border-violet-500/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
+                                       <div className="flex justify-between items-center mb-4">
+                                         <div className="flex items-center gap-2">
+                                           <StarIcon size={24} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
+                                           <span className="font-bold font-ui text-violet-200 text-xl">Level {userLevel}</span>
+                                         </div>
+                                         <div className="flex items-center gap-2">
+                                           <span className={`text-xl ${currentUserStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse' : 'text-violet-500/50 grayscale'}`}>🔥</span>
+                                           <span className={`font-bold font-ui text-xl ${currentUserStreak > 0 ? 'text-violet-200' : 'text-violet-500/50'}`}>{currentUserStreak} Days</span>
+                                         </div>
+                                       </div>
+                                       
+                                       <div className="w-full h-4 bg-obsidian-900 rounded-full overflow-hidden border border-violet-500/20 shadow-inner mb-4">
+                                         <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all duration-1000 ease-out relative" style={{ width: `${levelProgress}%` }}>
+                                           <div className="absolute inset-0 bg-violet-200/20 mix-blend-overlay"></div>
+                                         </div>
+                                       </div>
+                                       
+                                       <div className="flex justify-between items-center border-t border-violet-500/20 pt-4 mt-2">
+                                         <p className="text-sm text-violet-400/70 font-ui uppercase tracking-widest">{100 - levelProgress}% to next level</p>
+                                         <p className="text-sm text-violet-300 font-ui uppercase tracking-widest flex items-center gap-1.5 font-bold">
+                                           <HeartIcon size={16} className="text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]" fill="currentColor"/> 
+                                           {favorites.length} Saved
+                                         </p>
+                                       </div>
+                                     </div>
+                                   </div>
+                                 </div>
+                                 
+                                 <form onSubmit={handleUpdateProfile} className="space-y-8">
+                                   <div className="flex flex-col sm:flex-row gap-6">
+                                     <div className="flex-1">
+                                       <label className="block text-sm font-bold font-ui text-violet-400 mb-3 uppercase tracking-widest ml-1">Display Username</label>
+                                       <input 
+                                         type="text" 
+                                         value={profileUsername} 
+                                         onChange={e => setProfileUsername(e.target.value)} 
+                                         className="w-full bg-obsidian-950 border border-violet-500/20 rounded-2xl px-6 py-5 font-heading text-xl text-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" 
+                                         placeholder="Enter your username" 
+                                       />
+                                     </div>
+                                     <div className="w-full sm:w-40">
+                                       <label className="block text-sm font-bold font-ui text-violet-400 mb-3 uppercase tracking-widest ml-1">ID Tag</label>
+                                       <div className="relative">
+                                         <span className="absolute inset-y-0 left-0 pl-5 flex items-center text-violet-500 font-heading text-xl">#</span>
+                                         <input 
+                                           type="text" 
+                                           maxLength={4} 
+                                           value={profileUserTag} 
+                                           onChange={e => setProfileUserTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} 
+                                           className="w-full bg-obsidian-950 border border-violet-500/20 rounded-2xl px-4 py-5 pl-9 font-heading text-xl text-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] text-center uppercase" 
+                                           placeholder="TAG" 
+                                         />
+                                       </div>
+                                     </div>
+                                   </div>
+                                   
+                                   <div>
+                                     <label className="block text-sm font-bold font-ui text-violet-400 mb-3 uppercase tracking-widest ml-1">About Me (Bio)</label>
+                                     <textarea 
+                                       value={profileBio} 
+                                       onChange={e => setProfileBio(e.target.value)} 
+                                       maxLength={160} 
+                                       rows={3} 
+                                       className="w-full bg-obsidian-950 border border-violet-500/20 rounded-2xl px-6 py-5 font-ui text-lg text-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] resize-none" 
+                                       placeholder="Tell everyone a little about yourself..."
+                                     ></textarea>
+                                     <p className="text-right text-xs text-violet-500 font-ui mt-2 uppercase tracking-widest">{profileBio.length} / 160</p>
+                                   </div>
+                                   
+                                   <div className="pt-6 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-violet-500/20">
+                                     <button 
+                                       type="submit" 
+                                       disabled={isUpdatingProfile} 
+                                       className="w-full sm:w-auto px-10 py-4 bg-violet-600 hover:bg-violet-500 text-violet-100 font-bold font-ui tracking-widest text-xl uppercase rounded-2xl transition-all disabled:opacity-50 shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] active:scale-95 border border-violet-400/20"
+                                     >
+                                       {isUpdatingProfile ? 'Saving...' : 'Save Profile'}
+                                     </button>
+                                   </div>
+                                 </form>
+                               </div>
+                             </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* --- ABOUT US VIEW --- */}
+                  {activeView === 'about' && (
+                    <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                      <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                        <div className="w-full max-w-4xl relative z-10 flex flex-col">
+                          <h2 className="text-4xl font-black font-heading text-violet-100 mb-10 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">About Nexis Games</h2>
+                          
+                          <div className="bg-obsidian-800/80 backdrop-blur-xl border border-violet-500/20 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden mb-12">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/20 rounded-full blur-[80px] pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-600/20 rounded-full blur-[80px] pointer-events-none"></div>
+                            
+                            <div className="relative z-10 space-y-8">
+                              <section>
+                                <h3 className="text-2xl font-bold font-heading text-violet-300 mb-4 flex items-center gap-3 drop-shadow-sm">
+                                  <InfoIcon size={28} /> Our Story
+                                </h3>
+                                <p className="text-violet-200 font-ui text-lg sm:text-xl leading-relaxed drop-shadow-sm">
+                                  Hey! Welcome to <strong className="text-violet-100">Nexis Games</strong>. I'm really glad you found your way here. I started Nexis Games (as part of <strong className="text-fuchsia-400">Nexis GD</strong>) back on <strong className="text-violet-100">April 10th, 2026</strong>, with a really simple dream: to bring awesome, console-quality fun right to your web browser. No huge downloads, no expensive hardware—just jump in and play. Whether you're here to race your friends, battle it out in multiplayer, or get spooked in a maze, this place was built for you to just chill and have fun.
+                                </p>
+                              </section>
+                              
+                              <div className="h-px w-full bg-gradient-to-r from-transparent via-violet-500/30 to-transparent my-8"></div>
+                              
+                              <section>
+                                <h3 className="text-2xl font-bold font-heading text-violet-300 mb-4 flex items-center gap-3 drop-shadow-sm">
+                                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                  </svg> 
+                                  A Living Arcade
+                                </h3>
+                                <p className="text-violet-200 font-ui text-lg sm:text-xl leading-relaxed drop-shadow-sm">
+                                  One thing you should know—this is a living, breathing platform. A lot of the games you'll play here are still works in progress, meaning you might stumble upon some <strong className="text-fuchsia-400">early beta builds</strong> or weird little bugs. But that's honestly the fun part! Your gameplay and feedback directly help shape these games into something incredible.
+                                </p>
+                              </section>
+                              
+                              <section className="bg-obsidian-950/80 border border-violet-500/10 rounded-2xl p-6 sm:p-8 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] mt-4">
+                                <h4 className="text-xl font-bold font-heading text-violet-100 mb-3 flex items-center gap-3">
+                                  <UserIcon size={24} className="text-violet-400" /> Support the Devs
+                                </h4>
+                                <p className="text-violet-300 font-ui text-lg leading-relaxed">
+                                  Behind every great game is a passionate developer pouring their heart into it. That's why I always make sure the <strong>creator's name is front and center</strong> on every game card. If you have a blast playing something, definitely check out who made it and show them some support!
+                                </p>
+                              </section>
+                              
+                              <section className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 sm:p-8 shadow-inner mt-6 transition-all hover:bg-violet-600/20">
+                                <h4 className="text-xl font-bold font-heading text-fuchsia-300 mb-3 flex items-center gap-3 drop-shadow-sm">
+                                  <Gamepad2Icon size={24} className="text-fuchsia-400" /> Got a game? Let's talk!
+                                </h4>
+                                <p className="text-violet-200 font-ui text-lg leading-relaxed drop-shadow-sm">
+                                  Got a web game of your own you've been working on? I'd absolutely love to see it. We're always trying to grow our community with new developers and fresh ideas. If you're interested in getting your game hosted on Nexis Games, just shoot me an email at <button onClick={handleCopyEmail} className="text-fuchsia-400 hover:text-fuchsia-300 font-bold underline underline-offset-4 transition-colors cursor-pointer">mofawoyt@gmail.com</button> and let's chat.
+                                </p>
+                              </section>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* --- SETTINGS VIEW --- */}
+                  {activeView === 'settings' && (
+                    <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                      <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                        <div className="w-full max-w-3xl relative z-10">
+                          <h2 className="text-4xl font-black font-heading text-violet-100 mb-10 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">Settings</h2>
+                          
+                          <div className="bg-obsidian-800/80 backdrop-blur-xl border border-violet-500/20 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                            <div className="space-y-10">
+                              
+                              <section>
+                                <h3 className="text-2xl font-bold font-heading text-violet-300 mb-6 flex items-center gap-3 drop-shadow-sm border-b border-violet-500/20 pb-4">
+                                  <SettingsIcon size={28} /> Audio Controls
+                                </h3>
+                                <div className="bg-obsidian-950/80 p-6 sm:p-8 rounded-2xl border border-violet-500/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] space-y-8">
+                                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-violet-500/10 pb-6">
+                                    <div>
+                                      <span className="text-violet-100 font-bold font-ui text-xl block mb-1">Background Audio</span>
+                                      <span className="text-violet-400 font-ui text-base">Enable background music and sound effects.</span>
+                                    </div>
+                                    <button 
+                                      onClick={() => setIsSoundEnabled(!isSoundEnabled)} 
+                                      className={`px-8 py-3 rounded-xl border transition-all active:scale-95 font-bold font-ui tracking-widest text-base uppercase shadow-inner whitespace-nowrap ${isSoundEnabled ? 'bg-violet-600/20 text-violet-300 border-violet-500/40 hover:bg-violet-600/30' : 'bg-obsidian-800 text-violet-400/70 border-obsidian-700 hover:bg-obsidian-700 hover:text-violet-200'}`}
+                                    >
+                                      {isSoundEnabled ? 'Sound Enabled' : 'Enable Sound'}
+                                    </button>
+                                  </div>
+                                  
+                                  <div className={`transition-opacity duration-300 ${isSoundEnabled ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                                    <div>
+                                      <div className="flex justify-between items-end mb-3">
+                                        <span className="text-violet-200 font-bold font-ui text-xl">Master Volume</span>
+                                        <span className="text-fuchsia-400 font-black text-xl">{masterVolume}%</span>
+                                      </div>
+                                      <input type="range" min="0" max="100" value={masterVolume} onChange={(e) => setMasterVolume(e.target.value)} className="w-full accent-fuchsia-500 h-3 bg-obsidian-800 rounded-full appearance-none cursor-pointer" />
+                                    </div>
+                                    <div className="mt-8">
+                                      <div className="flex justify-between items-end mb-3">
+                                        <span className="text-violet-300 font-bold font-ui text-lg">Music Volume</span>
+                                        <span className="text-fuchsia-400 font-black">{musicVolume}%</span>
+                                      </div>
+                                      <input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-full accent-fuchsia-500 h-2 bg-obsidian-800 rounded-full appearance-none cursor-pointer" />
+                                    </div>
+                                    <div className="mt-8">
+                                      <div className="flex justify-between items-end mb-3">
+                                        <span className="text-violet-300 font-bold font-ui text-lg">Sound Effects</span>
+                                        <span className="text-fuchsia-400 font-black">{sfxVolume}%</span>
+                                      </div>
+                                      <input type="range" min="0" max="100" value={sfxVolume} onChange={(e) => setSfxVolume(e.target.value)} className="w-full accent-fuchsia-500 h-2 bg-obsidian-800 rounded-full appearance-none cursor-pointer" />
+                                    </div>
+                                  </div>
+                                </div>
+                              </section>
+                              
+                              {isRegistered && (
+                                <section className="pt-4 border-t border-violet-500/20 flex justify-end">
+                                  <button 
+                                    onClick={() => { handleLogout(); setActiveView('discover'); }} 
+                                    className="px-10 py-4 bg-rose-600 hover:bg-rose-500 text-violet-100 font-bold font-heading text-xl tracking-widest uppercase rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(225,29,72,0.5)] border border-rose-400/20"
+                                  >
+                                    Sign Out
+                                  </button>
+                                </section>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* --- ADMIN VIEW --- */}
+                  {activeView === 'admin' && isAdmin && (
+                    <div className="animate-in fade-in duration-500 flex flex-col flex-1">
+                      <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
+                        <div className="w-full max-w-5xl relative z-10 flex flex-col h-full">
+                          
+                          <h2 className="text-4xl font-black font-heading text-violet-100 mb-10 flex items-center gap-4 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">
+                            <div className="p-3 bg-rose-500/20 text-rose-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(225,29,72,0.6)] border border-rose-500/50">
+                              <ShieldIcon size={32} />
+                            </div> 
+                            Admin Portal
+                          </h2>
+                          
+                          <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col flex-1">
+                            <div className="p-6 sm:p-8 border-b border-violet-500/20 bg-obsidian-950/50 flex justify-between items-center">
+                              <h3 className="text-2xl font-bold font-heading text-violet-100">Player Database</h3>
+                              <span className="bg-violet-600/20 text-violet-300 font-bold px-4 py-1.5 rounded-full border border-violet-500/40 font-ui text-sm uppercase tracking-widest">
+                                {allUsers.length} Players
+                              </span>
+                            </div>
+                            
+                            <div className="overflow-y-auto p-4 flex-1 scrollbar-hide">
+                               {allUsers.length === 0 ? (
+                                  <div className="p-20 text-center text-violet-400/70 flex flex-col items-center">
+                                    <div className="w-16 h-16 border-4 border-violet-600 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div>
+                                    <p className="text-xl font-bold font-ui">Loading player database...</p>
+                                  </div>
+                               ) : (
+                                  <div className="space-y-3">
+                                     {allUsers.map(u => (
+                                        <div key={u.uid} className="flex flex-col sm:flex-row sm:items-center justify-between bg-obsidian-950/50 p-4 sm:p-5 rounded-2xl border border-violet-500/10 hover:border-violet-500/50 transition-colors shadow-inner">
+                                           <div className="flex items-center gap-4 sm:gap-5 mb-4 sm:mb-0">
+                                              <div className="w-14 h-14 rounded-xl bg-obsidian-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-violet-500/20 shadow-lg">
+                                                {u.photoURL ? (
+                                                  <img src={u.photoURL} alt="PFP" className="w-full h-full object-cover"/> 
+                                                ) : (
+                                                  <span className="font-bold text-xl text-violet-400 font-heading">{(u.username || 'U').charAt(0).toUpperCase()}</span>
+                                                )}
+                                              </div>
+                                              <div>
+                                                <div className="flex items-center gap-2">
+                                                  <span className="font-bold font-heading text-xl text-violet-100">{u.username}</span>
+                                                  <span className="text-violet-500 text-sm font-ui opacity-70">#{u.userTag}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3 mt-1.5">
+                                                  <span className="text-xs font-bold font-ui text-violet-300 bg-obsidian-800 px-2 py-0.5 rounded border border-violet-500/20">Lvl {u.currentLevel || 1}</span>
+                                                  <span className="text-xs font-bold font-ui text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">🔥 {getEffectiveStreak(u)}</span>
+                                                  {u.status === 'banned' && <span className="text-xs font-bold font-ui text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-wider">Banned</span>}
+                                                  {u.status === 'suspended' && <span className="text-xs font-bold font-ui text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase tracking-wider">Suspended</span>}
+                                                  {u.status === 'active' && <span className="text-xs font-bold font-ui text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wider">Active</span>}
+                                                </div>
+                                              </div>
+                                           </div>
+                                           <button 
+                                             onClick={() => openAdminModal(u)} 
+                                             className="w-full sm:w-auto px-6 py-3 bg-violet-600 hover:bg-violet-500 text-violet-100 font-bold font-ui uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_15px_-3px_rgba(139,92,246,0.5)] active:scale-95 whitespace-nowrap"
+                                           >
+                                             Manage
+                                           </button>
+                                        </div>
+                                     ))}
+                                  </div>
+                               )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* --- GLOBAL FOOTER --- */}
+                  <footer className="w-full mt-auto py-6 border-t border-violet-500/10 bg-obsidian-950/40 text-center text-violet-500 font-ui text-sm z-10 relative flex-shrink-0">
+                    <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
+                  </footer>
+                </>
+              )}
+
+            </div> 
+
+            {/* --- LEADERBOARD: VIEW PLAYER PROFILE MODAL --- */}
+            {viewingPlayer && (
+              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-obsidian-900/90 backdrop-blur-xl border border-violet-500/20 rounded-[2.5rem] w-full max-w-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative max-h-[95vh] overflow-y-auto overflow-hidden">
+                     <button onClick={() => setViewingPlayer(null)} className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md rounded-xl text-violet-300 hover:text-violet-100 transition-colors active:scale-95 z-20">
+                       <XIcon size={24} />
+                     </button>
+                     
+                     <div className="w-full h-40 sm:h-48 bg-obsidian-800 relative">
+                       {viewingPlayer.bannerURL ? (
+                         <img src={viewingPlayer.bannerURL} className="w-full h-full object-cover" /> 
+                       ) : (
+                         <div className="w-full h-full bg-gradient-to-r from-violet-900 to-fuchsia-900"></div>
+                       )}
+                     </div>
+                     
+                     <div className="px-8 pb-8 relative">
+                         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[2rem] bg-obsidian-800 flex items-center justify-center shadow-xl border-4 border-obsidian-900 -mt-12 sm:-mt-14 mb-4 overflow-hidden relative z-10">
+                           {viewingPlayer.photoURL ? (
+                             <img src={viewingPlayer.photoURL} className="w-full h-full object-cover" /> 
+                           ) : (
+                             <span className="text-3xl sm:text-4xl font-bold text-violet-100 font-heading">{viewingPlayer.username.charAt(0).toUpperCase()}</span>
+                           )}
+                         </div>
+                         <h2 className="text-3xl font-black text-violet-100 font-heading flex items-center gap-2">
+                           {viewingPlayer.username} 
+                           <span className="text-lg text-violet-500 font-ui">#{viewingPlayer.userTag}</span>
+                         </h2>
+                         <p className="text-violet-300 mt-4 mb-6 font-ui leading-relaxed bg-obsidian-950/50 p-5 rounded-2xl border border-violet-500/10 shadow-inner break-words">
+                           {viewingPlayer.bio || "This player hasn't written a bio yet."}
+                         </p>
+                         
+                         <div className="flex gap-4">
+                             <div className="bg-obsidian-950/80 px-5 py-3 rounded-2xl border border-violet-500/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center">
+                               <span className="block text-violet-400/70 text-xs uppercase tracking-widest font-bold mb-1">Level</span>
+                               <span className="text-2xl font-black text-fuchsia-400 font-heading">{viewingPlayer.currentLevel || 1}</span>
+                             </div>
+                             <div className="bg-obsidian-950/80 px-5 py-3 rounded-2xl border border-violet-500/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center">
+                               <span className="block text-violet-400/70 text-xs uppercase tracking-widest font-bold mb-1">Streak</span>
+                               <span className={`text-2xl font-black font-heading flex items-center justify-center gap-2 ${getEffectiveStreak(viewingPlayer) > 0 ? 'text-orange-500' : 'text-violet-500/50'}`}>
+                                 <span className={getEffectiveStreak(viewingPlayer) > 0 ? 'animate-pulse' : 'grayscale'}>🔥</span> 
+                                 {getEffectiveStreak(viewingPlayer)}
+                               </span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+              </div>
+            )}
+
+            {/* --- ADMIN: EDIT PLAYER MODAL --- */}
+            {adminEditingUser && (
+              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-obsidian-900/90 backdrop-blur-xl border border-violet-500/20 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
+                    <button onClick={() => setAdminEditingUser(null)} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-obsidian-800/50 rounded-xl text-violet-400 hover:text-violet-100 transition-colors active:scale-95 shadow-inner">
+                      <XIcon size={24} />
+                    </button>
+                    
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="p-3 bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/50">
+                        <ShieldIcon size={28} />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl sm:text-3xl font-black font-heading text-violet-100">Manage Player</h2>
+                        <p className="text-violet-400 font-ui text-sm sm:text-base">
+                          Editing profile for <span className="text-violet-100 font-bold">{adminEditingUser.username}</span>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <form onSubmit={submitAdminAction} className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-violet-400 mb-2 ml-1">Username</label>
+                          <input type="text" required value={adminEditUsername} onChange={e => setAdminEditUsername(e.target.value)} className="w-full bg-obsidian-950/80 border border-violet-500/20 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
+                        </div>
+                        <div>
+                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-violet-400 mb-2 ml-1">ID Tag</label>
+                          <div className="relative">
+                            <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-violet-500 font-heading text-xl">#</span>
+                            <input type="text" maxLength={4} required value={adminEditTag} onChange={e => setAdminEditTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} className="w-full bg-obsidian-950/80 border border-violet-500/20 rounded-2xl px-4 pl-8 py-4 font-ui text-lg sm:text-xl font-bold text-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] uppercase" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-violet-400 mb-2 ml-1">Profile Image URL</label>
+                        <input type="text" value={adminEditPhoto} onChange={e => setAdminEditPhoto(e.target.value)} className="w-full bg-obsidian-950/80 border border-violet-500/20 rounded-2xl px-5 py-4 font-ui text-base sm:text-lg text-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="https://..." />
+                      </div>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-violet-400 mb-2 ml-1">Daily Streak</label>
+                          <input type="number" required min="0" value={adminEditStreak} onChange={e => setAdminEditStreak(e.target.value)} className="w-full bg-obsidian-950/80 border border-violet-500/20 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
+                        </div>
+                        <div>
+                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-violet-400 mb-2 ml-1">Player Level</label>
+                          <input type="number" required min="1" value={adminEditLevel} onChange={e => setAdminEditLevel(e.target.value)} className="w-full bg-obsidian-950/80 border border-violet-500/20 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-violet-400 mb-2 ml-1">Account Status</label>
+                        <select value={adminEditStatus} onChange={(e) => setAdminEditStatus(e.target.value)} className="w-full bg-obsidian-950/80 border border-violet-500/20 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-violet-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] appearance-none cursor-pointer">
+                          <option value="active">🟢 Active</option>
+                          <option value="suspended">🟡 Suspended</option>
+                          <option value="banned">🔴 Banned</option>
+                        </select>
+                      </div>
+                      
+                      <div className="pt-4 mt-8 border-t border-violet-500/20 flex justify-between items-center gap-4">
+                        <button
+                          type="button"
+                          onClick={deleteAdminUser}
+                          disabled={adminActionLoading}
+                          className="w-full sm:w-auto px-6 py-4 bg-rose-600/10 hover:bg-rose-600/20 text-rose-500 font-bold font-heading text-base sm:text-lg tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 active:scale-95 border border-rose-500/30"
+                        >
+                          Delete
+                        </button>
+                        <button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-violet-600 hover:bg-violet-500 text-violet-100 font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_-5px_rgba(168,85,247,0.5)] border border-violet-400/20">
+                          {adminActionLoading ? (
+                            <div className="w-6 h-6 sm:w-7 sm:h-7 border-4 border-violet-100 border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            'Save Changes'
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                 </div>
+              </div>
+            )}
+
+            {/* --- AUTHENTICATION MODAL --- */}
+            {showAuthModal && (
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-4">
+                 <div className="bg-obsidian-900 border border-violet-500/20 rounded-[2.5rem] p-8 sm:p-10 w-full max-w-md shadow-2xl relative">
+                    <button 
+                      onClick={() => { setShowAuthModal(false); setAuthMode('login'); setAuthError(''); setResetMessage(''); }} 
+                      className="absolute top-6 right-6 p-2 bg-violet-500/10 rounded-xl text-violet-400/70 hover:text-violet-200 hover:bg-violet-500/20 transition-colors active:scale-95"
+                    >
+                      <XIcon size={20} />
+                    </button>
+                    
+                    <h2 className="text-3xl font-black font-heading text-violet-100 mb-8 tracking-wide">
+                      {authMode === 'login' ? 'Welcome Back' : authMode === 'signup' ? 'Create Account' : 'Reset Password'}
+                    </h2>
+                    
+                    {authError && (
+                      <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 font-ui font-semibold text-sm rounded-xl flex items-center gap-3">
+                        <XIcon size={18} className="text-rose-500" /> {authError}
+                      </div>
+                    )}
+                    
+                    {resetMessage && (
+                      <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-ui font-semibold text-sm rounded-xl flex items-center gap-3">
+                        <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                        </svg> 
+                        {resetMessage}
+                      </div>
+                    )}
+                    
+                    <form onSubmit={authMode === 'login' ? handleLogin : authMode === 'signup' ? handleSignup : handlePasswordReset} className="space-y-4">
+                      {authMode === 'signup' && (
+                        <div>
+                          <label className="block text-xs font-bold tracking-widest uppercase text-violet-400 mb-2 ml-1">Username</label>
+                          <input 
+                            type="text" 
+                            required 
+                            value={username} 
+                            onChange={e => setUsername(e.target.value)} 
+                            className="w-full bg-obsidian-950 border border-violet-500/20 rounded-xl px-4 py-3.5 font-ui text-base text-violet-100 focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" 
+                            placeholder="ProGamer123" 
+                          />
+                        </div>
+                      )}
+                      
+                      <div>
+                        <label className="block text-xs font-bold tracking-widest uppercase text-violet-400 mb-2 ml-1">Email Address</label>
+                        <input 
+                          type="email" 
+                          required 
+                          value={email} 
+                          onChange={e => setEmail(e.target.value)} 
+                          className="w-full bg-obsidian-950 border border-violet-500/20 rounded-xl px-4 py-3.5 font-ui text-base text-violet-100 focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" 
+                          placeholder="player@example.com" 
+                        />
+                      </div>
+                      
+                      {authMode !== 'reset' && (
+                        <div>
+                          <label className="block text-xs font-bold tracking-widest uppercase text-violet-400 mb-2 ml-1">Password</label>
+                          <div className="relative">
+                            <input 
+                              type={showPassword ? "text" : "password"} 
+                              required 
+                              minLength={6} 
+                              value={password} 
+                              onChange={e => setPassword(e.target.value)} 
+                              className="w-full bg-obsidian-950 border border-violet-500/20 rounded-xl px-4 py-3.5 pr-12 font-ui text-base text-violet-100 focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" 
+                              placeholder="••••••••" 
+                            />
+                            <button 
+                              type="button" 
+                              onClick={() => setShowPassword(!showPassword)} 
+                              className="absolute inset-y-0 right-0 pr-4 flex items-center text-violet-500 hover:text-violet-300 transition-colors"
+                            >
+                              {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                            </button>
+                          </div>
+                          {authMode === 'login' && (
+                            <div className="mt-3 text-right">
+                              <button 
+                                type="button" 
+                                onClick={() => { setAuthMode('reset'); setAuthError(''); setResetMessage(''); }} 
+                                className="text-xs font-ui font-bold text-violet-400/70 hover:text-violet-300 transition-colors"
+                              >
+                                Forgot password?
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {authMode === 'signup' && (
+                        <div className="bg-obsidian-950 p-4 rounded-xl border border-violet-500/10 mt-2 shadow-inner">
+                          <label className="block text-xs font-bold tracking-widest uppercase text-violet-400 mb-2 flex items-center gap-2">
+                            <ShieldIcon size={14}/> Anti-Bot Verification
+                          </label>
+                          <div className="flex items-center gap-4">
+                            <span className="text-xl font-bold text-violet-200">{botCheck.num1} + {botCheck.num2} =</span>
+                            <input 
+                              type="number" 
+                              required 
+                              value={botCheck.answer} 
+                              onChange={e => setBotCheck({...botCheck, answer: e.target.value})} 
+                              className="flex-1 bg-obsidian-900 border border-violet-500/20 rounded-lg px-3 py-2 font-ui text-base text-violet-100 focus:outline-none focus:border-violet-500/50 transition-colors" 
+                              placeholder="?" 
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <button 
+                        disabled={authLoading || authCooldown} 
+                        type="submit" 
+                        className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-violet-100 font-bold font-ui text-sm tracking-widest uppercase rounded-xl transition-all mt-8 disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/20"
+                      >
+                        {authLoading ? (
+                          <div className="w-5 h-5 border-2 border-violet-100 border-t-transparent rounded-full animate-spin"></div>
+                        ) : ( 
+                          authMode === 'login' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link' 
+                        )}
+                      </button>
+                    </form>
+                    
+                    <div className="mt-8 text-center border-t border-violet-500/10 pt-6">
+                      {authMode === 'reset' ? (
+                        <button 
+                          onClick={() => { setAuthMode('login'); setAuthError(''); setResetMessage(''); }} 
+                          className="text-violet-400 hover:text-violet-200 font-ui font-bold text-sm transition-colors"
+                        >
+                          Back to Sign In
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => { setAuthMode(authMode === 'login' ? 'signup' : 'login'); setAuthError(''); }} 
+                          className="text-violet-400 hover:text-violet-200 font-ui font-bold text-sm transition-colors"
+                        >
+                          {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                        </button>
+                      )}
+                    </div>
+                 </div>
+              </div>
+            )}
+            
+            {/* --- TOAST NOTIFICATIONS --- */}
+            {toast && (
+              <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-[300] font-ui font-bold text-xl flex items-center gap-3 animate-toast-slide border ${toast.type === 'error' ? 'bg-rose-600 text-white border-rose-500/50' : 'bg-obsidian-800 text-violet-300 border-violet-500/30'}`}>
+                {toast.type === 'error' ? <XIcon size={24}/> : <TrophyIcon size={24}/>}
+                {toast.message}
+              </div>
+            )}
+
+          </main>
+        </div>
+      );
+    }
+    
+    // --- APP INITIALIZATION ---
+    const root = ReactDOM.createRoot(document.getElementById('root')); 
+    root.render(<App />);
+  </script>
+</body>
+</html>
