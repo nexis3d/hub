@@ -835,27 +835,17 @@
             throw new Error("Security Error: Email not verified! We just sent a NEW verification link to your inbox/spam folder. Please click it to continue.");
           }
           
-          // Clear any failed attempts upon successful login
-          localStorage.removeItem('nexis_failed_logins');
           setShowAuthModal(false); 
           showToast("Logged in!"); 
         } catch (err) { 
-          // SECURITY UPDATE: Brute-Force Rate Limiting Tracker
-          let fails = parseInt(localStorage.getItem('nexis_failed_logins') || '0') + 1;
-          
-          if (fails >= 5) {
-             const blockUntil = Date.now() + 3600000; // Block for 1 Hour (3,600,000 ms)
-             localStorage.setItem('nexis_block_until', blockUntil.toString());
-             localStorage.removeItem('nexis_failed_logins');
-             setIsBlocked(true);
-             setShowAuthModal(false);
+          if (err.message.includes("Security Error")) {
+              setAuthError(err.message);
           } else {
-             localStorage.setItem('nexis_failed_logins', fails.toString());
-             if (err.message.includes("Security Error")) {
-                 setAuthError(err.message);
-             } else {
-                 setAuthError(`Login failed. Invalid email or password. (${5 - fails} attempts remaining)`);
-             }
+              // Instant 1-hour block on a single failed login attempt
+              const blockUntil = Date.now() + 3600000; 
+              localStorage.setItem('nexis_block_until', blockUntil.toString());
+              setIsBlocked(true);
+              setShowAuthModal(false);
           }
         } finally { 
           setAuthLoading(false); 
@@ -1107,7 +1097,7 @@
           <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
             <ShieldIcon size={80} className="text-rose-600 mb-6 animate-pulse" />
             <h1 className="text-5xl font-black font-heading text-rose-500 mb-4 tracking-widest uppercase">Access Blocked</h1>
-            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Due to multiple failed login attempts, your access to Nexis Games has been temporarily blocked for 1 hour to protect your security.</p>
+            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Due to a failed login attempt, your access to Nexis Games has been temporarily blocked for 1 hour to protect your security.</p>
             <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Please try again later.</p>
           </div>
         );
