@@ -87,8 +87,8 @@
     }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.4); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.7); }
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -143,7 +143,7 @@
     }
   </script>
 </head>
-<body class="bg-obsidian-900 text-slate-200 font-sans m-0 overflow-hidden selection:bg-violet-500/30">
+<body class="bg-obsidian-900 text-slate-300 font-sans m-0 overflow-hidden selection:bg-violet-500/40">
   
   <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s ease; overflow: hidden;">
     <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #2e1065 0%, #030008 60%); opacity: 0.9;"></div>
@@ -349,7 +349,7 @@
         }
       }, []);
       return (
-        <div className="w-full flex justify-center mt-8 min-h-[100px] relative z-50 bg-obsidian-900/50 backdrop-blur-md rounded-2xl overflow-hidden border border-violet-500/10 shadow-inner">
+        <div className="w-full flex justify-center mt-6 min-h-[100px] relative z-50 bg-obsidian-900/50 backdrop-blur-md rounded-2xl overflow-hidden border border-violet-500/10 shadow-inner">
           <ins className="adsbygoogle"
                style={{ display: 'block', width: '100%' }}
                data-ad-client="ca-pub-9729951455444854"
@@ -467,7 +467,7 @@
       const [activeGame, setActiveGame] = useState(null); 
       const [searchQuery, setSearchQuery] = useState(''); 
       const [activeCategory, setActiveCategory] = useState('All'); 
-      const [iframeLoading, setIframeLoading] = useState(true); 
+      const [iframeLoading, setIframeLoading] = useState(false); 
       const [adCountdown, setAdCountdown] = useState(0); 
       const [isCssFullscreen, setIsCssFullscreen] = useState(false); 
       const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
@@ -1004,12 +1004,16 @@
         }
       };
 
+      // SECURITY & LAUNCH LOGIC
       const handleLaunchGame = (game) => { 
         setActiveGame(game); 
         setIframeLoading(true); 
         setIsCssFullscreen(false); 
         setPendingFullscreen(false); 
+        
+        // This triggers the Ad overlay to show immediately over the game frame
         if (!isDevUser) setAdCountdown(5); 
+        
         if (bgMusicRef.current) bgMusicRef.current.pause();
       };
 
@@ -1059,10 +1063,11 @@
         document.body.removeChild(textArea); 
       };
 
+      // SECURITY: Fullscreen Ad Logic
       const requestFullscreenSequence = () => { 
         if (!document.fullscreenElement && !isCssFullscreen) { 
           setPendingFullscreen(true); 
-          if (!isDevUser) setAdCountdown(5); 
+          if (!isDevUser) setAdCountdown(5); // Start Ad!
         } else { 
           try { document.exitFullscreen(); } catch(e) {} 
           setIsCssFullscreen(false); 
@@ -1117,7 +1122,7 @@
 
       // --- MAIN RENDER ---
       return (
-        <div className="h-screen w-screen bg-[#030008] text-slate-200 font-sans flex overflow-hidden relative">
+        <div className="h-screen w-screen bg-[#030008] text-slate-300 font-sans flex overflow-hidden relative">
           
           <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px]"></div>
@@ -1188,6 +1193,7 @@
 
           <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10 ml-0 md:ml-[88px]">
             
+            {/* The Hub Wrapper */}
             <div className={`absolute inset-0 flex flex-col transition-all duration-500 ease-out ${activeGame ? 'opacity-0 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100 overflow-y-auto'}`}>
               
               <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-[#030008]/80 backdrop-blur-2xl border-b border-white/5 shadow-sm">
@@ -1875,6 +1881,90 @@
 
             </div> 
 
+            {/* --- IN-GAME PLAYER & FULLSCREEN OVERLAYS --- */}
+            <div className={`absolute inset-0 flex flex-col bg-black transition-all duration-500 ease-out z-[70] ${activeGame ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-105 pointer-events-none'}`}>
+              {activeGame && (
+                <div className={`flex-1 flex flex-col w-full h-full relative ${isCssFullscreen ? 'fixed inset-0 z-[9999]' : ''}`} ref={playerContainerRef}>
+                  
+                  {/* Controls Header (Hidden in CSS Fullscreen) */}
+                  <div className={`h-16 bg-obsidian-900 border-b border-violet-500/20 flex items-center justify-between px-6 flex-shrink-0 ${isCssFullscreen ? 'hidden' : ''}`}>
+                    <div className="flex items-center gap-6">
+                      <button onClick={handleCloseGame} className="flex items-center gap-2 text-slate-400 hover:text-white bg-obsidian-800 hover:bg-obsidian-700 px-4 py-2 rounded-xl border border-white/5 transition-colors font-bold font-ui">
+                        <ChevronLeftIcon size={20}/> Exit Game
+                      </button>
+                      <div className="h-6 w-px bg-white/10"></div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg overflow-hidden border border-white/10">
+                          <ActiveIcon />
+                        </div>
+                        <h1 className="font-heading font-black text-xl text-white tracking-wide">{activeGame.title}</h1>
+                      </div>
+                    </div>
+                    <button onClick={requestFullscreenSequence} className="text-violet-400 hover:text-violet-200 p-2 bg-obsidian-800 rounded-xl hover:bg-obsidian-700 transition-colors border border-violet-500/10 shadow-inner group">
+                      <Maximize2Icon size={22} className="group-active:scale-95 transition-transform" />
+                    </button>
+                  </div>
+
+                  {/* Fallback CSS Fullscreen Exit Button */}
+                  {isCssFullscreen && (
+                     <button onClick={requestFullscreenSequence} className="absolute top-6 right-6 z-[60] bg-obsidian-900/80 p-3 rounded-2xl text-violet-300 hover:text-white border border-violet-500/30 shadow-2xl backdrop-blur-md transition-all hover:bg-obsidian-800 active:scale-95">
+                       <Minimize2Icon size={24} />
+                     </button>
+                  )}
+
+                  {/* The AdSense Sponsor Break Overlay */}
+                  {adCountdown > 0 && (
+                    <div className="absolute inset-0 z-[150] bg-obsidian-950/90 backdrop-blur-md flex flex-col items-center justify-center px-4 text-center">
+                      <div className="bg-obsidian-900 border border-violet-500/20 p-8 sm:p-12 rounded-[2.5rem] shadow-[0_0_50px_rgba(139,92,246,0.3)] max-w-3xl w-full relative overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="absolute bottom-0 left-0 h-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 transition-all duration-1000 ease-linear" style={{width: `${(5 - adCountdown) * 20}%`}}></div>
+                        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-white/5 pb-6">
+                          <h2 className="text-3xl font-black font-heading text-white uppercase tracking-widest drop-shadow-md">Sponsor Break</h2>
+                          <span className="text-violet-400 font-bold px-4 py-2 bg-obsidian-950 rounded-xl border border-violet-500/10 uppercase tracking-widest text-sm shadow-inner">Starting in {adCountdown}s</span>
+                        </div>
+                        <AdSenseWidget />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pending Fullscreen (User Confirmation) */}
+                  {pendingFullscreen && adCountdown === 0 && (
+                    <div className="absolute inset-0 z-[150] bg-obsidian-950/90 backdrop-blur-md flex flex-col items-center justify-center px-4 text-center">
+                       <div className="bg-obsidian-900 border border-violet-500/30 p-10 rounded-[2.5rem] shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300">
+                          <h2 className="text-3xl font-black font-heading text-white mb-8 uppercase tracking-widest">Ready</h2>
+                          <button onClick={executeFullscreen} className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold font-ui text-xl tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(139,92,246,0.5)] active:scale-95 mb-4">
+                            Enter Fullscreen
+                          </button>
+                          <button onClick={() => { setPendingFullscreen(false); setIsCssFullscreen(false); }} className="text-violet-400 hover:text-violet-200 font-bold uppercase tracking-widest transition-colors">
+                            Cancel
+                          </button>
+                       </div>
+                    </div>
+                  )}
+
+                  {/* Iframe Loading State */}
+                  {iframeLoading && adCountdown === 0 && !pendingFullscreen && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center z-[100] bg-obsidian-950">
+                      <div className="w-32 h-32 mb-8 animate-pulse drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+                        <ActiveIcon />
+                      </div>
+                      <p className="text-violet-400 font-bold font-ui text-2xl tracking-widest animate-pulse">
+                        CONNECTING SERVER...
+                      </p>
+                    </div>
+                  )}
+
+                  {/* The actual Game Iframe (Stays mounted to preserve state!) */}
+                  <iframe 
+                    src={activeGame.src} 
+                    onLoad={() => setIframeLoading(false)} 
+                    className={`flex-1 w-full h-full border-none bg-black transition-opacity duration-1000 ${(iframeLoading || adCountdown > 0 || pendingFullscreen) ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`} 
+                    allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"
+                  ></iframe>
+
+                </div>
+              )}
+            </div>
+
             {/* --- LEADERBOARD: VIEW PLAYER PROFILE MODAL --- */}
             {viewingPlayer && (
               <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
@@ -1927,7 +2017,7 @@
 
             {/* --- ADMIN: EDIT PLAYER MODAL --- */}
             {adminEditingUser && (
-              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-[250] flex items-center justify-center p-4 animate-modal-pop">
                  <div className="bg-obsidian-900/90 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
                     <button onClick={() => setAdminEditingUser(null)} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-obsidian-800/50 rounded-xl text-slate-400 hover:text-white transition-colors active:scale-95 shadow-inner">
                       <XIcon size={24} />
@@ -1994,7 +2084,7 @@
                         >
                           Delete
                         </button>
-                        <button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_-5px_rgba(168,85,247,0.5)] border border-violet-400/20">
+                        <button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_-5px_rgba(168,85,247,0.5)] border border-white/10">
                           {adminActionLoading ? (
                             <div className="w-6 h-6 sm:w-7 sm:h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                           ) : (
@@ -2010,7 +2100,7 @@
             {/* --- AUTHENTICATION MODAL --- */}
             {showAuthModal && (
               <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-4">
-                 <div className="bg-obsidian-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 w-full max-w-md shadow-2xl relative">
+                 <div className="bg-obsidian-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 w-full max-w-md shadow-2xl relative animate-modal-pop">
                     <button 
                       onClick={() => { setShowAuthModal(false); setAuthMode('login'); setAuthError(''); setResetMessage(''); }} 
                       className="absolute top-6 right-6 p-2 bg-white/5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors active:scale-95"
@@ -2121,7 +2211,7 @@
                       <button 
                         disabled={authLoading || authCooldown} 
                         type="submit" 
-                        className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold font-ui text-sm tracking-widest uppercase rounded-xl transition-all mt-8 disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/20"
+                        className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold font-ui text-sm tracking-widest uppercase rounded-xl transition-all mt-8 disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-white/10"
                       >
                         {authLoading ? (
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
