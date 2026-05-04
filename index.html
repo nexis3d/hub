@@ -21,15 +21,13 @@
   <meta name="description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
   <meta name="keywords" content="Nexis Games, gaming, web games, browser games, free games, online games, unblocked games, play games online, no download games, 3D games, casual games, action games, racing games, io games, html5 games, offline games, arcade, multiplayer, minigames, best browser games, free to play, indie games, Nexis GD">
   <meta name="author" content="Nexis Games">
-  <meta name="theme-color" content="#020617">
+  <meta name="theme-color" content="#030008">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <meta name="googlebot" content="index, follow, max-snippet:-1">
   <meta name="google-adsense-account" content="ca-pub-9729951455444854">
   
-  <!-- SECURITY: Tightened Content Security Policy to block object injections and unauthorized base URIs -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; object-src 'none'; base-uri 'none';">
 
-  <!-- Global Error Handler to Suppress Cross-Origin Ad Script Spam -->
   <script>
     window.addEventListener('error', function(e) {
       if (e.message === 'Script error.' || (e.error && e.error.message === 'Script error.')) {
@@ -45,33 +43,9 @@
     };
   </script>
 
-  <!-- Google AdSense Script -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9729951455444854" crossorigin="anonymous"></script>
-  
-  <!-- Google Funding Choices / Consent Management -->
   <script async src="https://fundingchoicesmessages.google.com/i/pub-9729951455444854?ers=1" crossorigin="anonymous"></script>
-  <script>
-    try {
-      (function() {
-        function signalGooglefcPresent() {
-          if (!window.frames['googlefcPresent']) {
-            if (document.body) {
-              const iframe = document.createElement('iframe'); 
-              iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; 
-              iframe.style.display = 'none'; 
-              iframe.name = 'googlefcPresent'; 
-              document.body.appendChild(iframe);
-            } else {
-              setTimeout(signalGooglefcPresent, 0);
-            }
-          }
-        }
-        signalGooglefcPresent();
-      })();
-    } catch(e) {}
-  </script>
 
-  <!-- Loader Hard Failsafe (Forces loader removal if React crashes entirely) -->
   <script>
     setTimeout(() => {
       const loader = document.getElementById('nexis-global-loader');
@@ -92,13 +66,12 @@
   <meta property="og:image:secure_url" content="assets/og_image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Nexis Games promotional banner featuring game characters">
 
   <style>
     @keyframes pulse-ring {
-      0% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); opacity: 0.6; }
-      70% { transform: scale(1.2) translateZ(0); box-shadow: 0 0 0 40px rgba(99, 102, 241, 0); opacity: 0.1; }
-      100% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); opacity: 0.6; }
+      0% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); opacity: 0.6; }
+      70% { transform: scale(1.2) translateZ(0); box-shadow: 0 0 0 40px rgba(139, 92, 246, 0); opacity: 0.1; }
+      100% { transform: scale(0.8) translateZ(0); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); opacity: 0.6; }
     }
     @keyframes float-logo {
       0%, 100% { transform: translateY(0) translateZ(0); }
@@ -108,59 +81,16 @@
       0% { transform: translateX(-100%) translateZ(0); }
       100% { transform: translateX(350%) translateZ(0); }
     }
-    @keyframes loader-spin {
-      100% { transform: rotate(360deg) translateZ(0); }
-    }
-    @keyframes loader-spin-reverse {
-      100% { transform: rotate(-360deg) translateZ(0); }
-    }
     @keyframes text-shimmer {
       0% { background-position: -200% center; }
       100% { background-position: 200% center; }
     }
-    :root {
-      --color-white: 221 214 254; 
-      --color-black: 0 0 0; 
-      --color-slate-50: 248 250 252; 
-      --color-slate-100: 241 245 249; 
-      --color-slate-200: 226 232 240; 
-      --color-slate-300: 203 213 225; 
-      --color-slate-400: 148 163 184; 
-      --color-slate-500: 100 116 139; 
-      --color-slate-600: 71 85 105; 
-      --color-slate-700: 51 65 85; 
-      --color-slate-800: 30 41 59; 
-      --color-slate-900: 15 23 42; 
-      --color-slate-950: 2 6 23; 
-      --color-indigo-300: 216 180 254; 
-      --color-indigo-400: 192 132 252; 
-      --color-indigo-500: 168 85 247; 
-      --color-indigo-600: 147 51 234; 
-      --color-indigo-900: 88 28 135; 
-      --color-fuchsia-600: 192 38 211; 
-      --color-fuchsia-900: 112 26 117;
-    }
-    ::-webkit-scrollbar { 
-      width: 8px; 
-      height: 8px; 
-    }
-    ::-webkit-scrollbar-track { 
-      background: transparent; 
-    }
-    ::-webkit-scrollbar-thumb { 
-      background: rgb(var(--color-slate-700)); 
-      border-radius: 10px; 
-    }
-    ::-webkit-scrollbar-thumb:hover { 
-      background: rgb(var(--color-slate-600)); 
-    }
-    .scrollbar-hide::-webkit-scrollbar { 
-      display: none; 
-    }
-    .scrollbar-hide { 
-      -ms-overflow-style: none; 
-      scrollbar-width: none; 
-    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.6); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -169,31 +99,11 @@
       theme: {
         extend: {
           colors: {
-            white: 'rgb(var(--color-white) / <alpha-value>)', 
-            black: 'rgb(var(--color-black) / <alpha-value>)',
-            slate: { 
-              50: 'rgb(var(--color-slate-50) / <alpha-value>)', 
-              100: 'rgb(var(--color-slate-100) / <alpha-value>)', 
-              200: 'rgb(var(--color-slate-200) / <alpha-value>)', 
-              300: 'rgb(var(--color-slate-300) / <alpha-value>)', 
-              400: 'rgb(var(--color-slate-400) / <alpha-value>)', 
-              500: 'rgb(var(--color-slate-500) / <alpha-value>)', 
-              600: 'rgb(var(--color-slate-600) / <alpha-value>)', 
-              700: 'rgb(var(--color-slate-700) / <alpha-value>)', 
-              800: 'rgb(var(--color-slate-800) / <alpha-value>)', 
-              900: 'rgb(var(--color-slate-900) / <alpha-value>)', 
-              950: 'rgb(var(--color-slate-950) / <alpha-value>)', 
-            },
-            indigo: { 
-              300: 'rgb(var(--color-indigo-300) / <alpha-value>)', 
-              400: 'rgb(var(--color-indigo-400) / <alpha-value>)', 
-              500: 'rgb(var(--color-indigo-500) / <alpha-value>)', 
-              600: 'rgb(var(--color-indigo-600) / <alpha-value>)', 
-              900: 'rgb(var(--color-indigo-900) / <alpha-value>)', 
-            },
-            fuchsia: { 
-              600: 'rgb(var(--color-fuchsia-600) / <alpha-value>)', 
-              900: 'rgb(var(--color-fuchsia-900) / <alpha-value>)', 
+            obsidian: {
+              900: '#030008',
+              800: '#0a0a0f',
+              700: '#12121a',
+              950: '#010003'
             }
           },
           fontFamily: { 
@@ -202,23 +112,10 @@
             ui: ['Fira Sans', 'sans-serif'], 
           },
           animation: { 
-            blob: 'blob 25s infinite ease-in-out', 
-            'gradient-x': 'gradient-x 5s ease infinite', 
             'modal-pop': 'modal-pop 0.3s ease-out forwards', 
             'toast-slide': 'toast-slide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', 
-            'float-slow': 'float-slow 6s ease-in-out infinite', 
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 
           },
           keyframes: {
-            blob: { 
-              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' }, 
-              '33%': { transform: 'translate(150px, -150px) scale(1.2)' }, 
-              '66%': { transform: 'translate(-120px, 120px) scale(0.8)' }, 
-            },
-            'gradient-x': { 
-              '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' }, 
-              '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }, 
-            },
             'modal-pop': { 
               '0%': { opacity: '0', transform: 'scale(0.95)' }, 
               '100%': { opacity: '1', transform: 'scale(1)' }, 
@@ -226,10 +123,6 @@
             'toast-slide': { 
               '0%': { opacity: '0', transform: 'translateY(100%) scale(0.9)' }, 
               '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }, 
-            },
-            'float-slow': { 
-              '0%, 100%': { transform: 'translateY(0px)' }, 
-              '50%': { transform: 'translateY(-15px)' }, 
             }
           }
         }
@@ -250,37 +143,34 @@
     }
   </script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans m-0 overflow-hidden selection:bg-indigo-500/30">
+<body class="bg-obsidian-900 text-slate-200 font-sans m-0 overflow-hidden selection:bg-violet-500/30">
   
   <div id="nexis-global-loader" style="position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s ease; overflow: hidden;">
-    <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #1e1b4b 0%, #020617 60%); opacity: 0.9;"></div>
+    <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, #2e1065 0%, #030008 60%); opacity: 0.9;"></div>
     <div style="position: absolute; top: -10%; left: 0; width: 600px; height: 600px; background: #a855f7; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(-30%, -30%); animation: float-logo 8s ease-in-out infinite alternate;"></div>
     <div style="position: absolute; bottom: -10%; right: 0; width: 700px; height: 700px; background: #c026d3; border-radius: 50%; filter: blur(120px); opacity: 0.2; transform: translate(30%, 30%); animation: float-logo 10s ease-in-out infinite alternate-reverse;"></div>
     <div style="animation: float-logo 4s ease-in-out infinite; z-index: 10; position: relative; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
         <defs>
           <linearGradient id="loaderNexisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#a855f7" />
+            <stop offset="0%" stop-color="#8b5cf6" />
             <stop offset="100%" stop-color="#c026d3" />
           </linearGradient>
         </defs>
         <rect width="100" height="100" rx="24" fill="url(#loaderNexisGrad)" />
-        <rect width="100" height="100" rx="24" fill="#ddd6fe" opacity="0.15" />
-        <rect width="98" height="98" x="1" y="1" rx="23" fill="none" stroke="#ddd6fe" stroke-width="2" opacity="0.2" />
-        <g transform="translate(25, 25) scale(2.0833)" fill="#ddd6fe">
+        <rect width="100" height="100" rx="24" fill="#ffffff" opacity="0.15" />
+        <rect width="98" height="98" x="1" y="1" rx="23" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.2" />
+        <g transform="translate(25, 25) scale(2.0833)" fill="#ffffff">
           <path d="M2 2 L 18 2 L 2 18 Z" />
           <path d="M22 6 L 22 22 L 6 22 Z" />
         </g>
       </svg>
     </div>
-    <div style="margin-top: 2.5rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2.2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #94a3b8 0%, #ddd6fe 50%, #94a3b8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; drop-shadow: 0 4px 6px rgba(0,0,0,0.5);">
+    <div style="margin-top: 2.5rem; font-family: 'Fira Sans', sans-serif; font-weight: 900; font-size: 2.2rem; letter-spacing: 0.4em; z-index: 10; background: linear-gradient(90deg, #e2e8f0 0%, #ffffff 50%, #e2e8f0 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: text-shimmer 3s linear infinite; drop-shadow: 0 4px 6px rgba(0,0,0,0.5);">
       NEXIS<span style="color: #c084fc; -webkit-text-fill-color: #c084fc;">GAMES</span>
     </div>
-    <div style="margin-top: 1.25rem; font-family: 'Fira Sans', sans-serif; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.3em; color: #94a3b8; text-transform: uppercase; animation: pulse-ring 2s infinite; text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);">
-      Loading...
-    </div>
     <div style="margin-top: 1.5rem; width: 260px; height: 3px; background: #0f172a; border-radius: 4px; overflow: hidden; z-index: 10; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 1px 2px rgba(0,0,0,0.8);">
-      <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #c084fc, #38bdf8, #c026d3, transparent); border-radius: 4px; animation: loading-bar 1.2s infinite ease-in-out; box-shadow: 0 0 10px #c084fc;"></div>
+      <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #c084fc, #a78bfa, #c026d3, transparent); border-radius: 4px; animation: loading-bar 1.2s infinite ease-in-out; box-shadow: 0 0 10px #c084fc;"></div>
     </div>
   </div>
 
@@ -289,552 +179,168 @@
   <script type="text/babel" data-type="module">
     import { initializeApp } from 'firebase/app';
     import { 
-      getAuth, 
-      createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword, 
-      signOut, 
-      onAuthStateChanged, 
-      updateProfile, 
-      signInAnonymously, 
-      signInWithCustomToken, 
-      sendPasswordResetEmail,
-      sendEmailVerification
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+      signOut, onAuthStateChanged, updateProfile, signInAnonymously, 
+      signInWithCustomToken, sendPasswordResetEmail, sendEmailVerification
     } from 'firebase/auth';
     import { 
-      getFirestore, 
-      doc, 
-      getDoc, 
-      setDoc, 
-      updateDoc, 
-      deleteDoc, 
-      collection, 
-      onSnapshot, 
-      enableIndexedDbPersistence 
+      getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, 
+      collection, onSnapshot, enableIndexedDbPersistence 
     } from 'firebase/firestore';
 
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect, useRef, memo, useMemo } = React;
 
-    // --- ICONS ---
-    const HomeIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor" fillOpacity="0.2"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
+    // --- UI ICONS ---
+    const HomeIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor" fillOpacity="0.1"/><polyline points="9 22 9 12 15 12 15 22"/></svg>);
+    const UserIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" fill="currentColor" fillOpacity="0.1"/><circle cx="12" cy="7" r="4" fill="currentColor" fillOpacity="0.1"/></svg>);
+    const SettingsIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.1"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>);
+    const TrophyIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" fill="currentColor" fillOpacity="0.1"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0z" fill="currentColor" fillOpacity="0.1"/></svg>);
+    const SearchIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8" fill="currentColor" fillOpacity="0.1"/><path d="m21 21-4.3-4.3"/></svg>);
+    const PlayIcon = ({ size = 24, className = "", fill = "none" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>);
+    const Gamepad2Icon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="12" x="2" y="6" rx="2" fill="currentColor" fillOpacity="0.1"/><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/></svg>);
+    const ChevronLeftIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>);
+    const Maximize2Icon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>);
+    const Minimize2Icon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>);
+    const XIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>);
+    const MenuIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>);
+    const UploadIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="currentColor" fillOpacity="0.1"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>);
+    const EyeIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" fill="currentColor" fillOpacity="0.1"/><circle cx="12" cy="12" r="3"/></svg>);
+    const EyeOffIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" fill="currentColor" fillOpacity="0.1"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" fill="currentColor" fillOpacity="0.1"/><line x1="2" y1="2" x2="22" y2="22"/></svg>);
+    const StarIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>);
+    const InfoIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.1"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>);
+    const HeartIcon = ({ size = 24, className = "", fill = "none" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>);
+    const SurpriseIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" fill="currentColor" fillOpacity="0.1"/><path d="M5 3v4M7 5H3"/><path d="M19 17v4M21 19h-4"/></svg>);
+    const ShieldIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.1"/></svg>);
+    const BanIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.1"/><path d="m4.9 4.9 14.2 14.2"/></svg>);
+    const ClockIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.1"/><polyline points="12 6 12 12 16 14"/></svg>);
+    const WifiOffIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/></svg>);
+
+    // --- GAME ICONS ---
+    const BurgerIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Burger.png" alt="Burger Chef" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/d97706/ffffff?text=Burger';}}/></div>));
+    const CheeseIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Cheese.png" alt="Beauty and the Cheese" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/eab308/ffffff?text=Cheese';}}/></div>));
+    const GSwitchIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Switch.png" alt="G-Switch 3" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/1e3a8a/ffffff?text=Switch';}}/></div>));
+    const ArchitectIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Curse.png" alt="The Architect's Curse" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/020617/ffffff?text=Curse';}}/></div>));
+    const BlackjackIcon = memo(() => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id="bjTable" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#064e3b"/><stop offset="100%" stopColor="#020617"/>
+          </linearGradient>
+          <filter id="cardShadow"><feDropShadow dx="2" dy="8" stdDeviation="6" floodColor="#000000" floodOpacity="0.8" /></filter>
+          <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="100">
+            <stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#e2e8f0"/>
+          </linearGradient>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#bjTable)" />
+        <circle cx="100" cy="220" r="140" stroke="#16a34a" strokeWidth="3" opacity="0.3" fill="none"/>
+        <circle cx="100" cy="220" r="100" stroke="#22c55e" strokeWidth="2" opacity="0.2" fill="none"/>
+        <g filter="url(#cardShadow)">
+          <g transform="translate(50, 40) rotate(-15)">
+            <rect width="70" height="100" rx="8" fill="url(#cardGrad)" stroke="#cbd5e1" strokeWidth="2"/>
+            <text x="10" y="25" fill="#ef4444" fontSize="22" fontFamily="Arial" fontWeight="900">A</text>
+            <path d="M35 45 L45 60 L35 75 L25 60 Z" fill="#ef4444" />
+            <text x="45" y="90" fill="#ef4444" fontSize="22" fontFamily="Arial" fontWeight="900" transform="rotate(180 50 82)">A</text>
+          </g>
+          <g transform="translate(85, 55) rotate(12)">
+            <rect width="70" height="100" rx="8" fill="url(#cardGrad)" stroke="#cbd5e1" strokeWidth="2"/>
+            <text x="10" y="25" fill="#0f172a" fontSize="22" fontFamily="Arial" fontWeight="900">J</text>
+            <path d="M35 60 C45 45, 45 75, 35 60" fill="#0f172a" stroke="#0f172a" strokeWidth="8" strokeLinecap="round"/>
+            <path d="M35 45 L40 55 L35 75 L30 55 Z" fill="#0f172a" />
+            <text x="45" y="90" fill="#0f172a" fontSize="22" fontFamily="Arial" fontWeight="900" transform="rotate(180 50 82)">J</text>
+          </g>
+        </g>
       </svg>
-    );
-
-    const UserIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" fill="currentColor" fillOpacity="0.2"/>
-        <circle cx="12" cy="7" r="4" fill="currentColor" fillOpacity="0.2"/>
-      </svg>
-    );
-
-    const SettingsIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" fillOpacity="0.2"/>
-        <circle cx="12" cy="12" r="3"/>
-      </svg>
-    );
-
-    const TrophyIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-        <path d="M4 22h16"/>
-        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" fill="currentColor" fillOpacity="0.2"/>
-        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-        <path d="M18 2H6v7a6 6 0 0 0 12 0z" fill="currentColor" fillOpacity="0.2"/>
-      </svg>
-    );
-
-    const SearchIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <circle cx="11" cy="11" r="8" fill="currentColor" fillOpacity="0.15"/>
-        <path d="m21 21-4.3-4.3"/>
-      </svg>
-    );
-
-    const PlayIcon = ({ size = 24, className = "", fill = "none" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <polygon points="5 3 19 12 5 21 5 3"/>
-      </svg>
-    );
-
-    const Gamepad2Icon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <rect width="20" height="12" x="2" y="6" rx="2" fill="currentColor" fillOpacity="0.2"/>
-        <line x1="6" x2="10" y1="12" y2="12"/>
-        <line x1="8" x2="8" y1="10" y2="14"/>
-        <line x1="15" x2="15.01" y1="13" y2="13"/>
-        <line x1="18" x2="18.01" y1="11" y2="11"/>
-      </svg>
-    );
-
-    const ChevronLeftIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="m15 18-6-6 6-6"/>
-      </svg>
-    );
-
-    const Maximize2Icon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <polyline points="15 3 21 3 21 9"/>
-        <polyline points="9 21 3 21 3 15"/>
-        <line x1="21" x2="14" y1="3" y2="10"/>
-        <line x1="3" x2="10" y1="21" y2="14"/>
-      </svg>
-    );
-
-    const Minimize2Icon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <polyline points="4 14 10 14 10 20"/>
-        <polyline points="20 10 14 10 14 4"/>
-        <line x1="14" x2="21" y1="10" y2="3"/>
-        <line x1="3" x2="10" y1="21" y2="14"/>
-      </svg>
-    );
-
-    const XIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M18 6 6 18"/>
-        <path d="m6 6 12 12"/>
-      </svg>
-    );
-
-    const MenuIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <line x1="4" x2="20" y1="12" y2="12"/>
-        <line x1="4" x2="20" y1="6" y2="6"/>
-        <line x1="4" x2="20" y1="18" y2="18"/>
-      </svg>
-    );
-
-    const UploadIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="currentColor" fillOpacity="0.2"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
-    );
-
-    const EyeIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" fill="currentColor" fillOpacity="0.15"/>
-        <circle cx="12" cy="12" r="3"/>
-      </svg>
-    );
-
-    const EyeOffIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
-        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" fill="currentColor" fillOpacity="0.15"/>
-        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" fill="currentColor" fillOpacity="0.15"/>
-        <line x1="2" y1="2" x2="22" y2="22"/>
-      </svg>
-    );
-
-    const StarIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-    );
-
-    const InfoIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/>
-        <path d="M12 16v-4"/>
-        <path d="M12 8h.01"/>
-      </svg>
-    );
-
-    const HeartIcon = ({ size = 24, className = "", fill = "none" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-      </svg>
-    );
-
-    const SurpriseIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" fill="currentColor" fillOpacity="0.2"/>
-        <path d="M5 3v4M7 5H3"/>
-        <path d="M19 17v4M21 19h-4"/>
-      </svg>
-    );
-
-    const ShieldIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.2"/>
-      </svg>
-    );
-
-    const BanIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/>
-        <path d="m4.9 4.9 14.2 14.2"/>
-      </svg>
-    );
-
-    const ClockIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
-    );
-
-    const WifiOffIcon = ({ size = 24, className = "" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <line x1="2" y1="2" x2="22" y2="22"/>
-        <path d="M8.5 16.5a5 5 0 0 1 7 0"/>
-        <path d="M2 8.82a15 15 0 0 1 4.17-2.65"/>
-        <path d="M10.66 5c4.01-.36 8.14.9 11.34 3.82"/>
-      </svg>
-    );
-
-    const ShaddoCraftIcon = React.memo(() => (
-      <div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'15px', boxSizing:'border-box'}}>
-        <img src="assets/shado.png" alt="Cube Game" style={{width:'100%', height:'100%', objectFit:'contain', filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/>
-      </div>
     ));
-
-    const VoidStalkerIcon = React.memo(() => (
-      <div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}>
-        <img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/312e81/ffffff?text=Spooky';}}/>
-      </div>
+    const PolyBitIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Poly.png" alt="PolyBit Destruction" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/d946ef/ffffff?text=Poly';}}/></div>));
+    const DungeonCrawlerIcon = memo(() => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id="dungBg" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#27272a"/><stop offset="100%" stopColor="#09090b"/>
+          </linearGradient>
+          <filter id="swordGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#dungBg)" />
+        <path d="M50 40 L150 40 L150 100 C150 150 100 180 100 180 C100 180 50 150 50 100 Z" fill="#18181b" stroke="#3f3f46" strokeWidth="4"/>
+        <g transform="translate(100, 100) rotate(45)" filter="url(#swordGlow)">
+          <path d="M-15 -50 L0 -120 L15 -50 L15 20 L-15 20 Z" fill="#e4e4e7" />
+          <path d="M0 -120 L15 -50 L15 20 L0 20 Z" fill="#a1a1aa" />
+          <rect x="-40" y="20" width="80" height="16" rx="6" fill="#fbbf24" stroke="#d97706" strokeWidth="2" />
+          <rect x="-12" y="36" width="24" height="40" rx="6" fill="#78350f" stroke="#451a03" strokeWidth="2" />
+          <circle cx="0" cy="80" r="16" fill="#fbbf24" stroke="#d97706" strokeWidth="2"/>
+          <circle cx="0" cy="80" r="6" fill="#ef4444" />
+        </g>
+      </svg>
     ));
-
-    const VBrawlIcon = React.memo(() => (
+    const ScaryMazeIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Maze.png" alt="Scary Maze" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/000000/ffffff?text=Maze';}}/></div>));
+    const TheSpookyMazeIcon = memo(() => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id="spokBg" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#3b0764"/><stop offset="100%" stopColor="#000000"/>
+          </linearGradient>
+          <filter id="ghostGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#spokBg)" />
+        <path d="M20 20H180V180H20V20Z" stroke="#7e22ce" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" opacity="0.4"/>
+        <path d="M60 60H140V140H60V60Z" stroke="#9333ea" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
+        <g filter="url(#ghostGlow)">
+          <path d="M100 50 C120 50 140 70 140 100 L140 150 L125 135 L110 150 L95 135 L80 150 L60 150 C60 150 60 100 60 100 C60 70 80 50 100 50 Z" fill="#e9d5ff" />
+          <circle cx="85" cy="90" r="8" fill="#000000" />
+          <circle cx="115" cy="90" r="8" fill="#000000" />
+          <ellipse cx="100" cy="115" rx="8" ry="12" fill="#000000" />
+        </g>
+      </svg>
+    ));
+    const RealmIcon = memo(() => (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id="realmBg" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stopColor="#0c4a6e"/><stop offset="100%" stopColor="#020617"/>
+          </linearGradient>
+          <filter id="crystalGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#realmBg)" />
+        <circle cx="40" cy="40" r="2" fill="#fff" opacity="0.5"/>
+        <circle cx="160" cy="60" r="3" fill="#fff" opacity="0.6"/>
+        <circle cx="50" cy="150" r="2" fill="#fff" opacity="0.4"/>
+        <g transform="translate(100, 100)" filter="url(#crystalGlow)">
+          <path d="M0 -80 L30 10 L0 70 L-30 10 Z" fill="#e0f2fe" />
+          <path d="M0 -80 L30 10 L0 70 Z" fill="#bae6fd" opacity="0.8"/>
+          <path d="M-20 -20 L-60 0 L-20 30 L-10 10 Z" fill="#7dd3fc" />
+          <path d="M-20 -20 L-60 0 L-20 30 Z" fill="#38bdf8" opacity="0.7"/>
+          <path d="M20 -30 L70 -10 L30 20 L15 0 Z" fill="#0ea5e9" />
+          <path d="M20 -30 L70 -10 L30 20 Z" fill="#0284c7" opacity="0.7"/>
+        </g>
+      </svg>
+    ));
+    const VBrawlIcon = memo(() => (
       <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
         <defs>
           <linearGradient id="bBg" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#1e1b4b"/>
-            <stop offset="100%" stopColor="#0f172a"/>
+            <stop offset="0%" stopColor="#7c2d12"/><stop offset="100%" stopColor="#020617"/>
           </linearGradient>
-          <filter id="brawlImpactGlow">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
+          <filter id="vGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <linearGradient id="vGrad" x1="0" y1="0" x2="0" y2="200">
+            <stop offset="0%" stopColor="#f97316"/><stop offset="100%" stopColor="#ef4444"/>
+          </linearGradient>
         </defs>
         <rect width="200" height="200" rx="40" fill="url(#bBg)" />
-        <g transform="translate(100, 135)">
-          <path d="M0 0L75 -37.5L0 -75L-75 -37.5Z" fill="#334155" stroke="#475569" strokeWidth="3" strokeLinejoin="round"/>
-          <path d="M-75 -37.5L0 0L0 25L-75 -12.5Z" fill="#0f172a" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
-          <path d="M75 -37.5L0 0L0 25L75 -12.5Z" fill="#1e293b" stroke="#334155" strokeWidth="2" strokeLinejoin="round"/>
-        </g>
-        <g filter="url(#brawlImpactGlow)">
-          <path d="M90 80L110 100M110 80L90 100M100 70L100 110M80 90L120 90" stroke="#facc15" strokeWidth="4" strokeLinecap="round" />
-          <circle cx="100" cy="90" r="15" fill="#fef08a" opacity="0.6" />
-        </g>
-        <g filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.6))">
-          <g transform="translate(75, 90)">
-            <path d="M-15 0Q-25 -5 -35 0Q-25 5 -15 0" fill="#fca5a5" opacity="0.8"/>
-            <circle cx="0" cy="0" r="14" fill="#ef4444" />
-            <path d="M3 -4L8 0L3 4" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </g>
-          <g transform="translate(125, 90)">
-            <path d="M15 0Q25 -5 35 0Q25 5 15 0" fill="#93c5fd" opacity="0.8"/>
-            <circle cx="0" cy="0" r="14" fill="#3b82f6" />
-            <path d="M-3 -4L-8 0L-3 4" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </g>
-          <g transform="translate(100, 45)">
-            <path d="M0 -15L-5 -30L5 -30Z" fill="#86efac" opacity="0.8"/>
-            <circle cx="0" cy="0" r="14" fill="#22c55e" />
-            <path d="M-4 2L0 6L4 2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </g>
-          <g transform="translate(145, 55)">
-            <circle cx="0" cy="0" r="14" fill="#a855f7" />
-            <path d="M-4 -2L4 -2M-4 2L4 2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M-15 15Q-20 25 -30 35" stroke="#d8b4fe" strokeWidth="3" strokeDasharray="4 4" fill="none"/>
-          </g>
+        <circle cx="100" cy="100" r="70" fill="#000000" opacity="0.4" />
+        <path d="M30 100 L170 100 M100 30 L100 170 M50 50 L150 150 M150 50 L50 150" stroke="#f97316" strokeWidth="2" opacity="0.2" />
+        <g filter="url(#vGlow)">
+          <path d="M50 50 L90 150 L100 170 L110 150 L150 50 L115 50 L100 100 L85 50 Z" fill="url(#vGrad)" />
+          <path d="M100 80 L110 100 L130 105 L110 110 L100 130 L90 110 L70 105 L90 100 Z" fill="#fef08a" />
         </g>
       </svg>
     ));
+    const PigeonIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Bird.png" alt="Super Pigeon Rumble" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/4c1d95/ffffff?text=Bird';}}/></div>));
+    const ShaddoCraftIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'15px', boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%', height:'100%', objectFit:'contain', filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/></div>));
+    const VoidStalkerIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/312e81/ffffff?text=Spooky';}}/></div>));
 
-    const PigeonIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="pGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#4c1d95"/>
-            <stop offset="100%" stopColor="#be185d"/>
-          </linearGradient>
-          <filter id="pGlow">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#pGrad)" />
-        <g transform="translate(100, 115)">
-          <path d="M-45 0C-45 30,-25 50,0 50C25 50,45 30,45 0C45 -40,25 -50,0 -50C-25 -50,-45 -40,-45 0Z" fill="#94a3b8" stroke="#334155" strokeWidth="4"/>
-          <path d="M-30 5C-30 25,-15 40,0 40C15 40,30 25,30 5Z" fill="#cbd5e1" />
-        </g>
-        <g transform="translate(100, 60)">
-          <circle cx="0" cy="0" r="35" fill="#94a3b8" stroke="#334155" strokeWidth="4"/>
-          <path d="M-12 8L12 8L0 28Z" fill="#f59e0b" stroke="#b45309" strokeWidth="3" strokeLinejoin="round"/>
-          <path d="M-28 -8L-5 0L-15 12Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
-          <path d="M28 -8L5 0L15 12Z" fill="#ffffff" stroke="#1e293b" strokeWidth="2" strokeLinejoin="round"/>
-          <circle cx="-12" cy="2" r="3.5" fill="#ef4444" />
-          <circle cx="12" cy="2" r="3.5" fill="#ef4444" />
-        </g>
-        <g transform="translate(50, 130)" filter="url(#pGlow)">
-          <circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" />
-          <path d="M-12 -15Q8 -22 18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/>
-        </g>
-        <g transform="translate(150, 130)" filter="url(#pGlow)">
-          <circle cx="0" cy="0" r="28" fill="#ef4444" stroke="#991b1b" strokeWidth="4" />
-          <path d="M12 -15Q-8 -22 -18 -5" stroke="#fca5a5" strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <rect x="-15" y="15" width="30" height="10" rx="4" fill="#991b1b"/>
-        </g>
-      </svg>
-    ));
-
-    const BurgerIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="burgerBg" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#f59e0b"/>
-            <stop offset="100%" stopColor="#b45309"/>
-          </linearGradient>
-          <filter id="glowSteam">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#burgerBg)" />
-        <g transform="translate(100, 105) scale(1.15)">
-          <ellipse cx="0" cy="35" rx="65" ry="15" fill="#fef3c7" stroke="#d97706" strokeWidth="3"/>
-          <ellipse cx="0" cy="35" rx="45" ry="8" fill="#fde68a" />
-          <path d="M-25 -65Q-15 -80 -25 -95M0 -70Q10 -85 0 -100M25 -65Q35 -80 25 -95" stroke="#fde68a" strokeWidth="4" strokeLinecap="round" fill="none" filter="url(#glowSteam)" opacity="0.7"/>
-          <path d="M-50 20C-50 40,50 40,50 20Z" fill="#fbbf24" stroke="#d97706" strokeWidth="4"/>
-          <rect x="-55" y="0" width="110" height="20" rx="10" fill="#78350f" stroke="#451a03" strokeWidth="4"/>
-          <path d="M-60 -5L-50 5L-40 -5L-30 10L-20 -5L-10 5L0 -5L10 10L20 -5L30 5L40 -5L50 10L60 -5Z" fill="#facc15" stroke="#ca8a04" strokeWidth="3" strokeLinejoin="round"/>
-          <rect x="-52" y="-12" width="104" height="8" rx="4" fill="#ef4444" stroke="#b91c1c" strokeWidth="2"/>
-          <path d="M-55 -20C-40 -35,-30 -5,-15 -20C0 -35,10 -5,25 -20C40 -35,50 -5,55 -20C60 0,-60 0,-55 -20Z" fill="#4ade80" stroke="#16a34a" strokeWidth="4" strokeLinejoin="round"/>
-          <path d="M-50 -25C-50 -65,50 -65,50 -25Z" fill="#fbbf24" stroke="#d97706" strokeWidth="4"/>
-          <ellipse cx="-20" cy="-45" rx="4" ry="2" fill="#ddd6fe" transform="rotate(15 -20 -45)"/>
-          <ellipse cx="0" cy="-52" rx="4" ry="2" fill="#ddd6fe" />
-          <ellipse cx="20" cy="-45" rx="4" ry="2" fill="#ddd6fe" transform="rotate(-15 20 -45)"/>
-        </g>
-      </svg>
-    ));
-
-    const RealmIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="realmGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#0284c7"/>
-            <stop offset="100%" stopColor="#1e3a8a"/>
-          </linearGradient>
-          <filter id="shardGlow">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#realmGrad)" />
-        <g transform="translate(100, 100)" filter="url(#shardGlow)">
-          <path d="M0 -60L30 10L0 50L-30 10Z" fill="#e0f2fe" opacity="0.9"/>
-          <path d="M0 -60L30 10L0 80L0 50Z" fill="#bae6fd" opacity="0.7"/>
-          <path d="M-40 -10L-10 20L-20 40Z" fill="#7dd3fc" opacity="0.8"/>
-          <path d="M40 0L15 30L30 45Z" fill="#38bdf8" opacity="0.8"/>
-        </g>
-      </svg>
-    ));
-
-    const ScaryMazeIcon = React.memo(() => (
-      <div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}>
-        <img src="assets/Maze.png" alt="Scary Maze" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/0f172a/ffffff?text=Scary+Maze';}}/>
-      </div>
-    ));
-
-    const TheSpookyMazeIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="spokGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#4c1d95"/>
-            <stop offset="100%" stopColor="#000000"/>
-          </linearGradient>
-          <filter id="spokGlow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#spokGrad)" />
-        <g filter="url(#spokGlow)">
-          <path d="M40 40H160V160H40V40Z" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M40 80H120V120H80V160" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M160 100H100V40" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-          <circle cx="140" cy="140" r="10" fill="#ef4444"/>
-          <path d="M60 140 Q 70 120 80 140" stroke="#ef4444" strokeWidth="4" fill="none" />
-        </g>
-      </svg>
-    ));
-
-    const GSwitchIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="gsGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#3b82f6"/>
-            <stop offset="100%" stopColor="#1e3a8a"/>
-          </linearGradient>
-          <filter id="gsGlow">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#gsGrad)" />
-        <g filter="url(#gsGlow)">
-          <path d="M70 140 L70 60 L40 90 M70 60 L100 90" stroke="#93c5fd" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M130 60 L130 140 L100 110 M130 140 L160 110" stroke="#60a5fa" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/>
-        </g>
-      </svg>
-    ));
-
-    const PolyBitIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="polyGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#8b5cf6"/>
-            <stop offset="100%" stopColor="#d946ef"/>
-          </linearGradient>
-          <filter id="polyGlow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#polyGrad)" />
-        <g filter="url(#polyGlow)">
-          <path d="M100 40 L160 140 L40 140 Z" fill="#fbcfe8" opacity="0.8"/>
-          <path d="M100 40 L160 140 L100 120 Z" fill="#fdf4ff" opacity="0.9"/>
-          <polygon points="100,120 160,140 100,160 40,140" fill="#f0abfc" opacity="0.6"/>
-          <path d="M100 80 L120 120 L80 120 Z" fill="#d946ef" />
-        </g>
-      </svg>
-    ));
-
-    const DungeonCrawlerIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="dungGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#27272a"/>
-            <stop offset="100%" stopColor="#09090b"/>
-          </linearGradient>
-          <filter id="swordGlow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#dungGrad)" />
-        <g filter="url(#swordGlow)" transform="translate(100, 100) rotate(45)">
-          <path d="M-10 -40 L0 -90 L10 -40 L10 20 L-10 20 Z" fill="#e4e4e7" stroke="#a1a1aa" strokeWidth="2"/>
-          <path d="M0 -90 L10 -40 L10 20 L0 20 Z" fill="#71717a" />
-          <rect x="-30" y="20" width="60" height="12" rx="4" fill="#fbbf24" stroke="#b45309" strokeWidth="2"/>
-          <rect x="-10" y="20" width="20" height="16" rx="2" fill="#f59e0b" />
-          <rect x="-8" y="32" width="16" height="35" rx="4" fill="#78350f" stroke="#451a03" strokeWidth="2"/>
-          <circle cx="0" cy="70" r="10" fill="#fbbf24" stroke="#b45309" strokeWidth="2"/>
-          <circle cx="0" cy="70" r="4" fill="#ef4444" />
-        </g>
-      </svg>
-    ));
-
-    const ArchitectIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="archGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#1e293b"/>
-            <stop offset="100%" stopColor="#020617"/>
-          </linearGradient>
-          <filter id="archGlow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#archGrad)" />
-        <g filter="url(#archGlow)">
-          <path d="M50 150 L150 150 L100 50 Z" fill="none" stroke="#2dd4bf" strokeWidth="8" />
-          <circle cx="100" cy="110" r="15" fill="#14b8a6" />
-          <path d="M85 110 Q 100 90 115 110" stroke="#020617" strokeWidth="4" fill="none" />
-        </g>
-      </svg>
-    ));
-
-    const BlackjackIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="bjGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#166534"/>
-            <stop offset="100%" stopColor="#064e3b"/>
-          </linearGradient>
-          <filter id="bjDrop">
-            <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.5" />
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#bjGrad)" />
-        <g filter="url(#bjDrop)">
-          <g transform="translate(60, 60) rotate(-15)">
-            <rect width="60" height="90" rx="6" fill="#ddd6fe" />
-            <path d="M25 35 L30 45 L35 35 A 5 5 0 0 0 25 35" fill="#ef4444" />
-            <text x="10" y="25" fill="#ef4444" fontSize="16" fontFamily="Arial" fontWeight="bold">A</text>
-          </g>
-          <g transform="translate(100, 70) rotate(10)">
-            <rect width="60" height="90" rx="6" fill="#ddd6fe" />
-            <path d="M30 35 C 35 25, 45 45, 30 55 C 15 45, 25 25, 30 35" fill="#0f172a" />
-            <text x="10" y="25" fill="#0f172a" fontSize="16" fontFamily="Arial" fontWeight="bold">J</text>
-          </g>
-        </g>
-      </svg>
-    ));
-
-    const CheeseIcon = React.memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="cheeseGrad" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#fef08a"/>
-            <stop offset="100%" stopColor="#eab308"/>
-          </linearGradient>
-          <filter id="cheeseDrop">
-            <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.3" />
-          </filter>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#cheeseGrad)" />
-        <g filter="url(#cheeseDrop)" transform="translate(50, 60)">
-          <path d="M0 0 L100 -20 L80 60 L-20 80 Z" fill="#fde047" stroke="#ca8a04" strokeWidth="6" strokeLinejoin="round" />
-          <path d="M0 0 L-20 80 L-20 100 L0 20 Z" fill="#facc15" stroke="#ca8a04" strokeWidth="6" strokeLinejoin="round" />
-          <path d="M80 60 L-20 80 L-20 100 L80 80 Z" fill="#eab308" stroke="#ca8a04" strokeWidth="6" strokeLinejoin="round" />
-          <circle cx="30" cy="30" r="12" fill="#ca8a04" />
-          <circle cx="65" cy="15" r="8" fill="#ca8a04" />
-          <circle cx="10" cy="50" r="10" fill="#ca8a04" />
-        </g>
-      </svg>
-    ));
 
     // --- ADSENSE WIDGET COMPONENT ---
-    const AdSenseWidget = React.memo(() => {
+    const AdSenseWidget = memo(() => {
       useEffect(() => {
         try {
           (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -843,7 +349,7 @@
         }
       }, []);
       return (
-        <div className="w-full flex justify-center mt-8 min-h-[100px] relative z-50 bg-slate-950/50 rounded-xl overflow-hidden border border-slate-800/80 shadow-inner">
+        <div className="w-full flex justify-center mt-8 min-h-[100px] relative z-50 bg-obsidian-900/50 backdrop-blur-md rounded-2xl overflow-hidden border border-violet-500/10 shadow-inner">
           <ins className="adsbygoogle"
                style={{ display: 'block', width: '100%' }}
                data-ad-client="ca-pub-9729951455444854"
@@ -937,19 +443,19 @@
 
     // --- GAME DATA ---
     const GAMES = [
-      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-500 to-orange-700', tags: ['Cooking', 'Action'] },
-      { id: 'beauty-and-the-cheese', title: 'Beauty and the Cheese', developer: 'Jam', src: 'games/Che.html', icon: CheeseIcon, theme: 'from-yellow-400 to-amber-600', tags: ['Adventure', 'Arcade'] },
-      { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: 'https://gswitch.io/g-switch-3.embed', icon: GSwitchIcon, theme: 'from-blue-600 to-indigo-800', tags: ['Action', 'Arcade'] },
-      { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', icon: ArchitectIcon, theme: 'from-teal-800 to-slate-900', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
-      { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', icon: BlackjackIcon, theme: 'from-green-700 to-emerald-950', tags: ['Arcade', 'Table'] },
-      { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-purple-600 to-fuchsia-800', tags: ['Action', 'Arcade'] },
-      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Unknown', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-700 to-stone-900', tags: ['RPG', 'Adventure'], isPublicBeta: true },
-      { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-slate-900 to-black', tags: ['Spooky', 'Action'] },
+      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', icon: BurgerIcon, theme: 'from-amber-600 to-orange-900', tags: ['Cooking', 'Action'] },
+      { id: 'beauty-and-the-cheese', title: 'Beauty and the Cheese', developer: 'Jam', src: 'games/Che.html', icon: CheeseIcon, theme: 'from-yellow-500 to-amber-700', tags: ['Adventure', 'Arcade'] },
+      { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: 'https://gswitch.io/g-switch-3.embed', icon: GSwitchIcon, theme: 'from-blue-700 to-indigo-950', tags: ['Action', 'Arcade'] },
+      { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', icon: ArchitectIcon, theme: 'from-teal-900 to-black', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
+      { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', icon: BlackjackIcon, theme: 'from-green-800 to-emerald-950', tags: ['Arcade', 'Table'] },
+      { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-fuchsia-700 to-purple-950', tags: ['Action', 'Arcade'] },
+      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Unknown', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-800 to-black', tags: ['RPG', 'Adventure'], isPublicBeta: true },
+      { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-red-950 to-black', tags: ['Spooky', 'Action'] },
       { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Unknown', src: 'games/Spok.html', icon: TheSpookyMazeIcon, theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
       { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
-      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'] },
+      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'], isPublicBeta: true },
       { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true }
     ];
 
@@ -1516,8 +1022,11 @@
       };
 
       const playRandomGame = () => { 
-        const randomIndex = Math.floor(Math.random() * GAMES.length); 
-        handleLaunchGame(GAMES[randomIndex]); 
+        // SECURITY UPDATE: Filter out Dev Beta games for regular players
+        const pool = GAMES.filter(g => !g.isBeta || isDevUser);
+        if(pool.length === 0) return;
+        const randomIndex = Math.floor(Math.random() * pool.length); 
+        handleLaunchGame(pool[randomIndex]); 
       };
 
       const toggleFavorite = async (e, gid) => { 
@@ -1590,28 +1099,30 @@
             <BanIcon size={80} className="text-rose-600 mb-6 animate-pulse" />
             <h1 className="text-5xl font-black font-heading text-rose-500 mb-4 tracking-widest uppercase">Account Banned</h1>
             <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Your access to Nexis Games has been permanently revoked due to a violation of our community standards.</p>
-            <button onClick={handleLogout} className="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold uppercase tracking-widest">Sign Out</button>
+            <button onClick={handleLogout} className="px-8 py-3 bg-obsidian-800 text-white rounded-xl font-bold uppercase tracking-widest border border-white/5 hover:bg-obsidian-700 transition-colors">Sign Out</button>
           </div>
         );
       }
 
       if (userStatus === 'suspended') {
         return (
-          <div className="h-screen w-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8 text-center">
+          <div className="h-screen w-screen bg-obsidian-950 text-white flex flex-col items-center justify-center p-8 text-center">
             <ClockIcon size={80} className="text-amber-500 mb-6 animate-bounce" />
             <h1 className="text-5xl font-black font-heading text-amber-500 mb-4 tracking-widest uppercase">Account Suspended</h1>
             <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Your account is currently under review or temporarily suspended. Please check back later.</p>
-            <button onClick={handleLogout} className="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold uppercase tracking-widest">Sign Out</button>
+            <button onClick={handleLogout} className="px-8 py-3 bg-obsidian-800 text-white rounded-xl font-bold uppercase tracking-widest border border-white/5 hover:bg-obsidian-700 transition-colors">Sign Out</button>
           </div>
         );
       }
 
       // --- MAIN RENDER ---
       return (
-        <div className="h-screen w-screen bg-[#050505] text-slate-200 font-sans flex overflow-hidden relative">
+        <div className="h-screen w-screen bg-[#030008] text-slate-200 font-sans flex overflow-hidden relative">
           
           <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900/20 via-[#050505] to-[#000000]"></div>
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px]"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-fuchsia-600/10 blur-[120px]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-obsidian-800/50 via-[#030008] to-[#000000]"></div>
           </div>
           
           {isOffline && (
@@ -1624,10 +1135,11 @@
             <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] animate-in fade-in duration-300" onClick={() => setIsSidebarOpen(false)}></div>
           )}
           
-          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen z-[100] flex flex-col flex-shrink-0 bg-[#0a0a0a]/90 backdrop-blur-2xl border-r border-white/5 transition-[width,transform] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden whitespace-nowrap shadow-2xl ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-[88px]'}`}>
+          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen z-[100] flex flex-col flex-shrink-0 bg-[#050508]/60 backdrop-blur-2xl border-r border-white/5 transition-[width,transform] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden whitespace-nowrap shadow-2xl ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-[88px]'}`}>
             <div className="p-6 flex items-center justify-start h-24 border-b border-white/5">
-              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 border border-white/10 relative bg-black">
-                <img src="assets/Favicon.png" alt="Nexis Games Logo" className="w-full h-full object-cover relative z-10" />
+              <div className="w-10 h-10 rounded-[12px] bg-obsidian-950 flex items-center justify-center flex-shrink-0 border border-violet-400/30 shadow-[0_0_15px_rgba(139,92,246,0.4)] relative z-10 overflow-hidden">
+                <img src="assets/backup.png" alt="Nexis Games Logo" className="w-full h-full object-cover relative z-10" onError={e => {e.target.onerror=null; e.target.style.display='none'}} />
+                <span className="font-heading font-black text-white absolute">NG</span>
               </div>
               <h1 className={`text-xl font-bold tracking-widest text-white font-heading transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>
                 NEXIS GAMES
@@ -1635,30 +1147,30 @@
             </div>
             
             <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
-              <button onClick={() => { setActiveView('discover'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-xl transition-all duration-300 border ${activeView === 'discover' ? 'bg-white/10 border-white/10 text-white' : 'border-transparent text-slate-500 hover:bg-white/5 hover:text-slate-300'}`} title="Discover">
+              <button onClick={() => { setActiveView('discover'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'discover' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Discover">
                 <HomeIcon size={22} className="flex-shrink-0" />
                 <span className={`font-semibold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Discover</span>
               </button>
               
-              <button onClick={() => { setActiveView('leaderboard'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-xl transition-all duration-300 border ${activeView === 'leaderboard' ? 'bg-white/10 border-white/10 text-white' : 'border-transparent text-slate-500 hover:bg-white/5 hover:text-slate-300'}`} title="Leaderboard">
+              <button onClick={() => { setActiveView('leaderboard'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'leaderboard' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Leaderboard">
                 <TrophyIcon size={22} className="flex-shrink-0" />
                 <span className={`font-semibold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Leaderboard</span>
               </button>
               
-              <button onClick={() => { setActiveView('profile'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'profile' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Profile">
+              <button onClick={() => { setActiveView('profile'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'profile' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Profile">
                 <UserIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>My Profile</span>
               </button>
               
-              <button onClick={() => { setActiveView('about'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'about' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="About Us">
+              <button onClick={() => { setActiveView('about'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'about' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="About Us">
                 <InfoIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>About Us</span>
               </button>
               
               {isAdmin && (
                  <>
-                   <div className="h-px w-full bg-slate-800/50 my-2"></div>
-                   <button onClick={() => { setActiveView('admin'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/20 border-rose-500/30 text-rose-400 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Admin Portal">
+                   <div className="h-px w-full bg-white/5 my-2"></div>
+                   <button onClick={() => { setActiveView('admin'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Admin Portal">
                      <ShieldIcon size={24} className="flex-shrink-0" />
                      <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Admin Portal</span>
                    </button>
@@ -1666,8 +1178,8 @@
               )}
             </nav>
             
-            <div className="p-4 border-t border-slate-800/50">
-              <button onClick={() => { setActiveView('settings'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`} title="Settings">
+            <div className="p-4 border-t border-white/5">
+              <button onClick={() => { setActiveView('settings'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Settings">
                 <SettingsIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Settings</span>
               </button>
@@ -1678,9 +1190,9 @@
             
             <div className={`absolute inset-0 flex flex-col transition-all duration-500 ease-out ${activeGame ? 'opacity-0 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100 overflow-y-auto'}`}>
               
-              <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-[#050505]/80 backdrop-blur-2xl border-b border-white/5 shadow-sm">
+              <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-[#030008]/80 backdrop-blur-2xl border-b border-white/5 shadow-sm">
                 <div className="flex items-center flex-1">
-                  <button onClick={() => setIsSidebarOpen(true)} className="mr-4 md:hidden p-3 bg-[#111] rounded-xl text-slate-400 hover:text-white border border-white/10 transition-all flex-shrink-0">
+                  <button onClick={() => setIsSidebarOpen(true)} className="mr-4 md:hidden p-3 bg-obsidian-900 rounded-xl text-slate-400 hover:text-white border border-white/5 transition-all flex-shrink-0">
                     <MenuIcon size={24} />
                   </button>
                   <div className="relative w-full max-w-md group hidden sm:block">
@@ -1689,7 +1201,7 @@
                     </div>
                     <input 
                       type="text" 
-                      className="w-full bg-[#111] border border-white/10 text-white font-ui text-lg rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:ring-1 focus:ring-white/30 transition-all placeholder-slate-600" 
+                      className="w-full bg-obsidian-900 border border-white/5 text-white font-ui text-lg rounded-full py-2.5 pl-11 pr-4 focus:outline-none focus:ring-1 focus:ring-violet-500/50 transition-all placeholder-slate-500 shadow-inner" 
                       placeholder="Search games..." 
                       value={searchQuery} 
                       onChange={(e) => setSearchQuery(e.target.value)} 
@@ -1702,24 +1214,24 @@
                     <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => setActiveView('profile')}>
                       <div className="hidden sm:flex flex-col items-end">
                         <div className="flex items-center gap-2">
-                           <span className="text-base font-bold font-heading text-white group-hover:text-slate-300 transition-colors">
+                           <span className="text-base font-bold font-heading text-white group-hover:text-slate-200 transition-colors">
                              {user.displayName || 'Gamer'}
                            </span>
                            {currentUserStreak > 0 ? (
-                              <div className="flex items-center bg-[#111] border border-white/10 px-2 py-0.5 rounded-md">
+                              <div className="flex items-center bg-obsidian-900 border border-orange-500/20 px-2 py-0.5 rounded-md shadow-[inset_0_0_10px_rgba(249,115,22,0.1)]">
                                  <span className="text-orange-500 text-xs mr-1">🔥</span>
-                                 <span className="text-xs font-bold text-white font-ui">{currentUserStreak}</span>
+                                 <span className="text-xs font-bold text-orange-400 font-ui">{currentUserStreak}</span>
                               </div>
                            ) : (
-                              <div className="flex items-center bg-[#111] border border-white/10 px-2 py-0.5 rounded-md">
+                              <div className="flex items-center bg-obsidian-900 border border-white/5 px-2 py-0.5 rounded-md">
                                  <span className="text-slate-600 text-xs mr-1 grayscale">🔥</span>
-                                 <span className="text-xs font-bold text-slate-500 font-ui">0</span>
+                                 <span className="text-xs font-bold text-slate-400 font-ui">0</span>
                               </div>
                            )}
                         </div>
                       </div>
                       
-                      <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform shadow-lg">
                         {currentUserPhoto ? (
                            <img src={currentUserPhoto} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
@@ -1731,7 +1243,7 @@
                     <div className="flex items-center gap-3 sm:gap-4">
                       <button 
                         onClick={() => setShowAuthModal(true)} 
-                        className="px-6 py-2.5 bg-white hover:bg-slate-200 text-black font-bold font-ui text-sm tracking-widest rounded-xl transition-all whitespace-nowrap active:scale-95"
+                        className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold font-ui text-sm tracking-widest rounded-full transition-all whitespace-nowrap active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-white/10"
                       >
                         Sign In
                       </button>
@@ -1747,20 +1259,20 @@
                     <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                       {!searchQuery && activeCategory === 'All' && (
                         <div className="px-6 md:px-10 pb-8 pt-6 flex-shrink-0 relative z-10">
-                          <div className="relative w-full h-80 md:h-[420px] rounded-[2rem] overflow-hidden group cursor-pointer border border-white/5 hover:border-indigo-500/30 transition-all duration-500 shadow-2xl" onClick={() => handleLaunchGame(FeaturedGame)}>
+                          <div className="relative w-full h-80 md:h-[420px] rounded-[2rem] overflow-hidden group cursor-pointer border border-white/5 hover:border-violet-500/30 transition-all duration-500 shadow-2xl" onClick={() => handleLaunchGame(FeaturedGame)}>
                             
-                            <div className="absolute inset-0 bg-[#07070a]"></div>
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent"></div>
+                            <div className="absolute inset-0 bg-obsidian-900"></div>
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-violet-900/30 via-transparent to-transparent"></div>
                             
                             <div className="absolute right-0 top-0 w-full md:w-1/2 h-full opacity-40 transform translate-x-10 md:translate-x-20 -translate-y-5 md:group-hover:scale-[1.03] transition-transform duration-700 ease-out drop-shadow-2xl">
-                              {<FeaturedIcon />}
+                              <FeaturedIcon />
                             </div>
                             
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent"></div>
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/80 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/60 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-obsidian-950 via-obsidian-950/80 to-transparent"></div>
                             
                             <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 transform md:group-hover:-translate-y-1 transition-transform duration-500 ease-out z-10">
-                              <span className="px-3 py-1.5 text-[10px] font-black font-ui uppercase tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 rounded-md mb-4 inline-block backdrop-blur-sm">
+                              <span className="px-3 py-1.5 text-[10px] font-black font-ui uppercase tracking-widest text-violet-300 bg-violet-600/30 border border-violet-500/40 rounded-md mb-4 inline-block backdrop-blur-sm shadow-[0_0_15px_rgba(139,92,246,0.3)]">
                                 Featured Game
                               </span>
                               <h2 data-nosnippet="true" className="text-4xl md:text-6xl font-black font-heading text-white mb-6 tracking-tight drop-shadow-lg">
@@ -1768,7 +1280,7 @@
                               </h2>
                               <button 
                                 onClick={(e) => { e.stopPropagation(); handleLaunchGame(FeaturedGame); }} 
-                                className="flex items-center space-x-3 bg-white text-black px-8 py-3.5 rounded-xl font-bold font-ui text-lg tracking-wide hover:bg-indigo-50 hover:text-indigo-900 transition-colors active:scale-95"
+                                className="flex items-center space-x-3 bg-violet-600 text-white px-8 py-3.5 rounded-xl font-bold font-ui text-lg tracking-wide hover:bg-violet-500 transition-colors active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-white/10"
                               >
                                 <PlayIcon size={20} fill="currentColor" />
                                 <span>Play Now</span>
@@ -1777,7 +1289,7 @@
                             
                             <button 
                               onClick={(e) => toggleFavorite(e, FeaturedGame.id)} 
-                              className={`absolute top-6 right-6 z-20 p-3 rounded-xl backdrop-blur-md transition-all active:scale-95 border ${favorites.includes(FeaturedGame.id) ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/50' : 'bg-black/40 text-slate-300 border-white/10 hover:bg-black/60 hover:text-white'}`}
+                              className={`absolute top-6 right-6 z-20 p-3 rounded-xl backdrop-blur-md transition-all active:scale-95 border ${favorites.includes(FeaturedGame.id) ? 'bg-violet-500/30 text-white border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-obsidian-900/40 text-slate-300 border-white/5 hover:bg-obsidian-900/80 hover:text-white'}`}
                             >
                               <HeartIcon size={20} fill={favorites.includes(FeaturedGame.id) ? "currentColor" : "none"} />
                             </button>
@@ -1795,9 +1307,9 @@
                               <button 
                                 key={cat} 
                                 onClick={() => setActiveCategory(cat)} 
-                                className={`px-4 py-2 rounded-lg font-ui font-semibold text-sm whitespace-nowrap transition-all flex items-center gap-2 border ${activeCategory === cat ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' : 'bg-transparent text-slate-400 border-white/10 hover:border-white/30 hover:text-white'}`}
+                                className={`px-4 py-2 rounded-lg font-ui font-semibold text-sm whitespace-nowrap transition-all flex items-center gap-2 border ${activeCategory === cat ? 'bg-violet-500/20 text-violet-300 border-violet-500/30 shadow-[0_0_10px_rgba(139,92,246,0.2)]' : 'bg-transparent text-slate-400 border-white/5 hover:border-white/20 hover:text-white'}`}
                               >
-                                {cat === 'Favorites' && <HeartIcon size={14} fill={activeCategory === 'Favorites' ? 'currentColor' : 'none'} className={activeCategory === 'Favorites' ? 'text-indigo-400' : 'text-slate-400'} />}
+                                {cat === 'Favorites' && <HeartIcon size={14} fill={activeCategory === 'Favorites' ? 'currentColor' : 'none'} className={activeCategory === 'Favorites' ? 'text-violet-300' : 'text-slate-400'} />}
                                 {cat}
                               </button>
                             ))}
@@ -1811,7 +1323,7 @@
                             return (
                               <div 
                                 key={game.id} 
-                                className="group relative bg-[#07070a] border border-white/5 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-all duration-300 hover:shadow-[0_8px_30px_-5px_rgba(99,102,241,0.2)] md:hover:-translate-y-1 cursor-pointer flex flex-col h-full" 
+                                className="group relative bg-obsidian-800/80 backdrop-blur-sm border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/40 transition-all duration-300 hover:shadow-[0_8px_30px_-5px_rgba(139,92,246,0.3)] md:hover:-translate-y-1 cursor-pointer flex flex-col h-full" 
                                 onClick={() => handleLaunchGame(game)}
                               >
                                 <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center overflow-hidden border-b border-white/5`}>
@@ -1820,15 +1332,15 @@
                                     <GameIcon />
                                   </div>
                                   
-                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] bg-black/20">
-                                    <div className="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center transform scale-75 md:group-hover:scale-100 transition-transform duration-300 ease-out shadow-lg">
-                                      <PlayIcon size={24} className="ml-1" fill="currentColor" />
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] bg-obsidian-900/40">
+                                    <div className="w-14 h-14 bg-white/20 border border-white/30 rounded-full flex items-center justify-center transform scale-75 md:group-hover:scale-100 transition-transform duration-300 ease-out shadow-2xl backdrop-blur-md">
+                                      <PlayIcon size={24} className="ml-1 text-white" fill="currentColor" />
                                     </div>
                                   </div>
                                   
                                   <button 
                                     onClick={(e) => toggleFavorite(e, game.id)} 
-                                    className={`absolute top-3 right-3 z-20 p-2 rounded-lg backdrop-blur-md transition-all border ${isFav ? 'opacity-100 bg-indigo-500/20 text-indigo-400 border-indigo-500/50' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-black/40 text-white border-white/10 hover:bg-black/60'}`}
+                                    className={`absolute top-3 right-3 z-20 p-2 rounded-lg backdrop-blur-md transition-all border ${isFav ? 'opacity-100 bg-violet-500/30 text-white border-violet-500/50 shadow-[0_0_10px_rgba(139,92,246,0.3)]' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-obsidian-900/40 text-slate-200 border-white/5 hover:bg-obsidian-900/80'}`}
                                   >
                                     <HeartIcon size={16} fill={isFav ? "currentColor" : "none"} />
                                   </button>
@@ -1836,28 +1348,28 @@
                                 
                                 <div className="p-5 flex flex-col flex-1 relative z-10 bg-transparent">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <h4 data-nosnippet="true" className="text-lg font-bold font-heading text-white line-clamp-1 group-hover:text-indigo-300 transition-colors">
+                                    <h4 data-nosnippet="true" className="text-lg font-bold font-heading text-white line-clamp-1 group-hover:text-violet-300 transition-colors">
                                       {game.title}
                                     </h4>
                                   </div>
                                   
-                                  <p data-nosnippet="true" className="text-sm text-slate-500 mb-4 font-ui">
+                                  <p data-nosnippet="true" className="text-sm text-slate-400 mb-4 font-ui">
                                     {game.developer}
                                   </p>
                                   
                                   <div className="mt-auto flex flex-wrap items-center gap-2">
                                     {game.tags.map(tag => (
-                                      <span key={tag} className="px-2 py-1 text-[10px] font-bold font-ui uppercase tracking-wider bg-slate-900/80 text-slate-400 rounded-md border border-white/5 group-hover:border-indigo-500/20 transition-colors">
+                                      <span key={tag} className="px-2 py-1 text-[10px] font-bold font-ui uppercase tracking-wider bg-obsidian-900 text-slate-300 rounded-md border border-white/5 group-hover:border-violet-500/20 transition-colors shadow-inner">
                                         {tag}
                                       </span>
                                     ))}
                                     {game.isPublicBeta && (
-                                      <span className="ml-auto px-2 py-1 text-[9px] font-black uppercase tracking-widest bg-indigo-500/10 text-indigo-400 rounded border border-indigo-500/20">
+                                      <span className="ml-auto px-2 py-1 text-[9px] font-black uppercase tracking-widest bg-violet-500/20 text-violet-300 rounded border border-violet-500/30 shadow-[inset_0_0_8px_rgba(139,92,246,0.2)]">
                                         Public Beta
                                       </span>
                                     )}
                                     {game.isBeta && (
-                                      <span className="ml-auto px-2 py-1 text-[9px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-400 rounded border border-rose-500/20" title="Developer Only">
+                                      <span className="ml-auto px-2 py-1 text-[9px] font-black uppercase tracking-widest bg-rose-500/20 text-rose-300 rounded border border-rose-500/30 shadow-[inset_0_0_8px_rgba(244,63,94,0.2)]" title="Developer Only">
                                         Dev Beta
                                       </span>
                                     )}
@@ -1870,26 +1382,26 @@
                           {filteredGames.length === 0 && activeCategory !== 'Favorites' && (
                             <div className="col-span-full py-32 flex flex-col items-center justify-center text-slate-500 animate-in fade-in">
                               <Gamepad2Icon size={64} className="mb-6 opacity-30 drop-shadow-md" />
-                              <p className="text-2xl font-heading font-bold text-slate-400">No games found.</p>
+                              <p className="text-2xl font-heading font-bold text-white">No games found.</p>
                             </div>
                           )}
                           
                           {filteredGames.length === 0 && activeCategory === 'Favorites' && (
                             <div className="col-span-full py-32 flex flex-col items-center justify-center text-slate-500 animate-in fade-in">
-                              <HeartIcon size={64} className="mb-6 opacity-30 text-rose-400 drop-shadow-md" />
+                              <HeartIcon size={64} className="mb-6 opacity-30 text-rose-500 drop-shadow-md" />
                               <p className="text-3xl font-heading font-black text-white mb-2 drop-shadow-md">No favorites yet.</p>
                               <p className="text-xl font-ui text-slate-400">Click the heart icon on any game to save it here!</p>
                             </div>
                           )}
                         </div>
 
-                        <div className="mt-16 flex flex-col items-center justify-center pt-10 border-t border-slate-800/50 pb-10">
+                        <div className="mt-16 flex flex-col items-center justify-center pt-10 border-t border-white/5 pb-10">
                            <p className="text-slate-400 font-ui text-lg mb-6 tracking-wide uppercase font-bold text-center">Can't decide what to play?</p>
                            <button 
                              onClick={playRandomGame} 
-                             className="flex items-center gap-4 px-10 py-5 bg-[#0a0a0a] hover:bg-[#111] text-indigo-300 hover:text-indigo-200 font-black font-heading text-2xl sm:text-3xl tracking-widest rounded-3xl transition-all shadow-[0_0_30px_-5px_rgba(99,102,241,0.2)] hover:shadow-[0_0_40px_rgba(99,102,241,0.4)] active:scale-95 border border-indigo-500/30 group hover:-translate-y-1"
+                             className="flex items-center gap-4 px-10 py-5 bg-obsidian-900 hover:bg-obsidian-800 text-white font-black font-heading text-2xl sm:text-3xl tracking-widest rounded-3xl transition-all shadow-[0_0_30px_-5px_rgba(139,92,246,0.2)] hover:shadow-[0_0_40px_rgba(139,92,246,0.5)] active:scale-95 border border-violet-500/30 group hover:-translate-y-1"
                            >
-                             <SurpriseIcon size={32} className="group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300 text-indigo-400" />
+                             <SurpriseIcon size={32} className="group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300 text-violet-400" />
                              SURPRISE ME
                            </button>
                         </div>
@@ -1904,8 +1416,8 @@
                         <div className="w-full max-w-4xl relative z-10">
                           
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-                            <h2 className="text-4xl font-black font-heading text-white flex items-center gap-4 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">
-                              <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(234,179,8,0.6)] text-white border border-white/20">
+                            <h2 className="text-4xl font-black font-heading text-white flex items-center gap-4 drop-shadow-md">
+                              <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(234,179,8,0.6)] text-white border border-yellow-200/20">
                                 <TrophyIcon size={32} />
                               </div>
                               Global Rankings
@@ -1913,21 +1425,21 @@
                           </div>
                           
                           {!isRegistered && (
-                            <div className="mb-8 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-inner">
+                            <div className="mb-8 bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-inner">
                               <div>
-                                <h3 className="text-2xl font-bold font-heading text-indigo-300 drop-shadow-sm mb-1">Want to get ranked?</h3>
+                                <h3 className="text-2xl font-bold font-heading text-white drop-shadow-sm mb-1">Want to get ranked?</h3>
                                 <p className="text-slate-300 font-ui text-sm sm:text-base">Create an account to start your streak and climb the leaderboard.</p>
                               </div>
                               <button
                                 onClick={() => setShowAuthModal(true)}
-                                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui text-lg tracking-widest rounded-xl transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)]"
+                                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold font-ui text-lg tracking-widest rounded-xl transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_-3px_rgba(139,92,246,0.6)] border border-white/10"
                               >
                                 Sign In
                               </button>
                             </div>
                           )}
                           
-                          <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                          <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                             {leaderboardError ? (
                                <div className="p-16 text-center flex flex-col items-center justify-center">
                                   <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 mb-6 shadow-inner">
@@ -1936,21 +1448,21 @@
                                   <p className="text-rose-400 font-bold font-heading text-2xl mb-3">
                                     {leaderboardError === "Please login to see the leaderboard" ? "Sign In Required" : "Database Access Denied"}
                                   </p>
-                                  <p className="text-slate-400 font-ui text-xl max-w-lg">{leaderboardError}</p>
+                                  <p className="text-slate-300 font-ui text-xl max-w-lg">{leaderboardError}</p>
                                </div>
                             ) : isLeaderboardLoading ? (
                                <div className="p-20 text-center flex flex-col items-center justify-center">
-                                  <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
-                                  <p className="text-indigo-300 font-bold font-heading text-2xl animate-pulse drop-shadow-md">Syncing Ranks...</p>
+                                  <div className="w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div>
+                                  <p className="text-white font-bold font-heading text-2xl animate-pulse drop-shadow-md">Syncing Ranks...</p>
                                </div>
                             ) : leaderboard.length === 0 ? (
                                <div className="p-20 text-center flex flex-col items-center justify-center">
                                   <TrophyIcon size={48} className="text-slate-600 mb-4 drop-shadow-md" />
-                                  <p className="text-slate-400 font-bold font-heading text-2xl">No players ranked yet.</p>
-                                  <p className="text-slate-500 font-ui text-lg mt-2">Be the first to start a streak!</p>
+                                  <p className="text-white font-bold font-heading text-2xl">No players ranked yet.</p>
+                                  <p className="text-slate-400 font-ui text-lg mt-2">Be the first to start a streak!</p>
                                </div>
                             ) : (
-                               <div className="divide-y divide-slate-800/50 p-4">
+                               <div className="divide-y divide-white/5 p-4">
                                   {leaderboard.map((player, idx) => {
                                      const activeStreak = getEffectiveStreak(player); 
                                      const effectiveLevel = player.currentLevel || (1 + Math.floor(activeStreak / 2));
@@ -1958,40 +1470,40 @@
                                      <div 
                                        key={player.uid} 
                                        onClick={() => setViewingPlayer(player)} 
-                                       className={`cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl mb-2 hover:bg-slate-800/80 transition-all duration-300 border border-transparent ${player.uid === user?.uid ? 'bg-indigo-500/10 border-indigo-500/30 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]' : ''}`}
+                                       className={`cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl mb-2 hover:bg-obsidian-900/60 transition-all duration-300 border border-transparent ${player.uid === user?.uid ? 'bg-violet-600/10 border-violet-500/30 shadow-[inset_0_0_20px_rgba(139,92,246,0.15)]' : ''}`}
                                      >
                                         <div className="flex items-center gap-4 sm:gap-6">
-                                           <span className={`text-2xl sm:text-3xl font-black font-heading w-10 sm:w-12 text-center ${idx === 0 ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : idx === 1 ? 'text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.5)]' : idx === 2 ? 'text-amber-600 drop-shadow-[0_0_8px_rgba(217,119,6,0.5)]' : 'text-slate-600'}`}>
+                                           <span className={`text-2xl sm:text-3xl font-black font-heading w-10 sm:w-12 text-center ${idx === 0 ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]' : idx === 1 ? 'text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.6)]' : idx === 2 ? 'text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]' : 'text-violet-500'}`}>
                                              #{idx + 1}
                                            </span>
-                                           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 shadow-lg">
+                                           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-obsidian-900 overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 shadow-lg">
                                               {player.photoURL ? (
                                                 <img src={player.photoURL} alt="PFP" className="w-full h-full object-cover"/> 
                                               ) : (
-                                                <span className="font-bold text-2xl text-slate-400 font-heading">{(player.username || 'U').charAt(0).toUpperCase()}</span>
+                                                <span className="font-bold text-2xl text-white font-heading">{(player.username || 'U').charAt(0).toUpperCase()}</span>
                                               )}
                                            </div>
                                            <div className="flex flex-col">
                                              <div className="flex items-center gap-2">
-                                               <span className={`font-bold font-heading text-xl sm:text-2xl truncate max-w-[120px] sm:max-w-[250px] ${player.uid === user?.uid ? 'text-indigo-300' : 'text-white'} drop-shadow-sm`}>
+                                               <span className={`font-bold font-heading text-xl sm:text-2xl truncate max-w-[120px] sm:max-w-[250px] text-white drop-shadow-sm`}>
                                                  {player.username}
                                                </span>
-                                               <span className="text-slate-500 text-sm font-ui mt-1 opacity-60 hidden sm:inline-block">
+                                               <span className="text-slate-500 text-sm font-ui mt-1 hidden sm:inline-block">
                                                  #{player.userTag}
                                               </span>
                                              </div>
                                              <div className="flex items-center gap-2 mt-1">
-                                               <span className="text-xs font-bold font-ui text-slate-400 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 shadow-inner">
+                                               <span className="text-xs font-bold font-ui text-slate-300 bg-obsidian-950 px-2 py-0.5 rounded-md border border-white/10 shadow-inner">
                                                  Lvl {effectiveLevel}
                                                </span>
                                                {player.uid === user?.uid && (
-                                                 <span className="text-xs uppercase tracking-widest text-indigo-400 font-bold font-ui">Your Rank</span>
+                                                 <span className="text-xs uppercase tracking-widest text-fuchsia-400 font-bold font-ui">Your Rank</span>
                                                )}
                                              </div>
                                            </div>
                                         </div>
                                         <div className="flex items-center gap-4 ml-14 sm:ml-0">
-                                           <div className="flex items-center gap-3 bg-slate-950/80 px-6 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 sm:flex-none justify-center">
+                                           <div className="flex items-center gap-3 bg-obsidian-950/80 px-6 py-3 rounded-2xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 sm:flex-none justify-center">
                                               <span className={`text-2xl ${activeStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse' : 'text-slate-600 grayscale'}`}>🔥</span>
                                               <span className={`font-black font-heading text-3xl ${activeStreak > 0 ? 'text-white drop-shadow-md' : 'text-slate-600'}`}>{activeStreak}</span>
                                             </div>
@@ -2011,32 +1523,32 @@
                     <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                       <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                         <div className="w-full max-w-3xl relative z-10">
-                          <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">User Profile</h2>
+                          <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-md">User Profile</h2>
                           
                           {!isRegistered ? (
-                             <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] p-16 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                               <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-indigo-500/20 shadow-inner">
-                                 <UserIcon size={48} className="text-indigo-400" />
+                             <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-16 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                               <div className="w-24 h-24 bg-violet-600/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-violet-500/30 shadow-inner">
+                                 <UserIcon size={48} className="text-violet-400" />
                                </div>
                                <h3 className="text-3xl font-bold font-heading text-white mb-4 drop-shadow-sm">Sign in to edit your profile</h3>
-                               <p className="text-slate-400 text-lg font-ui mb-10 max-w-md mx-auto drop-shadow-sm">Create an account to customize your avatar, display name, and track your progress.</p>
+                               <p className="text-slate-300 text-lg font-ui mb-10 max-w-md mx-auto drop-shadow-sm">Create an account to customize your avatar, display name, and track your progress.</p>
                                <button 
                                  onClick={() => setShowAuthModal(true)} 
-                                 className="px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold font-ui text-2xl tracking-wide rounded-2xl transition-all shadow-[0_0_20px_-5px_rgba(99,102,241,0.6)] active:scale-95 border border-white/10"
+                                 className="px-10 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold font-ui text-2xl tracking-wide rounded-2xl transition-all shadow-[0_0_20px_-5px_rgba(139,92,246,0.6)] active:scale-95 border border-white/10"
                                >
                                  Sign In Now
                                </button>
                              </div>
                           ) : (
-                             <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                             <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                                
-                               <div className="relative w-full h-40 sm:h-52 bg-slate-800 group cursor-pointer border-b border-slate-700">
+                               <div className="relative w-full h-40 sm:h-52 bg-obsidian-900 group cursor-pointer border-b border-white/10">
                                  {profileBannerUrl ? ( 
                                    <img src={profileBannerUrl} alt="Banner" className="w-full h-full object-cover" /> 
                                  ) : ( 
-                                   <div className="w-full h-full bg-gradient-to-r from-indigo-900 to-fuchsia-900"></div> 
+                                   <div className="w-full h-full bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50"></div> 
                                  )}
-                                 <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                 <div className="absolute inset-0 bg-obsidian-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                                    <UploadIcon size={28} className="text-white mr-3 drop-shadow-md" />
                                    <span className="text-sm font-bold text-white font-ui uppercase tracking-widest drop-shadow-md">Change Banner</span>
                                  </div>
@@ -2044,17 +1556,17 @@
                                </div>
                                
                                <div className="p-8 sm:p-10 pt-0 relative">
-                                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-10 pb-10 border-b border-slate-800/60">
+                                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-10 pb-10 border-b border-white/10">
                                    
-                                   <div className="relative group w-32 h-32 sm:w-40 sm:h-40 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] overflow-hidden flex-shrink-0 cursor-pointer border-4 border-slate-900 -mt-16 sm:-mt-20 transition-all active:scale-95 z-10">
+                                   <div className="relative group w-32 h-32 sm:w-40 sm:h-40 rounded-[2.5rem] bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] overflow-hidden flex-shrink-0 cursor-pointer border-4 border-obsidian-900 -mt-16 sm:-mt-20 transition-all active:scale-95 z-10">
                                      {profilePhotoUrl ? ( 
                                        <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" /> 
                                      ) : ( 
-                                       <span className="font-bold text-6xl text-[#ffffff] font-heading drop-shadow-md">{(profileUsername || 'U').charAt(0).toUpperCase()}</span> 
+                                       <span className="font-bold text-6xl text-white font-heading drop-shadow-md">{(profileUsername || 'U').charAt(0).toUpperCase()}</span> 
                                      )}
-                                     <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                                       <UploadIcon size={32} className="text-[#ffffff] mb-2 drop-shadow-md" />
-                                       <span className="text-sm font-bold text-[#ffffff] font-ui uppercase tracking-widest drop-shadow-md">Change</span>
+                                     <div className="absolute inset-0 bg-obsidian-950/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                       <UploadIcon size={32} className="text-white mb-2 drop-shadow-md" />
+                                       <span className="text-sm font-bold text-white font-ui uppercase tracking-widest drop-shadow-md">Change</span>
                                      </div>
                                      <input type="file" accept="image/*" onChange={handlePhotoChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload a custom profile picture" />
                                    </div>
@@ -2066,26 +1578,26 @@
                                      </div>
                                      <p className="text-slate-400 font-medium truncate font-ui text-xl mb-6 drop-shadow-sm">{user.email}</p>
                                      
-                                     <div className="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
+                                     <div className="bg-obsidian-950/80 p-6 rounded-2xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                        <div className="flex justify-between items-center mb-4">
                                          <div className="flex items-center gap-2">
-                                           <StarIcon size={24} className="text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" />
+                                           <StarIcon size={24} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
                                            <span className="font-bold font-ui text-white text-xl">Level {userLevel}</span>
                                          </div>
                                          <div className="flex items-center gap-2">
                                            <span className={`text-xl ${currentUserStreak > 0 ? 'text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse' : 'text-slate-500 grayscale'}`}>🔥</span>
-                                           <span className={`font-bold font-ui text-xl ${currentUserStreak > 0 ? 'text-slate-200' : 'text-slate-500'}`}>{currentUserStreak} Days</span>
+                                           <span className={`font-bold font-ui text-xl ${currentUserStreak > 0 ? 'text-white' : 'text-slate-500'}`}>{currentUserStreak} Days</span>
                                          </div>
                                        </div>
                                        
-                                       <div className="w-full h-4 bg-slate-900 rounded-full overflow-hidden border border-slate-700 shadow-inner mb-4">
-                                         <div className="h-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 transition-all duration-1000 ease-out relative" style={{ width: `${levelProgress}%` }}>
+                                       <div className="w-full h-4 bg-obsidian-900 rounded-full overflow-hidden border border-white/10 shadow-inner mb-4">
+                                         <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all duration-1000 ease-out relative" style={{ width: `${levelProgress}%` }}>
                                            <div className="absolute inset-0 bg-white/20 mix-blend-overlay"></div>
                                          </div>
                                        </div>
                                        
-                                       <div className="flex justify-between items-center border-t border-slate-800/80 pt-4 mt-2">
-                                         <p className="text-sm text-slate-500 font-ui uppercase tracking-widest">{100 - levelProgress}% to next level</p>
+                                       <div className="flex justify-between items-center border-t border-white/5 pt-4 mt-2">
+                                         <p className="text-sm text-slate-400 font-ui uppercase tracking-widest">{100 - levelProgress}% to next level</p>
                                          <p className="text-sm text-slate-300 font-ui uppercase tracking-widest flex items-center gap-1.5 font-bold">
                                            <HeartIcon size={16} className="text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]" fill="currentColor"/> 
                                            {favorites.length} Saved
@@ -2103,7 +1615,7 @@
                                          type="text" 
                                          value={profileUsername} 
                                          onChange={e => setProfileUsername(e.target.value)} 
-                                         className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-6 py-5 font-heading text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" 
+                                         className="w-full bg-obsidian-950 border border-white/10 rounded-2xl px-6 py-5 font-heading text-xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" 
                                          placeholder="Enter your username" 
                                        />
                                      </div>
@@ -2116,7 +1628,7 @@
                                            maxLength={4} 
                                            value={profileUserTag} 
                                            onChange={e => setProfileUserTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} 
-                                           className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-4 py-5 pl-9 font-heading text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] text-center uppercase" 
+                                           className="w-full bg-obsidian-950 border border-white/10 rounded-2xl px-4 py-5 pl-9 font-heading text-xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] text-center uppercase" 
                                            placeholder="TAG" 
                                          />
                                        </div>
@@ -2130,17 +1642,17 @@
                                        onChange={e => setProfileBio(e.target.value)} 
                                        maxLength={160} 
                                        rows={3} 
-                                       className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-6 py-5 font-ui text-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] resize-none" 
+                                       className="w-full bg-obsidian-950 border border-white/10 rounded-2xl px-6 py-5 font-ui text-lg text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] resize-none" 
                                        placeholder="Tell everyone a little about yourself..."
                                      ></textarea>
                                      <p className="text-right text-xs text-slate-500 font-ui mt-2 uppercase tracking-widest">{profileBio.length} / 160</p>
                                    </div>
                                    
-                                   <div className="pt-6 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-slate-800/50">
+                                   <div className="pt-6 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-white/5">
                                      <button 
                                        type="submit" 
                                        disabled={isUpdatingProfile} 
-                                       className="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui tracking-widest text-xl uppercase rounded-2xl transition-all disabled:opacity-50 shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] active:scale-95 border border-white/10"
+                                       className="w-full sm:w-auto px-10 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold font-ui tracking-widest text-xl uppercase rounded-2xl transition-all disabled:opacity-50 shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] active:scale-95 border border-white/10"
                                      >
                                        {isUpdatingProfile ? 'Saving...' : 'Save Profile'}
                                      </button>
@@ -2159,26 +1671,26 @@
                     <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                       <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                         <div className="w-full max-w-4xl relative z-10 flex flex-col">
-                          <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">About Nexis Games</h2>
+                          <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-md">About Nexis Games</h2>
                           
-                          <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden mb-12">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none"></div>
-                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                          <div className="bg-obsidian-800/80 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden mb-12">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/20 rounded-full blur-[80px] pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-600/20 rounded-full blur-[80px] pointer-events-none"></div>
                             
                             <div className="relative z-10 space-y-8">
                               <section>
-                                <h3 className="text-2xl font-bold font-heading text-indigo-400 mb-4 flex items-center gap-3 drop-shadow-sm">
+                                <h3 className="text-2xl font-bold font-heading text-violet-400 mb-4 flex items-center gap-3 drop-shadow-sm">
                                   <InfoIcon size={28} /> Our Story
                                 </h3>
                                 <p className="text-slate-300 font-ui text-lg sm:text-xl leading-relaxed drop-shadow-sm">
-                                  Hey! Welcome to <strong className="text-white">Nexis Games</strong>. I'm really glad you found your way here. I started Nexis Games (as part of <strong className="text-indigo-400">Nexis GD</strong>) back on <strong className="text-white">April 10th, 2026</strong>, with a really simple dream: to bring awesome, console-quality fun right to your web browser. No huge downloads, no expensive hardware—just jump in and play. Whether you're here to race your friends, battle it out in multiplayer, or get spooked in a maze, this place was built for you to just chill and have fun.
+                                  Hey! Welcome to <strong className="text-white">Nexis Games</strong>. I'm really glad you found your way here. I started Nexis Games (as part of <strong className="text-fuchsia-400">Nexis GD</strong>) back on <strong className="text-white">April 10th, 2026</strong>, with a really simple dream: to bring awesome, console-quality fun right to your web browser. No huge downloads, no expensive hardware—just jump in and play. Whether you're here to race your friends, battle it out in multiplayer, or get spooked in a maze, this place was built for you to just chill and have fun.
                                 </p>
                               </section>
                               
-                              <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-700/50 to-transparent my-8"></div>
+                              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-8"></div>
                               
                               <section>
-                                <h3 className="text-2xl font-bold font-heading text-indigo-400 mb-4 flex items-center gap-3 drop-shadow-sm">
+                                <h3 className="text-2xl font-bold font-heading text-violet-400 mb-4 flex items-center gap-3 drop-shadow-sm">
                                   <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                                   </svg> 
@@ -2189,7 +1701,7 @@
                                 </p>
                               </section>
                               
-                              <section className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] mt-4">
+                              <section className="bg-obsidian-950/80 border border-white/5 rounded-2xl p-6 sm:p-8 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] mt-4">
                                 <h4 className="text-xl font-bold font-heading text-white mb-3 flex items-center gap-3">
                                   <UserIcon size={24} className="text-slate-400" /> Support the Devs
                                 </h4>
@@ -2198,12 +1710,12 @@
                                 </p>
                               </section>
                               
-                              <section className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6 sm:p-8 shadow-inner mt-6 transition-all hover:bg-indigo-500/20">
-                                <h4 className="text-xl font-bold font-heading text-indigo-300 mb-3 flex items-center gap-3 drop-shadow-sm">
-                                  <Gamepad2Icon size={24} className="text-indigo-400" /> Got a game? Let's talk!
+                              <section className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 sm:p-8 shadow-inner mt-6 transition-all hover:bg-violet-600/20">
+                                <h4 className="text-xl font-bold font-heading text-fuchsia-300 mb-3 flex items-center gap-3 drop-shadow-sm">
+                                  <Gamepad2Icon size={24} className="text-fuchsia-400" /> Got a game? Let's talk!
                                 </h4>
-                                <p className="text-slate-300 font-ui text-lg leading-relaxed drop-shadow-sm">
-                                  Got a web game of your own you've been working on? I'd absolutely love to see it. We're always trying to grow our community with new developers and fresh ideas. If you're interested in getting your game hosted on Nexis Games, just shoot me an email at <button onClick={handleCopyEmail} className="text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-4 transition-colors cursor-pointer">mofawoyt@gmail.com</button> and let's chat.
+                                <p className="text-violet-100 font-ui text-lg leading-relaxed drop-shadow-sm">
+                                  Got a web game of your own you've been working on? I'd absolutely love to see it. We're always trying to grow our community with new developers and fresh ideas. If you're interested in getting your game hosted on Nexis Games, just shoot me an email at <button onClick={handleCopyEmail} className="text-fuchsia-400 hover:text-fuchsia-300 font-bold underline underline-offset-4 transition-colors cursor-pointer">mofawoyt@gmail.com</button> and let's chat.
                                 </p>
                               </section>
                             </div>
@@ -2218,24 +1730,24 @@
                     <div className="animate-in fade-in duration-500 flex flex-col flex-1">
                       <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                         <div className="w-full max-w-3xl relative z-10">
-                          <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">Settings</h2>
+                          <h2 className="text-4xl font-black font-heading text-white mb-10 drop-shadow-md">Settings</h2>
                           
-                          <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                          <div className="bg-obsidian-800/80 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                             <div className="space-y-10">
                               
                               <section>
-                                <h3 className="text-2xl font-bold font-heading text-indigo-300 mb-6 flex items-center gap-3 drop-shadow-sm border-b border-slate-800 pb-4">
-                                  <SettingsIcon size={28} /> Audio Controls
+                                <h3 className="text-2xl font-bold font-heading text-white mb-6 flex items-center gap-3 border-b border-white/5 pb-4">
+                                  <SettingsIcon size={28} className="text-violet-400"/> Audio Controls
                                 </h3>
-                                <div className="bg-slate-950/80 p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] space-y-8">
-                                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-slate-800/50 pb-6">
+                                <div className="bg-obsidian-950/80 p-6 sm:p-8 rounded-2xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] space-y-8">
+                                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-white/5 pb-6">
                                     <div>
                                       <span className="text-white font-bold font-ui text-xl block mb-1">Background Audio</span>
                                       <span className="text-slate-400 font-ui text-base">Enable background music and sound effects.</span>
                                     </div>
                                     <button 
                                       onClick={() => setIsSoundEnabled(!isSoundEnabled)} 
-                                      className={`px-8 py-3 rounded-xl border transition-all active:scale-95 font-bold font-ui tracking-widest text-base uppercase shadow-inner whitespace-nowrap ${isSoundEnabled ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/30' : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white'}`}
+                                      className={`px-8 py-3 rounded-xl border transition-all active:scale-95 font-bold font-ui tracking-widest text-base uppercase shadow-inner whitespace-nowrap ${isSoundEnabled ? 'bg-violet-600/20 text-violet-300 border-violet-500/40 hover:bg-violet-600/30' : 'bg-obsidian-800 text-slate-400 border-white/5 hover:bg-obsidian-700 hover:text-white'}`}
                                     >
                                       {isSoundEnabled ? 'Sound Enabled' : 'Enable Sound'}
                                     </button>
@@ -2245,33 +1757,33 @@
                                     <div>
                                       <div className="flex justify-between items-end mb-3">
                                         <span className="text-white font-bold font-ui text-xl">Master Volume</span>
-                                        <span className="text-indigo-400 font-black text-xl">{masterVolume}%</span>
+                                        <span className="text-violet-400 font-black text-xl">{masterVolume}%</span>
                                       </div>
-                                      <input type="range" min="0" max="100" value={masterVolume} onChange={(e) => setMasterVolume(e.target.value)} className="w-full accent-indigo-500 h-3 bg-slate-800 rounded-full appearance-none cursor-pointer" />
+                                      <input type="range" min="0" max="100" value={masterVolume} onChange={(e) => setMasterVolume(e.target.value)} className="w-full accent-violet-500 h-3 bg-obsidian-800 rounded-full appearance-none cursor-pointer border border-white/5" />
                                     </div>
                                     <div className="mt-8">
                                       <div className="flex justify-between items-end mb-3">
                                         <span className="text-slate-300 font-bold font-ui text-lg">Music Volume</span>
-                                        <span className="text-indigo-400 font-black">{musicVolume}%</span>
+                                        <span className="text-violet-400 font-black">{musicVolume}%</span>
                                       </div>
-                                      <input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" />
+                                      <input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-full accent-violet-500 h-2 bg-obsidian-800 rounded-full appearance-none cursor-pointer border border-white/5" />
                                     </div>
                                     <div className="mt-8">
                                       <div className="flex justify-between items-end mb-3">
                                         <span className="text-slate-300 font-bold font-ui text-lg">Sound Effects</span>
-                                        <span className="text-indigo-400 font-black">{sfxVolume}%</span>
+                                        <span className="text-violet-400 font-black">{sfxVolume}%</span>
                                       </div>
-                                      <input type="range" min="0" max="100" value={sfxVolume} onChange={(e) => setSfxVolume(e.target.value)} className="w-full accent-indigo-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer" />
+                                      <input type="range" min="0" max="100" value={sfxVolume} onChange={(e) => setSfxVolume(e.target.value)} className="w-full accent-violet-500 h-2 bg-obsidian-800 rounded-full appearance-none cursor-pointer border border-white/5" />
                                     </div>
                                   </div>
                                 </div>
                               </section>
                               
                               {isRegistered && (
-                                <section className="pt-4 border-t border-slate-800 flex justify-end">
+                                <section className="pt-4 border-t border-white/5 flex justify-end">
                                   <button 
                                     onClick={() => { handleLogout(); setActiveView('discover'); }} 
-                                    className="px-10 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold font-heading text-xl tracking-widest uppercase rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(225,29,72,0.5)] border border-white/10"
+                                    className="px-10 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold font-heading text-xl tracking-widest uppercase rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(225,29,72,0.5)] border border-rose-400/20"
                                   >
                                     Sign Out
                                   </button>
@@ -2290,17 +1802,17 @@
                       <div className="px-6 md:px-10 pb-20 pt-8 flex-1 flex justify-center">
                         <div className="w-full max-w-5xl relative z-10 flex flex-col h-full">
                           
-                          <h2 className="text-4xl font-black font-heading text-white mb-10 flex items-center gap-4 drop-shadow-[0_0_15px_rgba(221,214,254,0.3)]">
+                          <h2 className="text-4xl font-black font-heading text-white mb-10 flex items-center gap-4 drop-shadow-md">
                             <div className="p-3 bg-rose-500/20 text-rose-500 rounded-2xl shadow-[0_0_20px_-5px_rgba(225,29,72,0.6)] border border-rose-500/50">
                               <ShieldIcon size={32} />
                             </div> 
                             Admin Portal
                           </h2>
                           
-                          <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col flex-1">
-                            <div className="p-6 sm:p-8 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center">
+                          <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col flex-1">
+                            <div className="p-6 sm:p-8 border-b border-white/5 bg-obsidian-950/50 flex justify-between items-center">
                               <h3 className="text-2xl font-bold font-heading text-white">Player Database</h3>
-                              <span className="bg-indigo-500/20 text-indigo-300 font-bold px-4 py-1.5 rounded-full border border-indigo-500/30 font-ui text-sm uppercase tracking-widest">
+                              <span className="bg-violet-600/20 text-violet-300 font-bold px-4 py-1.5 rounded-full border border-violet-500/40 font-ui text-sm uppercase tracking-widest">
                                 {allUsers.length} Players
                               </span>
                             </div>
@@ -2308,19 +1820,19 @@
                             <div className="overflow-y-auto p-4 flex-1 scrollbar-hide">
                                {allUsers.length === 0 ? (
                                   <div className="p-20 text-center text-slate-500 flex flex-col items-center">
-                                    <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+                                    <div className="w-16 h-16 border-4 border-violet-600 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div>
                                     <p className="text-xl font-bold font-ui">Loading player database...</p>
                                   </div>
                                ) : (
                                   <div className="space-y-3">
                                      {allUsers.map(u => (
-                                        <div key={u.uid} className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-950/50 p-4 sm:p-5 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-colors shadow-inner">
+                                        <div key={u.uid} className="flex flex-col sm:flex-row sm:items-center justify-between bg-obsidian-950/50 p-4 sm:p-5 rounded-2xl border border-white/5 hover:border-violet-500/50 transition-colors shadow-inner">
                                            <div className="flex items-center gap-4 sm:gap-5 mb-4 sm:mb-0">
-                                              <div className="w-14 h-14 rounded-xl bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 shadow-lg">
+                                              <div className="w-14 h-14 rounded-xl bg-obsidian-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 shadow-lg">
                                                 {u.photoURL ? (
                                                   <img src={u.photoURL} alt="PFP" className="w-full h-full object-cover"/> 
                                                 ) : (
-                                                  <span className="font-bold text-xl text-slate-400 font-heading">{(u.username || 'U').charAt(0).toUpperCase()}</span>
+                                                  <span className="font-bold text-xl text-white font-heading">{(u.username || 'U').charAt(0).toUpperCase()}</span>
                                                 )}
                                               </div>
                                               <div>
@@ -2329,17 +1841,17 @@
                                                   <span className="text-slate-500 text-sm font-ui opacity-70">#{u.userTag}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3 mt-1.5">
-                                                  <span className="text-xs font-bold font-ui text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Lvl {u.currentLevel || 1}</span>
+                                                  <span className="text-xs font-bold font-ui text-slate-300 bg-obsidian-800 px-2 py-0.5 rounded border border-white/10">Lvl {u.currentLevel || 1}</span>
                                                   <span className="text-xs font-bold font-ui text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">🔥 {getEffectiveStreak(u)}</span>
                                                   {u.status === 'banned' && <span className="text-xs font-bold font-ui text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-wider">Banned</span>}
                                                   {u.status === 'suspended' && <span className="text-xs font-bold font-ui text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase tracking-wider">Suspended</span>}
-                                                  {u.status === 'active' && <span className="text-xs font-bold font-ui text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wider">Active</span>}
+                                                  {u.status === 'active' && <span className="text-xs font-bold font-ui text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wider">Active</span>}
                                                 </div>
                                               </div>
                                            </div>
                                            <button 
                                              onClick={() => openAdminModal(u)} 
-                                             className="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)] active:scale-95 whitespace-nowrap"
+                                             className="w-full sm:w-auto px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold font-ui uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_15px_-3px_rgba(139,92,246,0.5)] active:scale-95 whitespace-nowrap"
                                            >
                                              Manage
                                            </button>
@@ -2355,7 +1867,7 @@
                   )}
 
                   {/* --- GLOBAL FOOTER --- */}
-                  <footer className="w-full mt-auto py-6 border-t border-slate-800/30 bg-slate-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
+                  <footer className="w-full mt-auto py-6 border-t border-white/5 bg-obsidian-950/40 text-center text-slate-500 font-ui text-sm z-10 relative flex-shrink-0">
                     <p>&copy; {new Date().getFullYear()} Nexis Game Development. All rights reserved.</p>
                   </footer>
                 </>
@@ -2365,22 +1877,22 @@
 
             {/* --- LEADERBOARD: VIEW PLAYER PROFILE MODAL --- */}
             {viewingPlayer && (
-              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-modal-pop">
-                 <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-[2.5rem] w-full max-w-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative max-h-[95vh] overflow-y-auto overflow-hidden">
+              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-obsidian-900/90 backdrop-blur-xl border border-white/10 rounded-[2.5rem] w-full max-w-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative max-h-[95vh] overflow-y-auto overflow-hidden">
                      <button onClick={() => setViewingPlayer(null)} className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md rounded-xl text-slate-300 hover:text-white transition-colors active:scale-95 z-20">
                        <XIcon size={24} />
                      </button>
                      
-                     <div className="w-full h-40 sm:h-48 bg-slate-800 relative">
+                     <div className="w-full h-40 sm:h-48 bg-obsidian-800 relative">
                        {viewingPlayer.bannerURL ? (
                          <img src={viewingPlayer.bannerURL} className="w-full h-full object-cover" /> 
                        ) : (
-                         <div className="w-full h-full bg-gradient-to-r from-indigo-900 to-fuchsia-900"></div>
+                         <div className="w-full h-full bg-gradient-to-r from-violet-900 to-fuchsia-900"></div>
                        )}
                      </div>
                      
                      <div className="px-8 pb-8 relative">
-                         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[2rem] bg-slate-800 flex items-center justify-center shadow-xl border-4 border-slate-900 -mt-12 sm:-mt-14 mb-4 overflow-hidden relative z-10">
+                         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[2rem] bg-obsidian-800 flex items-center justify-center shadow-xl border-4 border-obsidian-900 -mt-12 sm:-mt-14 mb-4 overflow-hidden relative z-10">
                            {viewingPlayer.photoURL ? (
                              <img src={viewingPlayer.photoURL} className="w-full h-full object-cover" /> 
                            ) : (
@@ -2391,16 +1903,16 @@
                            {viewingPlayer.username} 
                            <span className="text-lg text-slate-500 font-ui">#{viewingPlayer.userTag}</span>
                          </h2>
-                         <p className="text-slate-300 mt-4 mb-6 font-ui leading-relaxed bg-slate-950/50 p-5 rounded-2xl border border-slate-800/50 shadow-inner break-words">
+                         <p className="text-slate-300 mt-4 mb-6 font-ui leading-relaxed bg-obsidian-950/50 p-5 rounded-2xl border border-white/5 shadow-inner break-words">
                            {viewingPlayer.bio || "This player hasn't written a bio yet."}
                          </p>
                          
                          <div className="flex gap-4">
-                             <div className="bg-slate-950/80 px-5 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center">
+                             <div className="bg-obsidian-950/80 px-5 py-3 rounded-2xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center">
                                <span className="block text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">Level</span>
-                               <span className="text-2xl font-black text-indigo-400 font-heading">{viewingPlayer.currentLevel || 1}</span>
+                               <span className="text-2xl font-black text-violet-400 font-heading">{viewingPlayer.currentLevel || 1}</span>
                              </div>
-                             <div className="bg-slate-950/80 px-5 py-3 rounded-2xl border border-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center">
+                             <div className="bg-obsidian-950/80 px-5 py-3 rounded-2xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] flex-1 text-center">
                                <span className="block text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">Streak</span>
                                <span className={`text-2xl font-black font-heading flex items-center justify-center gap-2 ${getEffectiveStreak(viewingPlayer) > 0 ? 'text-orange-500' : 'text-slate-500'}`}>
                                  <span className={getEffectiveStreak(viewingPlayer) > 0 ? 'animate-pulse' : 'grayscale'}>🔥</span> 
@@ -2415,9 +1927,9 @@
 
             {/* --- ADMIN: EDIT PLAYER MODAL --- */}
             {adminEditingUser && (
-              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-modal-pop">
-                 <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
-                    <button onClick={() => setAdminEditingUser(null)} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-slate-800/50 rounded-xl text-slate-400 hover:text-white transition-colors active:scale-95 shadow-inner">
+              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
+                 <div className="bg-obsidian-900/90 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
+                    <button onClick={() => setAdminEditingUser(null)} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-obsidian-800/50 rounded-xl text-slate-400 hover:text-white transition-colors active:scale-95 shadow-inner">
                       <XIcon size={24} />
                     </button>
                     
@@ -2437,43 +1949,43 @@
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Username</label>
-                          <input type="text" required value={adminEditUsername} onChange={e => setAdminEditUsername(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
+                          <input type="text" required value={adminEditUsername} onChange={e => setAdminEditUsername(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/5 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
                         </div>
                         <div>
                           <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">ID Tag</label>
                           <div className="relative">
                             <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 font-heading text-xl">#</span>
-                            <input type="text" maxLength={4} required value={adminEditTag} onChange={e => setAdminEditTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 pl-8 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] uppercase" />
+                            <input type="text" maxLength={4} required value={adminEditTag} onChange={e => setAdminEditTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} className="w-full bg-obsidian-950/80 border border-white/5 rounded-2xl px-4 pl-8 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] uppercase" />
                           </div>
                         </div>
                       </div>
                       
                       <div>
                         <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Profile Image URL</label>
-                        <input type="text" value={adminEditPhoto} onChange={e => setAdminEditPhoto(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-base sm:text-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="https://..." />
+                        <input type="text" value={adminEditPhoto} onChange={e => setAdminEditPhoto(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/5 rounded-2xl px-5 py-4 font-ui text-base sm:text-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" placeholder="https://..." />
                       </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Daily Streak</label>
-                          <input type="number" required min="0" value={adminEditStreak} onChange={e => setAdminEditStreak(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
+                          <input type="number" required min="0" value={adminEditStreak} onChange={e => setAdminEditStreak(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/5 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
                         </div>
                         <div>
                           <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Player Level</label>
-                          <input type="number" required min="1" value={adminEditLevel} onChange={e => setAdminEditLevel(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
+                          <input type="number" required min="1" value={adminEditLevel} onChange={e => setAdminEditLevel(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/5 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]" />
                         </div>
                       </div>
                       
                       <div>
                         <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Account Status</label>
-                        <select value={adminEditStatus} onChange={(e) => setAdminEditStatus(e.target.value)} className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] appearance-none cursor-pointer">
+                        <select value={adminEditStatus} onChange={(e) => setAdminEditStatus(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/5 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] appearance-none cursor-pointer">
                           <option value="active">🟢 Active</option>
                           <option value="suspended">🟡 Suspended</option>
                           <option value="banned">🔴 Banned</option>
                         </select>
                       </div>
                       
-                      <div className="pt-4 mt-8 border-t border-slate-800 flex justify-between items-center gap-4">
+                      <div className="pt-4 mt-8 border-t border-white/5 flex justify-between items-center gap-4">
                         <button
                           type="button"
                           onClick={deleteAdminUser}
@@ -2482,7 +1994,7 @@
                         >
                           Delete
                         </button>
-                        <button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_-5px_rgba(168,85,247,0.5)] border border-white/10">
+                        <button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_-5px_rgba(168,85,247,0.5)] border border-violet-400/20">
                           {adminActionLoading ? (
                             <div className="w-6 h-6 sm:w-7 sm:h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                           ) : (
@@ -2495,105 +2007,10 @@
               </div>
             )}
 
-            {/* --- GAME PLAYER VIEW --- */}
-            <div className={`absolute inset-0 flex flex-col bg-black transition-all duration-500 ease-out z-[70] ${activeGame ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-105 pointer-events-none'}`}>
-              {activeGame && (
-                <>
-                  <div className={`h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 flex-shrink-0 transition-all ${isCssFullscreen ? 'hidden' : 'flex'}`}>
-                    <div className="flex items-center space-x-6">
-                      <button onClick={handleCloseGame} className="flex items-center space-x-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl transition-colors border border-slate-700 active:scale-95 shadow-inner">
-                        <ChevronLeftIcon size={20} />
-                        <span className="font-bold text-lg font-ui tracking-wide">Exit</span>
-                      </button>
-                      <div className="h-8 w-px bg-slate-700 hidden sm:block"></div>
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 hidden sm:block border border-white/10 shadow-lg">
-                          <ActiveIcon />
-                        </div>
-                        <span className="font-black font-heading text-xl text-white tracking-wider truncate max-w-[150px] sm:max-w-xs drop-shadow-sm">
-                          {activeGame.title}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <button onClick={requestFullscreenSequence} className="flex items-center space-x-2 text-slate-300 hover:text-white p-2.5 rounded-xl hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors tooltip group relative active:scale-95" title="Full Screen">
-                        <Maximize2Icon size={22} />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className={`flex-1 w-full bg-slate-950 relative ${isCssFullscreen ? 'fixed inset-0 z-[100]' : ''}`} ref={playerContainerRef}>
-                    
-                    {/* Floating Exit Fullscreen Button (Only shows in CSS Fallback mode) */}
-                    {isCssFullscreen && (
-                      <button onClick={requestFullscreenSequence} className="absolute top-6 right-6 z-[60] opacity-30 hover:opacity-100 bg-slate-900/80 hover:bg-slate-700 text-slate-300 hover:text-white p-3 rounded-2xl border border-slate-700 backdrop-blur-md transition-all shadow-2xl active:scale-95" title="Exit Full Screen (Esc)">
-                        <Minimize2Icon size={24} />
-                      </button>
-                    )}
-                    
-                    {/* Sponsor Break UI */}
-                    {adCountdown > 0 && (
-                      <div className="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center px-4 text-center">
-                        <div className="absolute inset-0 bg-indigo-500/5 mix-blend-screen animate-pulse"></div>
-                        <div className="bg-slate-900/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] border border-slate-800/80 shadow-[0_0_50px_-10px_rgba(0,0,0,0.8)] max-w-3xl w-full relative overflow-hidden animate-in zoom-in-95 duration-300">
-                          <div className="absolute bottom-0 left-0 h-2 bg-indigo-600 transition-all duration-1000 ease-linear" style={{width: `${(5 - adCountdown) * 20}%`}}></div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4 mb-2">
-                            <h2 className="text-3xl font-black font-heading text-white uppercase tracking-widest drop-shadow-md">Sponsor Break</h2>
-                            <span className="text-slate-400 font-bold font-ui px-4 py-2 bg-slate-950/80 rounded-xl border border-slate-800 shadow-inner text-sm tracking-wider uppercase">Starting in {adCountdown}s</span>
-                          </div>
-                          
-                          <AdSenseWidget />
-                          
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Pending Fullscreen (Requires user click) */}
-                    {pendingFullscreen && adCountdown === 0 && (
-                      <div className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center px-4 text-center">
-                         <div className="bg-slate-900/90 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-300">
-                            <h2 className="text-3xl font-black font-heading text-white mb-8 uppercase tracking-widest">Ready</h2>
-                            <button onClick={executeFullscreen} className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-ui text-xl tracking-widest rounded-xl transition-all shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)] active:scale-95 mb-4">
-                              Enter Fullscreen
-                            </button>
-                            <button onClick={() => setPendingFullscreen(false)} className="text-slate-400 hover:text-white font-ui font-bold tracking-widest uppercase transition-colors">
-                              Cancel
-                            </button>
-                         </div>
-                      </div>
-                    )}
-
-                    {/* Loading Screen beneath game */}
-                    {iframeLoading && adCountdown === 0 && !pendingFullscreen && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center z-0 bg-slate-950">
-                        <div className="w-32 h-32 mb-8 animate-pulse text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
-                          <ActiveIcon />
-                        </div>
-                        <p className="text-indigo-300 font-bold font-ui text-2xl tracking-widest animate-pulse drop-shadow-md">
-                          CONNECTING SERVER...
-                        </p>
-                      </div>
-                    )}
-                    
-                    {/* Game Iframe */}
-                    {adCountdown === 0 && !pendingFullscreen && (
-                      <iframe 
-                        src={activeGame.src} 
-                        title={activeGame.title} 
-                        onLoad={() => setIframeLoading(false)} 
-                        className={`w-full h-full border-0 relative z-10 transition-opacity duration-1000 ${iframeLoading ? 'opacity-0' : 'opacity-100 bg-slate-950'}`} 
-                        allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"
-                      ></iframe>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-
             {/* --- AUTHENTICATION MODAL --- */}
             {showAuthModal && (
-              <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-modal-pop">
-                 <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 sm:p-10 w-full max-w-md shadow-2xl relative">
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-4">
+                 <div className="bg-obsidian-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 w-full max-w-md shadow-2xl relative">
                     <button 
                       onClick={() => { setShowAuthModal(false); setAuthMode('login'); setAuthError(''); setResetMessage(''); }} 
                       className="absolute top-6 right-6 p-2 bg-white/5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors active:scale-95"
@@ -2606,13 +2023,13 @@
                     </h2>
                     
                     {authError && (
-                      <div className="mb-6 p-4 bg-white/5 border border-white/10 text-slate-200 font-ui font-semibold text-sm rounded-xl flex items-center gap-3">
+                      <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 font-ui font-semibold text-sm rounded-xl flex items-center gap-3">
                         <XIcon size={18} className="text-rose-500" /> {authError}
                       </div>
                     )}
                     
                     {resetMessage && (
-                      <div className="mb-6 p-4 bg-white/5 border border-white/10 text-slate-200 font-ui font-semibold text-sm rounded-xl flex items-center gap-3">
+                      <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-ui font-semibold text-sm rounded-xl flex items-center gap-3">
                         <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                         </svg> 
@@ -2629,7 +2046,7 @@
                             required 
                             value={username} 
                             onChange={e => setUsername(e.target.value)} 
-                            className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3.5 font-ui text-base text-white focus:outline-none focus:border-white/30 transition-colors placeholder-slate-600" 
+                            className="w-full bg-obsidian-950 border border-white/10 rounded-xl px-4 py-3.5 font-ui text-base text-white focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" 
                             placeholder="ProGamer123" 
                           />
                         </div>
@@ -2642,7 +2059,7 @@
                           required 
                           value={email} 
                           onChange={e => setEmail(e.target.value)} 
-                          className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3.5 font-ui text-base text-white focus:outline-none focus:border-white/30 transition-colors placeholder-slate-600" 
+                          className="w-full bg-obsidian-950 border border-white/10 rounded-xl px-4 py-3.5 font-ui text-base text-white focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" 
                           placeholder="player@example.com" 
                         />
                       </div>
@@ -2657,7 +2074,7 @@
                               minLength={6} 
                               value={password} 
                               onChange={e => setPassword(e.target.value)} 
-                              className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3.5 pr-12 font-ui text-base text-white focus:outline-none focus:border-white/30 transition-colors placeholder-slate-600" 
+                              className="w-full bg-obsidian-950 border border-white/10 rounded-xl px-4 py-3.5 pr-12 font-ui text-base text-white focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" 
                               placeholder="••••••••" 
                             />
                             <button 
@@ -2683,18 +2100,18 @@
                       )}
                       
                       {authMode === 'signup' && (
-                        <div className="bg-[#111] p-4 rounded-xl border border-white/5 mt-2">
+                        <div className="bg-obsidian-950 p-4 rounded-xl border border-white/5 mt-2 shadow-inner">
                           <label className="block text-xs font-bold tracking-widest uppercase text-slate-500 mb-2 flex items-center gap-2">
                             <ShieldIcon size={14}/> Anti-Bot Check
                           </label>
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg font-bold text-white">{botCheck.num1} + {botCheck.num2} = </span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-xl font-bold text-white">{botCheck.num1} + {botCheck.num2} = </span>
                             <input 
                               type="number" 
                               required 
                               value={botCheck.answer} 
                               onChange={e => setBotCheck({...botCheck, answer: e.target.value})} 
-                              className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 font-ui text-base text-white focus:outline-none focus:border-white/30 transition-colors" 
+                              className="flex-1 bg-obsidian-900 border border-white/10 rounded-lg px-3 py-2 font-ui text-base text-white focus:outline-none focus:border-violet-500/50 transition-colors" 
                               placeholder="?" 
                             />
                           </div>
@@ -2704,10 +2121,10 @@
                       <button 
                         disabled={authLoading || authCooldown} 
                         type="submit" 
-                        className="w-full py-4 bg-white hover:bg-slate-200 text-black font-bold font-ui text-sm tracking-widest uppercase rounded-xl transition-all mt-8 disabled:opacity-50 flex justify-center active:scale-95"
+                        className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold font-ui text-sm tracking-widest uppercase rounded-xl transition-all mt-8 disabled:opacity-50 flex justify-center active:scale-95 shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/20"
                       >
                         {authLoading ? (
-                          <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : ( 
                           authMode === 'login' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link' 
                         )}
@@ -2737,7 +2154,7 @@
             
             {/* --- TOAST NOTIFICATIONS --- */}
             {toast && (
-              <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-[300] font-ui font-bold text-xl flex items-center gap-3 animate-toast-slide border border-white/10 ${toast.type === 'error' ? 'bg-rose-600 text-white' : 'bg-indigo-600 text-white'}`}>
+              <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-[300] font-ui font-bold text-xl flex items-center gap-3 animate-toast-slide border ${toast.type === 'error' ? 'bg-rose-600 text-white border-rose-500/50' : 'bg-obsidian-800 text-violet-400 border-white/10'}`}>
                 {toast.type === 'error' ? <XIcon size={24}/> : <TrophyIcon size={24}/>}
                 {toast.message}
               </div>
