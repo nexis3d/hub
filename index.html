@@ -289,7 +289,7 @@
     const PigeonIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Bird.png" alt="Super Pigeon Rumble" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/4c1d95/ffffff?text=Bird';}}/></div>));
     const ShaddoCraftIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'15px', boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%', height:'100%', objectFit:'contain', filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/></div>));
     const VoidStalkerIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/312e81/ffffff?text=Spooky';}}/></div>));
-
+    const MofuTestIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Favicon.png" alt="Top Secret" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/4c1d95/ffffff?text=SECRET';}}/></div>));
 
     // --- ADSENSE WIDGET COMPONENT ---
     const AdSenseWidget = memo(() => {
@@ -408,14 +408,19 @@
       { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
       { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'], isPublicBeta: true },
-      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true }
+      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true },
+      { id: 'mofu-proto-1', title: 'Project: OVERDRIVE', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-rose-700 to-purple-950', tags: ['Action', 'Secret'], isMOFUOnly: true },
+      { id: 'mofu-proto-2', title: 'Project: NEBULA', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-cyan-700 to-blue-950', tags: ['Adventure', 'Secret'], isMOFUOnly: true }
     ];
 
     const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG', 'Arcade', 'Table'];
 
     function App() {
       // Basic States
-      const [activeView, setActiveView] = useState('discover'); 
+      const [activeView, setActiveView] = useState(() => {
+        const hash = window.location.hash.replace(/^#\/?/, '');
+        return ['discover', 'leaderboard', 'profile', 'about', 'download', 'settings', 'admin'].includes(hash) ? hash : 'discover';
+      }); 
       const [activeGame, setActiveGame] = useState(null); 
       const [searchQuery, setSearchQuery] = useState(''); 
       const [activeCategory, setActiveCategory] = useState('All'); 
@@ -426,6 +431,7 @@
       const [toast, setToast] = useState(null); 
       const [isOffline, setIsOffline] = useState(!navigator.onLine);
       const [pendingFullscreen, setPendingFullscreen] = useState(false);
+      const [isBlocked, setIsBlocked] = useState(false);
       
       // Auth & Profile States
       const [user, setUser] = useState(null); 
@@ -494,6 +500,27 @@
         setTimeout(() => setToast(null), 3500); 
       };
 
+      // --- ROUTING LOGIC (SUBDIRECTORIES) ---
+      useEffect(() => {
+        const handleHashChange = () => {
+          const hash = window.location.hash.replace(/^#\/?/, '');
+          if (['discover', 'leaderboard', 'profile', 'about', 'download', 'settings', 'admin'].includes(hash)) {
+            setActiveView(hash);
+          } else if (!hash) {
+            setActiveView('discover');
+          }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+      }, []);
+
+      const navigateTo = (view) => {
+        window.location.hash = `/${view}`;
+        setActiveGame(null);
+        setIsSidebarOpen(false);
+        if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{});
+      };
+
       // --- EFFECTS ---
 
       useEffect(() => {
@@ -501,6 +528,16 @@
           setAuthResolved(true);
         }, 800); 
         return () => clearTimeout(timeout);
+      }, []);
+
+      // SECURITY: Check for Brute-Force Rate Limiter Block
+      useEffect(() => {
+        const blockUntil = localStorage.getItem('nexis_block_until');
+        if (blockUntil && parseInt(blockUntil) > Date.now()) {
+          setIsBlocked(true);
+        } else if (blockUntil) {
+          localStorage.removeItem('nexis_block_until');
+        }
       }, []);
 
       useEffect(() => {
@@ -798,13 +835,27 @@
             throw new Error("Security Error: Email not verified! We just sent a NEW verification link to your inbox/spam folder. Please click it to continue.");
           }
           
+          // Clear any failed attempts upon successful login
+          localStorage.removeItem('nexis_failed_logins');
           setShowAuthModal(false); 
           showToast("Logged in!"); 
         } catch (err) { 
-          if (err.message.includes("Security Error")) {
-              setAuthError(err.message);
+          // SECURITY UPDATE: Brute-Force Rate Limiting Tracker
+          let fails = parseInt(localStorage.getItem('nexis_failed_logins') || '0') + 1;
+          
+          if (fails >= 5) {
+             const blockUntil = Date.now() + 3600000; // Block for 1 Hour (3,600,000 ms)
+             localStorage.setItem('nexis_block_until', blockUntil.toString());
+             localStorage.removeItem('nexis_failed_logins');
+             setIsBlocked(true);
+             setShowAuthModal(false);
           } else {
-              setAuthError("Login failed. Invalid email or password.");
+             localStorage.setItem('nexis_failed_logins', fails.toString());
+             if (err.message.includes("Security Error")) {
+                 setAuthError(err.message);
+             } else {
+                 setAuthError(`Login failed. Invalid email or password. (${5 - fails} attempts remaining)`);
+             }
           }
         } finally { 
           setAuthLoading(false); 
@@ -815,7 +866,7 @@
       const handleLogout = async () => { 
         if (auth) { 
           await signOut(auth); 
-          setActiveView('discover'); 
+          navigateTo('discover'); 
           setFavorites([]); 
           setUserStatus('active'); 
           showToast("Signed out."); 
@@ -978,8 +1029,8 @@
       };
 
       const playRandomGame = () => { 
-        // SECURITY UPDATE: Filter out Dev Beta games for regular players
-        const pool = GAMES.filter(g => !g.isBeta || isDevUser);
+        // SECURITY UPDATE: Filter out Dev Beta and MOFU games for regular players
+        const pool = GAMES.filter(g => (!g.isBeta || isDevUser) && (!g.isMOFUOnly || currentUserTag === 'MOFU'));
         if(pool.length === 0) return;
         const randomIndex = Math.floor(Math.random() * pool.length); 
         handleLaunchGame(pool[randomIndex]); 
@@ -1039,17 +1090,29 @@
         if (activeView !== 'discover') return [];
         return GAMES.filter(g => { 
           if (g.isBeta && !isDevUser) return false; 
+          if (g.isMOFUOnly && currentUserTag !== 'MOFU') return false; 
           const matchS = g.title.toLowerCase().includes(searchQuery.toLowerCase()) || g.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())); 
           const matchC = activeCategory === 'All' ? true : activeCategory === 'Favorites' ? favorites.includes(g.id) : g.tags.includes(activeCategory); 
           return matchS && matchC; 
         });
-      }, [activeView, searchQuery, activeCategory, favorites, isDevUser]);
+      }, [activeView, searchQuery, activeCategory, favorites, isDevUser, currentUserTag]);
 
       const FeaturedGame = GAMES[0]; 
       const FeaturedIcon = FeaturedGame.icon; 
       const ActiveIcon = activeGame ? activeGame.icon : null;
 
       // --- RENDER EARLY RETURNS ---
+      if (isBlocked) {
+        return (
+          <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
+            <ShieldIcon size={80} className="text-rose-600 mb-6 animate-pulse" />
+            <h1 className="text-5xl font-black font-heading text-rose-500 mb-4 tracking-widest uppercase">Access Blocked</h1>
+            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Due to multiple failed login attempts, your access to Nexis Games has been temporarily blocked for 1 hour to protect your security.</p>
+            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Please try again later.</p>
+          </div>
+        );
+      }
+
       if (userStatus === 'banned') {
         return (
           <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
@@ -1104,27 +1167,27 @@
             </div>
             
             <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
-              <button onClick={() => { setActiveView('discover'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'discover' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Discover">
+              <button onClick={() => navigateTo('discover')} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'discover' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Discover">
                 <HomeIcon size={22} className="flex-shrink-0" />
                 <span className={`font-semibold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Discover</span>
               </button>
               
-              <button onClick={() => { setActiveView('leaderboard'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'leaderboard' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Leaderboard">
+              <button onClick={() => navigateTo('leaderboard')} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === 'leaderboard' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Leaderboard">
                 <TrophyIcon size={22} className="flex-shrink-0" />
                 <span className={`font-semibold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Leaderboard</span>
               </button>
               
-              <button onClick={() => { setActiveView('profile'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'profile' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Profile">
+              <button onClick={() => navigateTo('profile')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'profile' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Profile">
                 <UserIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>My Profile</span>
               </button>
               
-              <button onClick={() => { setActiveView('about'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'about' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="About Us">
+              <button onClick={() => navigateTo('about')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'about' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="About Us">
                 <InfoIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>About Us</span>
               </button>
               
-              <button onClick={() => { setActiveView('download'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'download' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Download App">
+              <button onClick={() => navigateTo('download')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'download' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Download App">
                 <DownloadIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Download App</span>
               </button>
@@ -1132,7 +1195,7 @@
               {isAdmin && (
                  <>
                    <div className="h-px w-full bg-white/5 my-2"></div>
-                   <button onClick={() => { setActiveView('admin'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Admin Portal">
+                   <button onClick={() => navigateTo('admin')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Admin Portal">
                      <ShieldIcon size={24} className="flex-shrink-0" />
                      <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Admin Portal</span>
                    </button>
@@ -1141,7 +1204,7 @@
             </nav>
             
             <div className="p-4 border-t border-white/5">
-              <button onClick={() => { setActiveView('settings'); setActiveGame(null); setIsSidebarOpen(false); if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{}); }} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Settings">
+              <button onClick={() => navigateTo('settings')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-violet-500/10 border-violet-500/20 text-violet-400 shadow-[inset_4px_0_0_0_rgba(139,92,246,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Settings">
                 <SettingsIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Settings</span>
               </button>
@@ -1174,7 +1237,7 @@
                 
                 <div className="flex items-center space-x-4 ml-4">
                   {isRegistered ? (
-                    <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => setActiveView('profile')}>
+                    <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => navigateTo('profile')}>
                       <div className="hidden sm:flex flex-col items-end">
                         <div className="flex items-center gap-2">
                            <span className="text-base font-bold font-heading text-white group-hover:text-slate-200 transition-colors">
@@ -1801,7 +1864,7 @@
                               {isRegistered && (
                                 <section className="pt-4 border-t border-white/5 flex justify-end">
                                   <button 
-                                    onClick={() => { handleLogout(); setActiveView('discover'); }} 
+                                    onClick={() => handleLogout()} 
                                     className="px-10 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold font-heading text-xl tracking-widest uppercase rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(225,29,72,0.5)] border border-rose-400/20"
                                   >
                                     Sign Out
