@@ -220,37 +220,7 @@
     const CheeseIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Cheese.png" alt="Beauty and the Cheese" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/eab308/ffffff?text=Cheese';}}/></div>));
     const GSwitchIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Switch.png" alt="G-Switch 3" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/1e3a8a/ffffff?text=Switch';}}/></div>));
     const ArchitectIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Curse.png" alt="The Architect's Curse" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/020617/ffffff?text=Curse';}}/></div>));
-    const BlackjackIcon = memo(() => (
-      <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
-        <defs>
-          <linearGradient id="bjTable" x1="0" y1="0" x2="200" y2="200">
-            <stop offset="0%" stopColor="#064e3b"/><stop offset="100%" stopColor="#020617"/>
-          </linearGradient>
-          <filter id="cardShadow"><feDropShadow dx="2" dy="8" stdDeviation="6" floodColor="#000000" floodOpacity="0.8" /></filter>
-          <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="100">
-            <stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#e2e8f0"/>
-          </linearGradient>
-        </defs>
-        <rect width="200" height="200" rx="40" fill="url(#bjTable)" />
-        <circle cx="100" cy="220" r="140" stroke="#16a34a" strokeWidth="3" opacity="0.3" fill="none"/>
-        <circle cx="100" cy="220" r="100" stroke="#22c55e" strokeWidth="2" opacity="0.2" fill="none"/>
-        <g filter="url(#cardShadow)">
-          <g transform="translate(50, 40) rotate(-15)">
-            <rect width="70" height="100" rx="8" fill="url(#cardGrad)" stroke="#cbd5e1" strokeWidth="2"/>
-            <text x="10" y="25" fill="#ef4444" fontSize="22" fontFamily="Arial" fontWeight="900">A</text>
-            <path d="M35 45 L45 60 L35 75 L25 60 Z" fill="#ef4444" />
-            <text x="45" y="90" fill="#ef4444" fontSize="22" fontFamily="Arial" fontWeight="900" transform="rotate(180 50 82)">A</text>
-          </g>
-          <g transform="translate(85, 55) rotate(12)">
-            <rect width="70" height="100" rx="8" fill="url(#cardGrad)" stroke="#cbd5e1" strokeWidth="2"/>
-            <text x="10" y="25" fill="#0f172a" fontSize="22" fontFamily="Arial" fontWeight="900">J</text>
-            <path d="M35 60 C45 45, 45 75, 35 60" fill="#0f172a" stroke="#0f172a" strokeWidth="8" strokeLinecap="round"/>
-            <path d="M35 45 L40 55 L35 75 L30 55 Z" fill="#0f172a" />
-            <text x="45" y="90" fill="#0f172a" fontSize="22" fontFamily="Arial" fontWeight="900" transform="rotate(180 50 82)">J</text>
-          </g>
-        </g>
-      </svg>
-    ));
+    const BlackjackIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Black.png" alt="Casual Blackjack" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Blackjack';}}/></div>));
     const PolyBitIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Poly.png" alt="PolyBit Destruction" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/d946ef/ffffff?text=Poly';}}/></div>));
     const DungeonCrawlerIcon = memo(() => (
       <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none">
@@ -449,9 +419,9 @@
       { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', icon: ArchitectIcon, theme: 'from-teal-900 to-black', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
       { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', icon: BlackjackIcon, theme: 'from-green-800 to-emerald-950', tags: ['Arcade', 'Table'] },
       { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-fuchsia-700 to-purple-950', tags: ['Action', 'Arcade'] },
-      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Unknown', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-800 to-black', tags: ['RPG', 'Adventure'], isPublicBeta: true },
+      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Mofawo', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-800 to-black', tags: ['RPG', 'Adventure'], isPublicBeta: true },
       { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-red-950 to-black', tags: ['Spooky', 'Action'] },
-      { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Unknown', src: 'games/Spok.html', icon: TheSpookyMazeIcon, theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Manny', src: 'games/Spok.html', icon: TheSpookyMazeIcon, theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
       { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', icon: VoidStalkerIcon, theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
@@ -961,7 +931,7 @@
           if (t !== adminEditingUser.userTag) { 
             const tagRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', t); 
             const snap = await getDoc(tagRef); 
-            if (snap.exists()) throw new Error("Tag taken."); 
+            if (snap.exists() && snap.data().uid !== adminEditingUser.uid) throw new Error("Tag taken."); 
             await setDoc(tagRef, { uid: adminEditingUser.uid, username: adminEditUsername.trim(), userTag: t }); 
             if (adminEditingUser.userTag) {
               await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'uniqueTags', adminEditingUser.userTag)); 
