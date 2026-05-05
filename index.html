@@ -410,7 +410,10 @@
       { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'], isPublicBeta: true },
       { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true },
       { id: 'mofu-proto-1', title: 'Project: OVERDRIVE', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-rose-700 to-purple-950', tags: ['Action', 'Secret'], isMOFUOnly: true },
-      { id: 'mofu-proto-2', title: 'Project: NEBULA', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-cyan-700 to-blue-950', tags: ['Adventure', 'Secret'], isMOFUOnly: true }
+      { id: 'mofu-proto-2', title: 'Project: NEBULA', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-cyan-700 to-blue-950', tags: ['Adventure', 'Secret'], isMOFUOnly: true },
+      { id: 'mofu-proto-3', title: 'Project: CHRONOS', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-amber-600 to-red-950', tags: ['RPG', 'Secret'], isMOFUOnly: true },
+      { id: 'mofu-proto-4', title: 'Project: VORTEX', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-fuchsia-600 to-indigo-950', tags: ['Puzzle', 'Secret'], isMOFUOnly: true },
+      { id: 'mofu-proto-5', title: 'Project: OMEGA', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-emerald-600 to-teal-950', tags: ['Strategy', 'Secret'], isMOFUOnly: true }
     ];
 
     const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG', 'Arcade', 'Table'];
@@ -418,8 +421,8 @@
     function App() {
       // Basic States
       const [activeView, setActiveView] = useState(() => {
-        const hash = window.location.hash.replace(/^#\/?/, '');
-        return ['discover', 'leaderboard', 'profile', 'about', 'download', 'settings', 'admin'].includes(hash) ? hash : 'discover';
+        const path = window.location.pathname.replace(/^\//, '');
+        return ['discover', 'leaderboard', 'profile', 'about', 'download', 'settings', 'admin'].includes(path) ? path : 'discover';
       }); 
       const [activeGame, setActiveGame] = useState(null); 
       const [searchQuery, setSearchQuery] = useState(''); 
@@ -502,20 +505,21 @@
 
       // --- ROUTING LOGIC (SUBDIRECTORIES) ---
       useEffect(() => {
-        const handleHashChange = () => {
-          const hash = window.location.hash.replace(/^#\/?/, '');
-          if (['discover', 'leaderboard', 'profile', 'about', 'download', 'settings', 'admin'].includes(hash)) {
-            setActiveView(hash);
-          } else if (!hash) {
+        const handlePopState = () => {
+          const path = window.location.pathname.replace(/^\//, '');
+          if (['discover', 'leaderboard', 'profile', 'about', 'download', 'settings', 'admin'].includes(path)) {
+            setActiveView(path);
+          } else if (!path) {
             setActiveView('discover');
           }
         };
-        window.addEventListener('hashchange', handleHashChange);
-        return () => window.removeEventListener('hashchange', handleHashChange);
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
       }, []);
 
       const navigateTo = (view) => {
-        window.location.hash = `/${view}`;
+        window.history.pushState(null, '', `/${view}`);
+        setActiveView(view);
         setActiveGame(null);
         setIsSidebarOpen(false);
         if (bgMusicRef.current && isSoundEnabled) bgMusicRef.current.play().catch(e=>{});
@@ -835,21 +839,39 @@
             throw new Error("Security Error: Email not verified! We just sent a NEW verification link to your inbox/spam folder. Please click it to continue.");
           }
           
+          // Clear any failed attempts upon a successful login
+          localStorage.removeItem('nexis_failed_logins');
           setShowAuthModal(false); 
           showToast("Logged in!"); 
+          setAuthLoading(false);
+          setAuthCooldown(false);
         } catch (err) { 
           if (err.message.includes("Security Error")) {
               setAuthError(err.message);
+              setAuthLoading(false);
+              setTimeout(() => setAuthCooldown(false), 2000);
           } else {
-              // Instant 1-hour block on a single failed login attempt
-              const blockUntil = Date.now() + 3600000; 
-              localStorage.setItem('nexis_block_until', blockUntil.toString());
-              setIsBlocked(true);
-              setShowAuthModal(false);
+              let fails = parseInt(localStorage.getItem('nexis_failed_logins') || '0') + 1;
+              
+              if (fails >= 6) {
+                  const blockUntil = Date.now() + 3600000; // Block for 1 Hour (3,600,000 ms)
+                  localStorage.setItem('nexis_block_until', blockUntil.toString());
+                  localStorage.removeItem('nexis_failed_logins');
+                  setIsBlocked(true);
+                  setShowAuthModal(false);
+                  setAuthLoading(false);
+                  setAuthCooldown(false);
+              } else {
+                  localStorage.setItem('nexis_failed_logins', fails.toString());
+                  setAuthError(`Login failed. Invalid email or password. (${6 - fails} attempts remaining)`);
+                  
+                  // Dynamic Cooldown: 1s for Try 1 & 2, then adds 0.5s for each try after
+                  let cooldownSeconds = fails <= 2 ? 1 : 1 + (fails - 2) * 0.5;
+                  
+                  setAuthLoading(false);
+                  setTimeout(() => setAuthCooldown(false), cooldownSeconds * 1000);
+              }
           }
-        } finally { 
-          setAuthLoading(false); 
-          setTimeout(() => setAuthCooldown(false), 2000); 
         } 
       };
 
@@ -1097,7 +1119,7 @@
           <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
             <ShieldIcon size={80} className="text-rose-600 mb-6 animate-pulse" />
             <h1 className="text-5xl font-black font-heading text-rose-500 mb-4 tracking-widest uppercase">Access Blocked</h1>
-            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Due to a failed login attempt, your access to Nexis Games has been temporarily blocked for 1 hour to protect your security.</p>
+            <p className="text-xl text-slate-400 max-w-lg mb-8 font-ui">Due to multiple failed login attempts, your access to Nexis Games has been temporarily blocked for 1 hour to protect your security.</p>
             <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Please try again later.</p>
           </div>
         );
