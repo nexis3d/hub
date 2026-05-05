@@ -18,6 +18,9 @@
   <link rel="manifest" href="/assets/site.webmanifest" />
 
   <meta name="description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
+  <meta name="keywords" content="Nexis Games, Nexisgames, Nexus games, Nexusgames, Nexis Game, Nexus Game, Nexes games, Nexesgames, Nextis games, Nextisgames, NexisGD, Nexus GD, NexusGD, gaming, web games, browser games, free games, online games, unblocked games, play games online, no download games, 3D games, casual games, action games, racing games, io games, html5 games, offline games, arcade, multiplayer, minigames, best browser games, free to play, indie games, Nexis GD, unblocked games premium, play nexis games, nexis games hub, nexis game portal, nexus game portal, html5 unblocked, school unblocked games">
+  <meta name="author" content="Nexis Games">
+  <meta name="theme-color" content="#030008">
   
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; object-src 'none'; base-uri 'none';">
 
@@ -43,6 +46,8 @@
     @keyframes text-shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
     @keyframes float-logo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
     @keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+    @keyframes slideInRight { 0% { transform: translateX(20px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+    @keyframes chatFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
@@ -383,7 +388,7 @@
       { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', icon: ArchitectIcon, theme: 'from-teal-900 to-black', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
       { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', icon: BlackjackIcon, theme: 'from-green-800 to-emerald-950', tags: ['Arcade', 'Table'] },
       { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', icon: PolyBitIcon, theme: 'from-fuchsia-700 to-purple-950', tags: ['Action', 'Arcade'] },
-      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Mofawo', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-800 to-black', tags: ['RPG', 'Adventure'], isPublicBeta: true },
+      { id: 'dungeon-crawler', title: 'Dungeon Crawler', developer: 'Unknown', src: 'games/Dung.html', icon: DungeonCrawlerIcon, theme: 'from-zinc-800 to-black', tags: ['RPG', 'Adventure'], isPublicBeta: true },
       { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', icon: ScaryMazeIcon, theme: 'from-red-950 to-black', tags: ['Spooky', 'Action'] },
       { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Orange_Man', src: 'games/Spok.html', icon: TheSpookyMazeIcon, theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
       { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', icon: VBrawlIcon, theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
@@ -483,7 +488,8 @@
       const [adminEditLevel, setAdminEditLevel] = useState(1); 
       const [adminEditStatus, setAdminEditStatus] = useState('active'); 
       const [adminEditBadges, setAdminEditBadges] = useState([]);
-      const [newAdminBadge, setNewAdminBadge] = useState('');
+      const [newAdminBadgeCustom, setNewAdminBadgeCustom] = useState('');
+      const [newAdminBadgeSelect, setNewAdminBadgeSelect] = useState('');
       const [adminActionLoading, setAdminActionLoading] = useState(false); 
       
       // Developer Submission
@@ -1012,7 +1018,17 @@
         setAdminEditLevel(userToEdit.currentLevel || 1); 
         setAdminEditStatus(userToEdit.status || 'active'); 
         setAdminEditBadges(userToEdit.badges || []);
-        setNewAdminBadge('');
+        setNewAdminBadgeCustom('');
+        setNewAdminBadgeSelect('');
+      };
+
+      const handleAddAdminBadge = () => {
+          const badgeToAdd = newAdminBadgeCustom.trim() || newAdminBadgeSelect;
+          if (badgeToAdd && !adminEditBadges.includes(badgeToAdd)) {
+              setAdminEditBadges([...adminEditBadges, badgeToAdd]);
+          }
+          setNewAdminBadgeCustom('');
+          setNewAdminBadgeSelect('');
       };
 
       const submitAdminAction = async (e) => {
@@ -1150,10 +1166,13 @@
       const sendChat = async (e) => {
         e.preventDefault();
         if(!isRegistered || !chatMessage.trim() || activeChatTab === 'friends') return;
+        
+        // Verified Filter Lock!
         if(!badges.includes('Verified') && currentUserTag !== 'MOFU') {
            showToast("You need the Verified badge to chat!", "error");
            return;
         }
+        
         try {
            const filteredText = filterMessage(chatMessage.trim());
            
@@ -1287,17 +1306,7 @@
       // --- MAIN RENDER ---
       return (
         <div className={`h-screen w-screen bg-obsidian-900 text-slate-300 font-sans flex overflow-hidden relative selection:bg-${tColor}-500/40`}>
-          <style>{`
-            @keyframes slideInRight {
-              0% { transform: translateX(20px); opacity: 0; }
-              100% { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes chatFadeIn {
-              0% { opacity: 0; }
-              100% { opacity: 1; }
-            }
-          `}</style>
-
+          
           <GlobalLoader isVisible={!authResolved} />
 
           {/* Dynamic Theme Background */}
@@ -1313,19 +1322,19 @@
             </div>
           )}
           
-          {/* Overlay Sidebar Background */}
+          {/* Overlay Sidebar Background (For Mobile & Desktop Expansion) */}
           {isSidebarOpen && (
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] animate-in fade-in duration-300" onClick={() => setIsSidebarOpen(false)}></div>
           )}
           
-          {/* Sidebar Drawer (No longer pushes Main content!) */}
-          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen w-64 z-[100] flex flex-col flex-shrink-0 bg-obsidian-950/80 backdrop-blur-2xl border-r border-white/5 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden whitespace-nowrap shadow-2xl ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          {/* OVERLAPPING SIDEBAR DRAWER */}
+          <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className={`fixed top-0 left-0 h-screen z-[100] flex flex-col flex-shrink-0 bg-obsidian-950/90 backdrop-blur-2xl border-r border-white/5 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden whitespace-nowrap shadow-2xl ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-[88px]'}`}>
             <div className="p-6 flex items-center justify-start h-24 border-b border-white/5">
               <div className={`w-10 h-10 rounded-[12px] bg-gradient-to-br ${activeThemeColors.gradient} flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/20 relative z-10`}>
                 <img src="assets/backup.png" alt="Nexis Games Logo" className="w-full h-full object-cover relative z-10" onError={e => {e.target.onerror=null; e.target.style.display='none'}} />
                 <span className="font-heading font-black text-white shadow-inner absolute">NG</span>
               </div>
-              <h1 className="text-xl font-bold tracking-widest text-white font-heading ml-4">NEXIS GAMES</h1>
+              <h1 className={`text-xl font-bold tracking-widest text-white font-heading transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>NEXIS GAMES</h1>
             </div>
             
             <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
@@ -1340,38 +1349,39 @@
               ].map(item => (
                 <button key={item.id} onClick={() => navigateTo(item.id)} className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 border ${activeView === item.id || (activeView === 'details' && item.id === 'discover') ? `${activeThemeColors.bg} ${activeThemeColors.border} ${activeThemeColors.text} shadow-[inset_4px_0_0_0_currentColor]` : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title={item.label}>
                   <item.icon size={22} className="flex-shrink-0" />
-                  <span className="font-bold font-ui text-lg tracking-wide ml-4">{item.label}</span>
+                  <span className={`font-bold font-ui text-lg tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>{item.label}</span>
                 </button>
               ))}
               
               {isAdmin && (
                  <>
                    <div className="h-px w-full bg-white/5 my-2"></div>
-                   <button onClick={() => navigateTo('admin')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+                   <button onClick={() => navigateTo('admin')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'admin' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400 shadow-[inset_4px_0_0_0_rgba(225,29,72,1)]' : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Admin Portal">
                      <ShieldIcon size={24} className="flex-shrink-0" />
-                     <span className="font-bold font-ui text-xl tracking-wide ml-4">Admin Portal</span>
+                     <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Admin Portal</span>
                    </button>
                  </>
               )}
             </nav>
             
             <div className="p-4 border-t border-white/5">
-              <button onClick={() => navigateTo('settings')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 border ${activeView === 'settings' ? `${activeThemeColors.bg} ${activeThemeColors.border} ${activeThemeColors.text} shadow-[inset_4px_0_0_0_currentColor]` : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              <button onClick={() => navigateTo('settings')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 border ${activeView === 'settings' ? `${activeThemeColors.bg} ${activeThemeColors.border} ${activeThemeColors.text} shadow-[inset_4px_0_0_0_currentColor]` : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'}`} title="Settings">
                 <SettingsIcon size={24} className="flex-shrink-0" />
-                <span className="font-bold font-ui text-xl tracking-wide ml-4">Settings</span>
+                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Settings</span>
               </button>
             </div>
           </aside>
 
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10 ml-0">
+          <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10 ml-0 md:ml-[88px]">
             
             {/* The Hub Wrapper */}
             <div className={`absolute inset-0 flex flex-col transition-all duration-500 ease-out ${activeGame ? 'opacity-0 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100 overflow-y-auto'}`}>
               
               <header className="px-6 md:px-10 py-6 flex justify-between items-center sticky top-0 z-[60] bg-[#030008]/80 backdrop-blur-2xl border-b border-white/5 shadow-sm">
                 <div className="flex items-center flex-1 gap-4">
-                  <button onClick={() => setIsSidebarOpen(true)} className="p-3 bg-obsidian-900 rounded-xl text-slate-400 border border-white/5 flex-shrink-0 hover:text-white transition-colors">
+                  {/* The Menu Button is now visible on desktop to manually pop out the overlapping drawer if desired! */}
+                  <button onClick={() => setIsSidebarOpen(true)} className="p-3 bg-obsidian-900 rounded-xl text-slate-400 border border-white/5 flex-shrink-0 hover:text-white transition-colors block md:hidden">
                     <MenuIcon size={24} />
                   </button>
                   <div className="relative w-full max-w-md hidden sm:block">
@@ -1914,13 +1924,13 @@
                     </div>
                   </div>
                 )}
-                {/* --- SETTINGS, ABOUT, ADMIN VIEWS --- */}
-                {(activeView === 'about' || activeView === 'settings' || activeView === 'admin') && (
+
+                {/* --- SETTINGS & ABOUT VIEWS --- */}
+                {(activeView === 'about' || activeView === 'settings') && (
                    <div className="p-10 text-center animate-in fade-in flex flex-col items-center justify-center h-full pb-32">
                       <SettingsIcon size={64} className="text-slate-500 opacity-30 mb-6" />
                       <h2 className="text-3xl font-black text-white capitalize">{activeView} Area</h2>
                       <p className="text-slate-400 mt-4 text-lg">You are accessing the {activeView} module.</p>
-                      {activeView === 'admin' && <p className="mt-4 text-rose-400 font-bold uppercase tracking-widest">Admin Privileges Confirmed.</p>}
                    </div>
                 )}
 
@@ -1971,12 +1981,6 @@
                         <p className="text-slate-400 font-ui mb-4">Sign in to join the conversation with other players!</p>
                         <button onClick={()=>{setShowChatPanel(false); setShowAuthModal(true)}} className={`px-6 py-2 bg-obsidian-800 border border-white/20 rounded-lg text-white font-bold`}>Sign In</button>
                      </div>
-                  ) : (!badges.includes('Verified') && currentUserTag !== 'MOFU') ? (
-                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                        <ShieldIcon size={48} className="text-rose-500 mb-4 opacity-50"/>
-                        <p className="text-slate-300 font-bold font-ui mb-2">Restricted Access</p>
-                        <p className="text-slate-500 font-ui text-sm">You need the <span className="text-white font-bold">Verified</span> badge to access global and private chat. Play games or contact an Admin to get verified!</p>
-                     </div>
                   ) : activeChatTab === 'friends' ? (
                      <div className="space-y-2">
                         {friends.length === 0 ? (
@@ -2018,112 +2022,21 @@
                   <div ref={chatEndRef}></div>
                </div>
                
-               {isRegistered && (badges.includes('Verified') || currentUserTag === 'MOFU') && activeChatTab !== 'friends' && (
+               {isRegistered && (badges.includes('Verified') || currentUserTag === 'MOFU') && activeChatTab !== 'friends' ? (
                   <form onSubmit={sendChat} className="p-4 border-t border-white/10 bg-obsidian-900">
                      <div className="relative">
                         <input type="text" maxLength={150} value={chatMessage} onChange={e=>setChatMessage(e.target.value)} placeholder="Say something..." className="w-full bg-obsidian-950 border border-white/10 rounded-full py-3 pl-4 pr-12 text-white text-sm focus:outline-none focus:border-white/30" />
                         <button type="submit" disabled={!chatMessage.trim()} className={`absolute right-2 top-2 p-1.5 rounded-full ${chatMessage.trim() ? `bg-white/20 text-white` : 'text-slate-600'} transition-colors`}><SendIcon size={18}/></button>
                      </div>
                   </form>
-               )}
+               ) : isRegistered && activeChatTab !== 'friends' ? (
+                  <div className="p-4 border-t border-white/10 bg-obsidian-900 text-center">
+                     <p className="text-rose-400 font-bold font-ui text-sm flex items-center justify-center gap-2">
+                        <ShieldIcon size={16}/> You need the Verified badge to chat.
+                     </p>
+                  </div>
+               ) : null}
             </div>
-
-            {/* --- ADMIN: EDIT PLAYER MODAL --- */}
-            {adminEditingUser && (
-              <div className="absolute inset-0 z-[250] flex items-center justify-center bg-obsidian-950/80 backdrop-blur-md p-4 animate-modal-pop">
-                 <div className="bg-obsidian-900/90 backdrop-blur-xl border border-rose-500/20 rounded-[2.5rem] p-6 sm:p-10 w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative max-h-[95vh] overflow-y-auto">
-                    <button onClick={() => setAdminEditingUser(null)} className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-obsidian-800/50 rounded-xl text-slate-400 hover:text-white transition-colors active:scale-95 shadow-inner">
-                      <XIcon size={24} />
-                    </button>
-                    
-                    <div className="flex items-center gap-4 mb-8">
-                      <div className="p-3 bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/50">
-                        <ShieldIcon size={28} />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl sm:text-3xl font-black font-heading text-white">Manage Player</h2>
-                        <p className="text-slate-400 font-ui text-sm sm:text-base">
-                          Editing profile for <span className="text-white font-bold">{adminEditingUser.username}</span>
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <form onSubmit={submitAdminAction} className="space-y-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Username</label>
-                          <input type="text" required value={adminEditUsername} onChange={e => setAdminEditUsername(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/10 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:border-white/30 transition-all shadow-inner" />
-                        </div>
-                        <div>
-                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">ID Tag</label>
-                          <div className="relative">
-                            <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 font-heading text-xl">#</span>
-                            <input type="text" maxLength={4} required value={adminEditTag} onChange={e => setAdminEditTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} className="w-full bg-obsidian-950/80 border border-white/10 rounded-2xl px-4 pl-8 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:border-white/30 transition-all shadow-inner uppercase" />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Profile Image URL</label>
-                        <input type="text" value={adminEditPhoto} onChange={e => setAdminEditPhoto(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/10 rounded-2xl px-5 py-4 font-ui text-base sm:text-lg text-slate-300 focus:outline-none focus:border-white/30 transition-all shadow-inner" placeholder="https://..." />
-                      </div>
-                      
-                      {/* ADMIN BADGE & TAG MANAGER */}
-                      <div>
-                        <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Player Tags / Badges</label>
-                        <div className="bg-obsidian-950/80 border border-white/10 rounded-2xl p-4 shadow-inner">
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {adminEditBadges.map(b => (
-                              <span key={b} className="px-3 py-1.5 bg-rose-500/20 text-rose-200 text-sm font-bold rounded-lg border border-rose-500/30 flex items-center gap-2">
-                                 {b} 
-                                 <button type="button" onClick={() => setAdminEditBadges(adminEditBadges.filter(x => x !== b))} className="text-rose-400 hover:text-white ml-1 bg-rose-500/20 rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
-                              </span>
-                            ))}
-                            {adminEditBadges.length === 0 && <span className="text-slate-500 text-sm italic py-1">No tags assigned</span>}
-                          </div>
-                          <div className="flex gap-3">
-                             <input type="text" value={newAdminBadge} onChange={e => setNewAdminBadge(e.target.value)} placeholder="e.g. Verified, Mod, VIP" className="flex-1 bg-obsidian-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/30" />
-                             <button type="button" onClick={() => { if(newAdminBadge.trim() && !adminEditBadges.includes(newAdminBadge.trim())) { setAdminEditBadges([...adminEditBadges, newAdminBadge.trim()]); setNewAdminBadge(''); } }} className="px-6 py-2.5 bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 rounded-xl text-white text-sm font-bold transition-colors">Add Tag</button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Daily Streak</label>
-                          <input type="number" required min="0" value={adminEditStreak} onChange={e => setAdminEditStreak(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/10 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-orange-400 focus:outline-none focus:border-white/30 transition-all shadow-inner" />
-                        </div>
-                        <div>
-                          <label className="block text-xs sm:text-sm font-bold font-ui tracking-widest uppercase text-slate-400 mb-2 ml-1">Account Status</label>
-                          <select value={adminEditStatus} onChange={(e) => setAdminEditStatus(e.target.value)} className="w-full bg-obsidian-950/80 border border-white/10 rounded-2xl px-5 py-4 font-ui text-lg sm:text-xl font-bold text-white focus:outline-none focus:border-white/30 transition-all shadow-inner appearance-none cursor-pointer">
-                            <option value="active">🟢 Active</option>
-                            <option value="suspended">🟡 Suspended</option>
-                            <option value="banned">🔴 Banned</option>
-                          </select>
-                        </div>
-                      </div>
-                      
-                      <div className="pt-4 mt-8 border-t border-white/10 flex justify-between items-center gap-4">
-                        <button
-                          type="button"
-                          onClick={deleteAdminUser}
-                          disabled={adminActionLoading}
-                          className="w-full sm:w-auto px-6 py-4 bg-rose-600/10 hover:bg-rose-600/20 text-rose-500 font-bold font-heading text-base sm:text-lg tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 active:scale-95 border border-rose-500/30"
-                        >
-                          Delete
-                        </button>
-                        <button disabled={adminActionLoading} type="submit" className="w-full sm:w-auto px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold font-heading text-lg sm:text-xl tracking-wider uppercase rounded-2xl transition-all disabled:opacity-50 flex justify-center active:scale-95 border border-white/20">
-                          {adminActionLoading ? (
-                            <div className="w-6 h-6 sm:w-7 sm:h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                          ) : (
-                            'Save Changes'
-                          )}
-                        </button>
-                      </div>
-                    </form>
-                 </div>
-              </div>
-            )}
 
             {/* --- AUTH MODAL --- */}
             {showAuthModal && (
