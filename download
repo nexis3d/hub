@@ -1,0 +1,55 @@
+# Apache .htaccess — Nexis Games hardened security
+# Place in site root.
+
+# ---------- Force HTTPS ----------
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ---------- Block bad bots / scrapers ----------
+RewriteCond %{HTTP_USER_AGENT} (curl|wget|python-requests|libwww-perl|httrack|nikto|sqlmap|nmap|masscan|scrapy|fuzz|nuclei) [NC]
+RewriteRule ^ - [F,L]
+
+# ---------- Block direct access to source / config / hidden files ----------
+<FilesMatch "(^\.|(\.(env|git|gitignore|htaccess|htpasswd|ini|log|sh|sql|bak|swp|old|orig|map)$)|composer\.|package\.|yarn\.|babel\.config)">
+  Require all denied
+</FilesMatch>
+
+# ---------- Disable directory listing & MultiViews ----------
+Options -Indexes -MultiViews
+ServerSignature Off
+
+# ---------- Security HTTP headers ----------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), interest-cohort=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+  Header always set Cross-Origin-Resource-Policy "same-site"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://www.gstatic.com https://esm.sh https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com https://*.google.com https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://www.googletagmanager.com https://www.googletagservices.com https://static.cloudflareinsights.com https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; media-src 'self' https: data: blob:; frame-src https://challenges.cloudflare.com https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header unset X-Powered-By
+  Header unset Server
+</IfModule>
+
+# ---------- Compression ----------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json text/xml application/xml image/svg+xml
+</IfModule>
+
+# ---------- Caching policy ----------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                            "access plus 1 month"
+  ExpiresByType text/html                   "access plus 0 seconds"
+  ExpiresByType application/javascript      "access plus 1 year"
+  ExpiresByType text/css                    "access plus 1 year"
+  ExpiresByType image/jpeg                  "access plus 1 year"
+  ExpiresByType image/png                   "access plus 1 year"
+  ExpiresByType image/webp                  "access plus 1 year"
+  ExpiresByType image/svg+xml               "access plus 1 year"
+  ExpiresByType image/x-icon                "access plus 1 year"
+  ExpiresByType font/woff2                  "access plus 1 year"
+</IfModule>
