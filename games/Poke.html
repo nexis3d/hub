@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pokémon GO Web Edition - The Ultimate RPG Update</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet Map CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=VT323&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            background-color: #0f172a;
+        }
+
+        .font-retro { font-family: 'VT323', monospace; }
+
+        #map { width: 100vw; height: 100vh; z-index: 10; }
+
+        /* Pixel Art Rendering */
+        .pixelated {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Advanced Shaders & Effects */
+        .glow-common { filter: drop-shadow(0 10px 15px rgba(255, 255, 255, 0.2)); }
+        .glow-uncommon { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.4)); }
+        .glow-rare { filter: drop-shadow(0 10px 25px rgba(59, 130, 246, 0.6)); }
+        .glow-epic { filter: drop-shadow(0 10px 30px rgba(168, 85, 247, 0.8)); }
+        .glow-legendary { filter: drop-shadow(0 10px 40px rgba(234, 179, 8, 1)) brightness(1.1); }
+        .glow-boss { filter: drop-shadow(0 10px 30px rgba(220, 38, 38, 1)) brightness(1.2); }
+        .glow-shiny { filter: drop-shadow(0 0 30px rgba(253, 224, 71, 1)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)); }
+        .glow-rocket { filter: drop-shadow(0 0 25px rgba(147, 51, 234, 1)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.8)) brightness(0.8) contrast(1.2); }
+
+        .golden-glow {
+            filter: drop-shadow(0 0 20px rgba(250, 204, 21, 1)) drop-shadow(0 0 40px rgba(250, 204, 21, 0.8));
+            animation: spin-pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        .ball-caught-success {
+            animation: final-catch-spin 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(250, 204, 21, 1)) brightness(1.5);
+        }
+
+        @keyframes final-catch-spin {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(720deg); filter: brightness(2) drop-shadow(0 0 50px white); }
+            100% { transform: scale(1) rotate(1080deg); filter: brightness(1) drop-shadow(0 0 20px gold); }
+        }
+
+        @keyframes spin-pulse {
+            0% { transform: scale(1) rotate(-5deg); filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.8)); }
+            100% { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 40px rgba(250, 204, 21, 1)); }
+        }
+
+        /* General Animations */
+        @keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .pokemon-marker { animation: bounce-soft 2s infinite ease-in-out; }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        .pokemon-float { animation: float 3.5s infinite ease-in-out; }
+
+        .pokeball-wiggle { animation: wiggle 0.8s ease-in-out infinite; }
+        @keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-20deg); } 75% { transform: rotate(20deg); } }
+
+        @keyframes catch-flash { 0% { background-color: rgba(255, 255, 255, 0); } 50% { background-color: rgba(255, 255, 255, 1); } 100% { background-color: rgba(255, 255, 255, 0); } }
+        .flash-overlay { animation: catch-flash 0.6s ease-out; }
+
+        @keyframes hit-shake { 0% { transform: translate(0, 0) scale(1); filter: brightness(1); } 20% { transform: translate(-20px, 15px) scale(0.9); filter: brightness(2) drop-shadow(0 0 20px red); } 40% { transform: translate(20px, -15px); filter: brightness(2) drop-shadow(0 0 20px red); } 60% { transform: translate(-20px, -15px); filter: brightness(2) drop-shadow(0 0 20px red); } 80% { transform: translate(20px, 15px); filter: brightness(2); } 100% { transform: translate(0, 0) scale(1); filter: brightness(1); } }
+        .hit-anim { animation: hit-shake 0.5s ease-out; }
+
+        @keyframes sparkle-burst {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(2) rotate(180deg) translate(20px, -20px); opacity: 0; }
+        }
+        .sparkle-particle { position: absolute; animation: sparkle-burst 1s ease-out forwards; }
+
+        .ui-layer { z-index: 1000; }
+        .modal-layer { z-index: 2000; }
+        .top-layer { z-index: 3000; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Map Markers */
+        .gym-marker {
+            width: 60px; height: 80px; background: linear-gradient(to bottom, #ef4444, #991b1b);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex; align-items: center; justify-content: center;
+            border: 4px solid #fca5a5; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .rocket-marker {
+            width: 50px; height: 50px; background: #111; border-radius: 50%;
+            border: 3px solid #ef4444; color: #ef4444; font-weight: 900; font-size: 28px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(220,38,38,0.8); animation: float 2.5s infinite ease-in-out;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .avatar-btn.selected { border-color: #3b82f6; background-color: #eff6ff; transform: scale(1.1); box-shadow: 0 10px 25px rgba(59,130,246,0.4); }
+
+        /* Battle Backgrounds */
+        .battle-bg-arena { background: linear-gradient(to bottom, #1e3a8a, #0f172a); }
+        .battle-floor-arena { background: radial-gradient(ellipse at center, #334155 0%, #0f172a 70%); transform: rotateX(60deg) scale(2); transform-origin: top center; }
+        
+        .battle-bg-rocket { background: linear-gradient(to bottom, #4c1d95, #000000); }
+        .battle-floor-rocket { background: radial-gradient(ellipse at center, #2e1065 0%, #000000 70%); transform: rotateX(60deg) scale(2); transform-origin: top center; }
+
+        .type-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Trainer Setup Screen -->
+    <div id="setup-screen" class="fixed inset-0 top-layer bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center flex flex-col items-center justify-center p-6 z-[4000]">
+        <div class="absolute inset-0 bg-blue-900/60 backdrop-blur-sm z-0"></div>
+        <div class="z-10 flex flex-col items-center w-full">
+            <h1 class="text-5xl font-black text-white mb-2 tracking-widest text-center drop-shadow-2xl">Pokémon GO</h1>
+            <h2 class="text-2xl text-blue-300 font-black tracking-widest uppercase mb-10 drop-shadow-lg">Ultimate RPG</h2>
+            
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl p-8 w-full max-w-sm shadow-2xl flex flex-col items-center border border-white/50">
+                <h2 class="text-2xl font-extrabold text-gray-800 mb-6 text-center">Create Trainer</h2>
+                <div class="w-full mb-6">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Trainer Name</label>
+                    <input type="text" id="trainer-name-input" placeholder="e.g. Ash Ketchum" class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-800 focus:outline-none focus:border-blue-500 transition shadow-inner" maxlength="15">
+                </div>
+                <div class="w-full mb-8">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1 text-center">Choose Avatar</label>
+                    <div class="flex justify-center space-x-6">
+                        <button onclick="selectAvatar('boy')" id="avatar-boy" class="avatar-btn selected w-20 h-20 rounded-full border-4 border-gray-200 bg-gray-50 flex items-center justify-center transition hover:scale-105">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" class="w-14 h-14">
+                        </button>
+                        <button onclick="selectAvatar('girl')" id="avatar-girl" class="avatar-btn w-20 h-20 rounded-full border-4 border-gray-200 bg-gray-50 flex items-center justify-center transition hover:scale-105">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png" class="w-14 h-14">
+                        </button>
+                    </div>
+                </div>
+                <button onclick="startGame()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-black py-4 rounded-2xl shadow-[0_10px_20px_rgba(59,130,246,0.4)] hover:scale-[1.02] active:scale-95 transition tracking-widest text-xl border-b-4 border-blue-700">START JOURNEY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gray-900 flex flex-col items-center justify-center top-layer transition-opacity duration-500 hidden z-[3500]">
+        <div class="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_30px_rgba(59,130,246,0.5)]"></div>
+        <h1 class="text-white text-2xl font-black tracking-widest text-center uppercase animate-pulse">Initializing World...</h1>
+    </div>
+
+    <!-- Main Map Container -->
+    <div id="map" class="absolute inset-0"></div>
+
+    <!-- Main HUD UI -->
+    <div id="hud" class="absolute inset-0 pointer-events-none ui-layer flex flex-col justify-between p-5 hidden">
+        <div class="flex justify-between items-start pointer-events-auto">
+            <div class="bg-white/95 backdrop-blur-xl rounded-full px-5 py-2.5 flex items-center shadow-2xl cursor-pointer hover:bg-white transition border border-gray-100 transform hover:scale-105" onclick="toggleMenu()">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center mr-3 shadow-inner border-2 border-gray-100 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-200" id="hud-avatar-bg">
+                    <img id="hud-avatar-img" src="" class="w-10 h-10 object-contain drop-shadow-sm">
+                </div>
+                <div>
+                    <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest truncate max-w-[120px]" id="hud-name">Trainer</div>
+                    <div class="text-sm font-black text-blue-600 flex items-center">Lv. <span id="trainer-level" class="ml-1 mr-2 text-gray-800">1</span> <div class="w-1 h-1 rounded-full bg-gray-300 mx-1"></div> <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png" class="w-4 h-4 mx-1"><span id="hud-candies" class="text-gray-700">10</span></div>
+                </div>
+            </div>
+            <button onclick="scanForPokemon()" class="bg-white/95 backdrop-blur hover:bg-white text-blue-500 p-4 rounded-full shadow-2xl transition transform active:scale-95 flex items-center justify-center border border-gray-100">
+                <i class="ph-bold ph-radar text-3xl animate-pulse"></i>
+            </button>
+        </div>
+        <div class="flex justify-center pb-6 pointer-events-auto relative">
+            <button onclick="toggleMenu()" class="relative group">
+                <div class="w-20 h-20 bg-gradient-to-b from-red-500 to-red-700 rounded-full shadow-[0_15px_35px_rgba(220,38,38,0.5)] border-[5px] border-white flex flex-col items-center justify-center overflow-hidden transition transform hover:scale-110 active:scale-95">
+                    <div class="w-full h-1/2"></div>
+                    <div class="w-full h-1/2 bg-gray-100"></div>
+                    <div class="absolute w-full h-1.5 bg-gray-900 top-1/2 -translate-y-1/2"></div>
+                    <div class="absolute w-7 h-7 bg-white border-[5px] border-gray-900 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-inner">
+                        <div class="w-2 h-2 bg-gray-200 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50"></div>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Encounter Screen -->
+    <div id="encounter-screen" class="fixed inset-0 modal-layer hidden flex flex-col overflow-hidden bg-sky-300">
+        <!-- Parallax Background -->
+        <div class="absolute inset-0 bg-gradient-to-b from-sky-400 to-blue-200 z-0"></div>
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" class="absolute inset-0 w-full h-[60%] object-cover opacity-40 mix-blend-overlay z-0">
+        <div class="absolute bottom-0 left-[-20%] right-[-20%] h-[45%] bg-gradient-to-t from-green-600 to-green-400 z-0 shadow-[inset_0_30px_30px_rgba(0,0,0,0.1)]" style="border-radius: 50% 50% 0 0;"></div>
+        
+        <div id="flash-effect" class="absolute inset-0 pointer-events-none z-50"></div>
+        
+        <div id="shiny-overlay" class="absolute inset-0 pointer-events-none z-10 hidden flex items-center justify-center">
+            <div class="w-64 h-64 relative animate-spin-pulse">
+                <i class="ph-fill ph-sparkle absolute top-0 left-0 text-yellow-300 text-4xl animate-ping"></i>
+                <i class="ph-fill ph-sparkle absolute bottom-0 right-0 text-yellow-400 text-5xl animate-pulse"></i>
+                <i class="ph-fill ph-sparkle absolute top-10 right-5 text-yellow-200 text-3xl animate-bounce"></i>
+            </div>
+        </div>
+
+        <!-- Success Sparkles Container -->
+        <div id="catch-sparkles" class="absolute inset-0 pointer-events-none z-40 hidden flex items-center justify-center"></div>
+
+        <div class="absolute top-0 left-0 right-0 p-6 flex justify-between items-start z-20">
+            <button onclick="fleeEncounter()" class="bg-white/90 shadow-xl p-3.5 rounded-full text-gray-600 hover:bg-white active:scale-95 transition backdrop-blur-sm">
+                <i class="ph-bold ph-sign-out text-2xl"></i>
+            </button>
+            <div class="bg-white/95 rounded-3xl px-6 py-3 text-center shadow-2xl border-2 border-white min-w-[200px] relative backdrop-blur-md">
+                <div id="enc-shiny-badge" class="hidden absolute -top-4 -right-4 bg-gradient-to-br from-yellow-300 to-orange-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg border-2 border-white transform rotate-12 uppercase tracking-widest animate-pulse">Shiny!</div>
+                <div class="flex items-center justify-center space-x-2 mb-1.5">
+                    <span class="text-[9px] font-black px-2.5 py-0.5 rounded-full text-white tracking-widest uppercase shadow-sm" id="enc-rarity">Common</span>
+                    <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded-full" id="enc-stage">Stage 1</span>
+                </div>
+                <div class="flex items-end justify-center space-x-1.5">
+                    <div class="text-2xl font-black tracking-tight text-gray-800" id="enc-name">Pokemon</div>
+                    <div class="text-[10px] font-black text-gray-400 pb-1.5" id="enc-dex">#000</div>
+                </div>
+                <div class="mt-2 flex justify-center space-x-1" id="enc-types"></div>
+                <div class="text-xs font-black text-gray-700 bg-gray-100 rounded-full px-4 py-1 mt-2 inline-block shadow-inner border border-gray-200">CP <span id="enc-cp" class="text-blue-600 text-sm">100</span></div>
+            </div>
+            <div class="w-12"></div>
+        </div>
+
+        <div id="enc-message" class="absolute top-48 left-0 right-0 text-center z-20 hidden">
+            <span class="bg-white text-gray-800 px-6 py-3 rounded-full font-black text-sm tracking-widest uppercase shadow-2xl border-2 border-gray-100 inline-block"></span>
+        </div>
+
+        <div class="flex-1 flex items-center justify-center z-10 relative mt-16">
+            <div class="relative">
+                <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-40 h-8 bg-black/25 rounded-full blur-md"></div>
+                <img id="enc-image" src="" class="w-64 h-64 object-contain pixelated pokemon-float z-10 relative drop-shadow-2xl" alt="Pokemon">
+            </div>
+        </div>
+
+        <div class="h-64 w-full relative z-20 flex flex-col items-center justify-end pb-10">
+            <div class="flex space-x-4 mb-8 bg-white/60 p-2.5 rounded-full backdrop-blur-xl shadow-lg border border-white/50" id="ball-selector"></div>
+            <div id="pokeball-btn" class="relative w-28 h-28 touch-none cursor-grab active:cursor-grabbing z-30">
+                <img id="active-ball-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" class="w-full h-full pixelated drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)] pointer-events-none">
+                <div id="golden-particles" class="absolute inset-0 hidden pointer-events-none">
+                    <div class="absolute top-0 left-0 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_gold]"></div>
+                </div>
+            </div>
+            <p id="throw-hint" class="text-gray-700 bg-white/95 px-6 py-2.5 rounded-full text-[10px] mt-6 font-black shadow-xl animate-pulse tracking-widest uppercase border border-gray-100">Spin & Swipe Up to Throw</p>
+        </div>
+    </div>
+
+    <!-- Battle Screen (Turn-Based RPG) -->
+    <div id="battle-screen" class="fixed inset-0 modal-layer hidden flex flex-col overflow-hidden bg-gray-900">
+        <div id="battle-bg-layer" class="absolute inset-0 battle-bg-arena z-0"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-full overflow-hidden z-0">
+            <div id="battle-floor-layer" class="absolute bottom-[-20%] left-[-50%] right-[-50%] h-[60%] battle-floor-arena"></div>
+        </div>
+        
+        <div class="absolute top-5 left-5 z-20">
+            <button onclick="fleeBattle()" class="bg-white/10 p-3.5 rounded-full text-white hover:bg-white/20 transition backdrop-blur-md border border-white/20 shadow-lg">
+                <i class="ph-bold ph-sign-out text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="absolute top-10 right-0 left-0 text-center z-20 text-white/50 font-black uppercase tracking-widest text-sm drop-shadow" id="battle-type-text">Gym Battle</div>
+
+        <!-- Enemy Area -->
+        <div class="absolute top-24 right-6 z-10 text-right flex flex-col items-end">
+            <div class="bg-white/95 backdrop-blur rounded-2xl p-4 border-b-4 border-gray-300 shadow-2xl mb-4 min-w-[220px]">
+                <div class="flex justify-between items-end mb-2">
+                    <div class="text-gray-800 font-black text-xl leading-none tracking-tight" id="bat-enemy-name">Boss</div>
+                    <div class="text-[10px] font-black text-gray-400 bg-gray-100 px-2 py-0.5 rounded uppercase">Enemy</div>
+                </div>
+                <div class="flex justify-end space-x-1 mb-2" id="bat-enemy-types"></div>
+                <div class="w-full bg-gray-200 h-3 rounded-full mb-1 border border-gray-300 shadow-inner overflow-hidden">
+                    <div id="bat-enemy-hp-bar" class="bg-green-500 h-full rounded-full transition-all duration-300 w-full"></div>
+                </div>
+            </div>
+            <img id="bat-enemy-img" src="" class="w-56 h-56 object-contain pixelated glow-boss drop-shadow-2xl translate-y-2">
+        </div>
+
+        <!-- Player Area -->
+        <div class="absolute bottom-72 left-6 z-10 flex flex-col items-start">
+            <img id="bat-player-img" src="" class="w-56 h-56 object-contain pixelated glow-rare drop-shadow-2xl translate-y-2">
+            <div class="bg-white/95 backdrop-blur rounded-2xl p-4 border-b-4 border-gray-300 shadow-2xl mt-4 min-w-[220px]">
+                <div class="flex justify-between items-end mb-2">
+                    <div class="text-gray-800 font-black text-xl leading-none tracking-tight" id="bat-player-name">My Pokemon</div>
+                    <div class="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Lv. <span id="bat-player-lv">1</span></div>
+                </div>
+                <div class="flex justify-start space-x-1 mb-2" id="bat-player-types"></div>
+                <div class="w-full bg-gray-200 h-3 rounded-full mb-1.5 border border-gray-300 shadow-inner overflow-hidden">
+                    <div id="bat-player-hp-bar" class="bg-green-500 h-full rounded-full transition-all duration-300 w-full"></div>
+                </div>
+                <div class="text-gray-800 text-[11px] font-black text-right tracking-widest"><span id="bat-player-hp-text">50/50</span> HP</div>
+            </div>
+        </div>
+
+        <!-- Battle UI Bottom Section -->
+        <div class="absolute bottom-0 left-0 right-0 h-64 bg-gray-900 border-t-8 border-gray-800 z-20 p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+            
+            <!-- Dialog Box -->
+            <div id="bat-dialog" class="absolute inset-3 bg-white border-4 border-gray-300 rounded-2xl p-5 flex items-center shadow-inner z-30 transition-opacity duration-200">
+                <p id="bat-dialog-text" class="text-gray-800 text-2xl font-retro uppercase leading-relaxed tracking-wide">A wild Pokémon appeared!</p>
+            </div>
+
+            <!-- Action Menu (Classic 4 Buttons) -->
+            <div id="bat-action-menu" class="absolute inset-3 grid grid-cols-2 gap-3 z-20 hidden">
+                <button onclick="showMovesMenu()" class="bg-red-500 text-white rounded-2xl font-black text-3xl border-b-8 border-red-700 hover:bg-red-400 hover:border-red-600 hover:translate-y-1 active:translate-y-2 active:border-b-0 transition-all shadow-inner tracking-widest">FIGHT</button>
+                <button onclick="batBag()" class="bg-yellow-500 text-white rounded-2xl font-black text-3xl border-b-8 border-yellow-700 hover:bg-yellow-400 hover:translate-y-1 active:translate-y-2 active:border-b-0 transition-all shadow-inner tracking-widest relative">BAG <span class="absolute top-2 right-3 text-xs bg-black/50 px-2 py-1 rounded-full"><span id="bat-potion-cnt">0</span>x</span></button>
+                <button onclick="batPokemon()" class="bg-green-500 text-white rounded-2xl font-black text-3xl border-b-8 border-green-700 hover:bg-green-400 hover:translate-y-1 active:translate-y-2 active:border-b-0 transition-all shadow-inner tracking-widest">POKéMON</button>
+                <button onclick="batRun()" class="bg-blue-500 text-white rounded-2xl font-black text-3xl border-b-8 border-blue-700 hover:bg-blue-400 hover:translate-y-1 active:translate-y-2 active:border-b-0 transition-all shadow-inner tracking-widest">RUN</button>
+            </div>
+
+            <!-- Moves Selector -->
+            <div id="bat-moves-menu" class="absolute inset-3 bg-gray-800 rounded-2xl z-30 hidden flex flex-col p-2 border-4 border-gray-700">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <div class="text-white text-sm font-black uppercase tracking-widest">Select Move</div>
+                    <button onclick="hideMovesMenu()" class="text-gray-400 hover:text-white font-black text-xs uppercase bg-gray-700 px-3 py-1 rounded">Cancel</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2 flex-1" id="bat-moves-grid"></div>
+            </div>
+
+            <!-- Roster Selector -->
+            <div id="bat-selector" class="absolute inset-3 bg-gray-900 rounded-2xl z-40 hidden flex flex-col justify-center p-2 border-4 border-gray-800">
+                <div class="text-white text-center font-black uppercase tracking-widest mb-3">Choose Fighter</div>
+                <div class="flex overflow-x-auto space-x-3 pb-2 no-scrollbar px-2" id="bat-roster"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="menu-screen" class="fixed inset-0 modal-layer hidden bg-gray-50 flex flex-col">
+        <div class="bg-white p-5 shadow-md flex flex-col z-20 border-b border-gray-200">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-3xl font-black text-gray-800 tracking-tight">Trainer Menu</h2>
+                <button onclick="toggleMenu()" class="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-full transition text-gray-600 shadow-inner">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div class="flex space-x-2 bg-gray-100 p-1.5 rounded-2xl">
+                <button onclick="switchTab('pokemon')" id="tab-pokemon" class="flex-1 py-3 bg-white text-blue-600 font-black rounded-xl shadow-sm transition text-xs tracking-wider uppercase">Pokémon</button>
+                <button onclick="switchTab('inventory')" id="tab-inventory" class="flex-1 py-3 text-gray-500 font-black rounded-xl transition hover:bg-gray-200/50 text-xs tracking-wider uppercase">Bag</button>
+                <button onclick="switchTab('arena')" id="tab-arena" class="flex-1 py-3 text-gray-500 font-black rounded-xl transition hover:bg-gray-200/50 text-xs tracking-wider uppercase">Arena</button>
+                <button onclick="switchTab('missions')" id="tab-missions" class="flex-1 py-3 text-gray-500 font-black rounded-xl transition hover:bg-gray-200/50 text-xs tracking-wider uppercase relative">Quests <span id="mission-dot" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full hidden"></span></button>
+            </div>
+        </div>
+        
+        <div id="view-pokemon" class="flex-1 overflow-y-auto p-4 grid grid-cols-3 gap-3 no-scrollbar pb-24"></div>
+        <div id="view-inventory" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 no-scrollbar pb-24 hidden"></div>
+        
+        <div id="view-arena" class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 hidden">
+            <div class="w-32 h-32 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center shadow-2xl border-8 border-white mb-8 animate-bounce-soft">
+                <i class="ph-fill ph-swords text-white text-6xl"></i>
+            </div>
+            <h3 class="text-3xl font-black text-gray-800 mb-3 tracking-tight">Battle Arena</h3>
+            <p class="text-center text-gray-500 font-bold mb-10 px-6 text-sm leading-relaxed">Fight wild trainers to earn Rare Candies and Potions for your team. Train hard!</p>
+            <button onclick="startArenaBattle()" class="w-full max-w-xs py-5 bg-gradient-to-r from-red-500 to-orange-500 hover:scale-[1.02] active:scale-95 text-white rounded-2xl font-black shadow-[0_10px_20px_rgba(239,68,68,0.4)] transition tracking-widest text-xl border-b-4 border-red-700">ENTER ARENA</button>
+        </div>
+
+        <div id="view-missions" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 no-scrollbar pb-24 hidden bg-gray-100">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg mb-2">
+                <h3 class="font-black text-2xl tracking-widest uppercase mb-1">Field Research</h3>
+                <p class="text-blue-200 text-xs font-bold">Complete tasks to earn rewards!</p>
+            </div>
+            <div id="missions-list" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- Pokemon Details Modal -->
+    <div id="details-modal" class="fixed inset-0 top-layer hidden bg-gray-900/80 backdrop-blur-md flex items-center justify-center p-5">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl flex flex-col relative border border-gray-100">
+            <button onclick="closeDetails()" class="absolute top-5 right-5 p-2.5 bg-white/80 hover:bg-white rounded-full z-10 backdrop-blur text-gray-800 transition shadow-md hover:scale-105 active:scale-95">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+            <div class="h-60 relative flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200" id="detail-bg">
+                <img id="detail-img" src="" class="w-40 h-40 pixelated pokemon-float drop-shadow-2xl z-10">
+                <div class="absolute bottom-5 left-6 bg-white/95 backdrop-blur text-gray-800 px-4 py-1.5 rounded-full text-sm font-black shadow-lg tracking-widest" id="detail-cp">CP 100</div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 class="text-3xl font-black text-gray-800 leading-none tracking-tight" id="detail-name">Name</h3>
+                            <span id="detail-shiny-tag" class="hidden bg-gradient-to-r from-yellow-300 to-yellow-500 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-sm">SHINY</span>
+                        </div>
+                        <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2"><span id="detail-dex">#000</span> • <span id="detail-stage">Stage 1</span></div>
+                    </div>
+                    <span class="text-[10px] font-black px-3 py-1.5 rounded-full text-white uppercase tracking-widest shadow-sm" id="detail-rarity">Common</span>
+                </div>
+                
+                <div class="flex space-x-2 mb-5" id="detail-types"></div>
+
+                <div class="mb-5 bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner">
+                    <div class="flex justify-between text-xs font-black text-gray-500 mb-2.5 uppercase tracking-widest">
+                        <span>HP</span><span id="detail-hp-text">50 / 50</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner"><div id="detail-hp-bar" class="bg-green-500 h-full transition-all duration-500"></div></div>
+                </div>
+
+                <div class="mt-auto space-y-3 pt-2">
+                    <button id="btn-evolve" onclick="evolvePokemon()" class="hidden w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:scale-[1.02] text-white rounded-2xl font-black shadow-[0_5px_15px_rgba(168,85,247,0.4)] flex items-center justify-center transition active:scale-95 border-b-4 border-purple-700 tracking-widest text-lg">
+                        <i class="ph-bold ph-sparkle text-2xl mr-2"></i> EVOLVE <span class="text-purple-200 text-xs ml-2 font-black">(<span id="detail-ev-cost">25</span> C)</span>
+                    </button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="powerUpPokemon()" class="py-4 bg-blue-500 hover:bg-blue-400 text-white rounded-2xl font-black shadow-[0_5px_15px_rgba(59,130,246,0.3)] flex items-center justify-center transition active:scale-95 border-b-4 border-blue-700">
+                            <i class="ph-bold ph-arrow-fat-up mr-2 text-xl"></i> Power <span class="text-blue-200 text-[10px] ml-1 font-black">(<span id="detail-cost">2</span>)</span>
+                        </button>
+                        <button onclick="healPokemon()" id="btn-heal" class="py-4 bg-green-500 hover:bg-green-400 text-white rounded-2xl font-black shadow-[0_5px_15px_rgba(34,197,94,0.3)] flex items-center justify-center transition active:scale-95 border-b-4 border-green-700">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png" class="w-6 h-6 pixelated mr-2"> Heal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="fixed top-24 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-md text-white px-8 py-4 top-layer transform -translate-y-40 opacity-0 transition-all duration-400 flex items-center rounded-full shadow-2xl border-2 border-gray-700 pointer-events-none z-[5000]">
+        <i class="ph-fill ph-info text-blue-400 text-2xl mr-3"></i>
+        <span id="notif-text" class="text-sm font-black tracking-widest uppercase"></span>
+    </div>
+
+    <script>
+        // --- DATA & CONFIG ---
+        
+        // Colors for types
+        const TYPE_COLORS = {
+            normal: '#A8A77A', fire: '#EE8130', water: '#6390F0', electric: '#F7D02C', grass: '#7AC74C',
+            ice: '#96D9D6', fighting: '#C22E28', poison: '#A33EA1', ground: '#E2BF65', flying: '#A98FF3',
+            psychic: '#F95587', bug: '#A6B91A', rock: '#B6A136', ghost: '#735797', dragon: '#6F35FC',
+            dark: '#705746', steel: '#B7B7CE', fairy: '#D685AD'
+        };
+
+        // Simplified Type Effectiveness (Attack Type -> Defender Type Multiplier)
+        // 2.0 = Super Effective, 0.5 = Not Very Effective. Default = 1.0
+        const TYPE_CHART = {
+            fire: { grass: 2.0, bug: 2.0, ice: 2.0, steel: 2.0, water: 0.5, rock: 0.5, fire: 0.5, dragon: 0.5 },
+            water: { fire: 2.0, ground: 2.0, rock: 2.0, grass: 0.5, dragon: 0.5, water: 0.5 },
+            grass: { water: 2.0, ground: 2.0, rock: 2.0, fire: 0.5, grass: 0.5, poison: 0.5, flying: 0.5, bug: 0.5, dragon: 0.5, steel: 0.5 },
+            electric: { water: 2.0, flying: 2.0, grass: 0.5, electric: 0.5, dragon: 0.5, ground: 0.0 },
+            ground: { fire: 2.0, electric: 2.0, poison: 2.0, rock: 2.0, steel: 2.0, grass: 0.5, bug: 0.5, flying: 0.0 },
+            rock: { fire: 2.0, ice: 2.0, flying: 2.0, bug: 2.0, fighting: 0.5, ground: 0.5, steel: 0.5 },
+            fighting: { normal: 2.0, ice: 2.0, rock: 2.0, dark: 2.0, steel: 2.0, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, ghost: 0.0, fairy: 0.5 },
+            psychic: { fighting: 2.0, poison: 2.0, psychic: 0.5, steel: 0.5, dark: 0.0 },
+            ghost: { psychic: 2.0, ghost: 2.0, dark: 0.5, normal: 0.0 },
+            dragon: { dragon: 2.0, steel: 0.5, fairy: 0.0 },
+            dark: { psychic: 2.0, ghost: 2.0, fighting: 0.5, dark: 0.5, fairy: 0.5 },
+            fairy: { fighting: 2.0, dragon: 2.0, dark: 2.0, poison: 0.5, steel: 0.5, fire: 0.5 },
+            poison: { grass: 2.0, fairy: 2.0, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0.0 },
+            flying: { grass: 2.0, fighting: 2.0, bug: 2.0, electric: 0.5, rock: 0.5, steel: 0.5 },
+            bug: { grass: 2.0, psychic: 2.0, dark: 2.0, fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5, steel: 0.5, fairy: 0.5 },
+            ice: { grass: 2.0, ground: 2.0, flying: 2.0, dragon: 2.0, fire: 0.5, water: 0.5, ice: 0.5, steel: 0.5 },
+            steel: { ice: 2.0, rock: 2.0, fairy: 2.0, fire: 0.5, water: 0.5, electric: 0.5, steel: 0.5 },
+            normal: { rock: 0.5, steel: 0.5, ghost: 0.0 }
+        };
+
+        // Moves DB (Generic moves assigned by type)
+        const MOVES = {
+            normal: [{name: 'Tackle', pwr: 40}, {name: 'Quick Attack', pwr: 40}, {name: 'Slam', pwr: 80}],
+            fire: [{name: 'Ember', pwr: 40}, {name: 'Flamethrower', pwr: 90}, {name: 'Fire Blast', pwr: 110}],
+            water: [{name: 'Water Gun', pwr: 40}, {name: 'Surf', pwr: 90}, {name: 'Hydro Pump', pwr: 110}],
+            grass: [{name: 'Vine Whip', pwr: 45}, {name: 'Razor Leaf', pwr: 55}, {name: 'Solar Beam', pwr: 120}],
+            electric: [{name: 'Thunder Shock', pwr: 40}, {name: 'Thunderbolt', pwr: 90}, {name: 'Thunder', pwr: 110}],
+            ice: [{name: 'Powder Snow', pwr: 40}, {name: 'Ice Beam', pwr: 90}, {name: 'Blizzard', pwr: 110}],
+            fighting: [{name: 'Karate Chop', pwr: 50}, {name: 'Cross Chop', pwr: 100}, {name: 'Close Combat', pwr: 120}],
+            poison: [{name: 'Poison Sting', pwr: 30}, {name: 'Sludge Bomb', pwr: 90}, {name: 'Gunk Shot', pwr: 120}],
+            ground: [{name: 'Mud-Slap', pwr: 20}, {name: 'Earthquake', pwr: 100}, {name: 'Earth Power', pwr: 90}],
+            flying: [{name: 'Peck', pwr: 35}, {name: 'Air Slash', pwr: 75}, {name: 'Brave Bird', pwr: 120}],
+            psychic: [{name: 'Confusion', pwr: 50}, {name: 'Psychic', pwr: 90}, {name: 'Future Sight', pwr: 120}],
+            bug: [{name: 'Bug Bite', pwr: 60}, {name: 'X-Scissor', pwr: 80}, {name: 'Megahorn', pwr: 120}],
+            rock: [{name: 'Rock Throw', pwr: 50}, {name: 'Rock Slide', pwr: 75}, {name: 'Stone Edge', pwr: 100}],
+            ghost: [{name: 'Lick', pwr: 30}, {name: 'Shadow Ball', pwr: 80}, {name: 'Hex', pwr: 65}],
+            dragon: [{name: 'Dragon Breath', pwr: 60}, {name: 'Dragon Claw', pwr: 80}, {name: 'Outrage', pwr: 120}],
+            dark: [{name: 'Bite', pwr: 60}, {name: 'Crunch', pwr: 80}, {name: 'Dark Pulse', pwr: 80}],
+            steel: [{name: 'Metal Claw', pwr: 50}, {name: 'Iron Head', pwr: 80}, {name: 'Flash Cannon', pwr: 80}],
+            fairy: [{name: 'Fairy Wind', pwr: 40}, {name: 'Dazzling Gleam', pwr: 80}, {name: 'Moonblast', pwr: 95}]
+        };
+
+        const EVOLUTIONS = {
+            1: {to: 2, cost: 25}, 2: {to: 3, cost: 100}, 4: {to: 5, cost: 25}, 5: {to: 6, cost: 100}, 
+            7: {to: 8, cost: 25}, 8: {to: 9, cost: 100}, 10: {to: 11, cost: 12}, 11: {to: 12, cost: 50}, 
+            13: {to: 14, cost: 12}, 14: {to: 15, cost: 50}, 16: {to: 17, cost: 12}, 17: {to: 18, cost: 50}, 
+            25: {to: 26, cost: 50}, 133: {to: 134, cost: 25}, 147: {to: 148, cost: 25}, 148: {to: 149, cost: 100}
+        };
+
+        const POOLS = {
+            Common: { prob: 0.75, list: [{id:10,st:1},{id:13,st:1},{id:16,st:1},{id:41,st:1},{id:1,st:1},{id:4,st:1},{id:7,st:1},{id:29,st:1}], color: 'bg-gray-400', glow: 'glow-common', baseCp: 50 },
+            Uncommon: { prob: 0.18, list: [{id:11,st:2},{id:14,st:2},{id:17,st:2},{id:2,st:2},{id:5,st:2},{id:8,st:2},{id:25,st:1},{id:133,st:1},{id:147,st:1}], color: 'bg-green-500', glow: 'glow-uncommon', baseCp: 150 },
+            Rare: { prob: 0.05, list: [{id:3,st:3},{id:6,st:3},{id:9,st:3},{id:12,st:3},{id:15,st:3},{id:18,st:3},{id:148,st:2}], color: 'bg-blue-500', glow: 'glow-rare', baseCp: 400 },
+            Epic: { prob: 0.015, list: [{id:149,st:3},{id:134,st:2},{id:143,st:1},{id:130,st:2}], color: 'bg-purple-500', glow: 'glow-epic', baseCp: 800 },
+            Legendary: { prob: 0.005, list: [{id:150,st:'Legendary'},{id:151,st:'Mythical'},{id:249,st:'Legendary'},{id:384,st:'Legendary'}], color: 'bg-yellow-500', glow: 'glow-legendary', baseCp: 1500 }
+        };
+
+        // ROCKET POOL
+        const ROCKET_POOL = [41, 109, 110, 23, 24]; // Zubat, Koffing, Weezing, Ekans, Arbok
+
+        let player = {
+            name: "Trainer", avatar: "boy", level: 1, candies: 50,
+            inventory: {
+                pokeball: { name: "Poké Ball", count: 20, catchRate: 1.0, img: "poke-ball" },
+                greatball: { name: "Great Ball", count: 10, catchRate: 1.5, img: "great-ball" },
+                ultraball: { name: "Ultra Ball", count: 5, catchRate: 2.0, img: "ultra-ball" },
+                potion: { name: "Potion", count: 15, heal: 50, img: "potion" }
+            },
+            pokemon: [],
+            stats: { caught: 0, battles: 0, rocket: 0 },
+            missions: [
+                { id: 'm1', desc: "Catch 3 Pokémon", target: 3, progress: 0, rewardType: "candies", rewardAmt: 15, type: "caught", claimed: false },
+                { id: 'm2', desc: "Win 2 Arena Battles", target: 2, progress: 0, rewardType: "potion", rewardAmt: 5, type: "battles", claimed: false },
+                { id: 'm3', desc: "Defeat 1 Rocket Grunt", target: 1, progress: 0, rewardType: "ultraball", rewardAmt: 3, type: "rocket", claimed: false }
+            ]
+        };
+
+        // State Variables
+        let map, userMarker, userLocation = null;
+        let activeMarkers = [], gymMarkers = [], rocketMarkers = [];
+        let currentEncounter = null, activeBall = 'pokeball', isCatching = false, inspectedPokemonId = null;
+        let isDragging = false, startX=0, startY=0, currX=0, currY=0, dragPoints = [], isGoldenSpin = false;
+        let battleState = { active: false, type: null, enemy: null, playerPokeId: null, isEnemyTurn: false };
+
+        // --- SETUP ---
+        function selectAvatar(type) {
+            player.avatar = type;
+            document.getElementById('avatar-boy').classList.remove('selected');
+            document.getElementById('avatar-girl').classList.remove('selected');
+            document.getElementById(`avatar-${type}`).classList.add('selected');
+        }
+
+        async function startGame() {
+            const nameInput = document.getElementById('trainer-name-input').value.trim();
+            if(nameInput) player.name = nameInput;
+            document.getElementById('hud-name').innerText = player.name;
+            document.getElementById('hud-avatar-img').src = player.avatar === 'boy' ? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png' : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png';
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+            await initGame();
+        }
+
+        async function initGame() {
+            updateHUD(); updateMissionsUI(); initDrag();
+            try {
+                userLocation = await new Promise((res, rej) => {
+                    if (!navigator.geolocation) rej('No Geo');
+                    navigator.geolocation.getCurrentPosition(p => res([p.coords.latitude, p.coords.longitude]), e => rej(e), { enableHighAccuracy: true, timeout: 5000 });
+                });
+            } catch (err) {
+                userLocation = [37.7749, -122.4194]; 
+                showNotification("GPS Off. Using default map zone.");
+            }
+            initMap();
+            await scanForPokemon();
+            spawnPOIs(); // Gyms & Rocket
+            document.getElementById('loading-screen').classList.add('opacity-0');
+            setTimeout(() => { document.getElementById('loading-screen').classList.add('hidden'); document.getElementById('hud').classList.remove('hidden'); }, 500);
+        }
+
+        function initMap() {
+            map = L.map('map', { zoomControl: false, attributionControl: false }).setView(userLocation, 17);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
+            const userIcon = L.divIcon({ className: '', html: `<div class="w-8 h-8 bg-blue-500 border-[4px] border-white rounded-full shadow-xl relative"><div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-60"></div></div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
+            userMarker = L.marker(userLocation, { icon: userIcon }).addTo(map);
+        }
+
+        // --- ENCOUNTERS & SWIPING ---
+        function initDrag() {
+            const ballElem = document.getElementById('pokeball-btn');
+            if(!ballElem) return;
+            const evts = { start: ['touchstart', 'mousedown'], move: ['touchmove', 'mousemove'], end: ['touchend', 'mouseup'] };
+            
+            evts.start.forEach(evt => ballElem.addEventListener(evt, e => {
+                if (isCatching || !currentEncounter) return;
+                isDragging = true;
+                const pos = e.changedTouches ? e.changedTouches[0] : e;
+                startX = pos.clientX; startY = pos.clientY; currX = startX; currY = startY;
+                ballElem.style.transition = 'none'; dragPoints = []; isGoldenSpin = false;
+                
+                const gp = document.getElementById('golden-particles'); if(gp) gp.classList.add('hidden');
+                ballElem.classList.remove('golden-glow');
+            }, {passive: false}));
+
+            evts.move.forEach(evt => document.addEventListener(evt, e => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const pos = e.changedTouches ? e.changedTouches[0] : e;
+                currX = pos.clientX; currY = pos.clientY;
+                ballElem.style.transform = `translate(${currX - startX}px, ${currY - startY}px)`;
+                dragPoints.push({x: currX, y: currY});
+                if(dragPoints.length > 20) dragPoints.shift();
+
+                let dist = 0;
+                for(let i=1; i<dragPoints.length; i++) dist += Math.hypot(dragPoints[i].x - dragPoints[i-1].x, dragPoints[i].y - dragPoints[i-1].y);
+                if (dist > 300 && !isGoldenSpin) { 
+                    isGoldenSpin = true; ballElem.classList.add('golden-glow');
+                    const gp = document.getElementById('golden-particles'); if(gp) gp.classList.remove('hidden');
+                }
+            }, {passive: false}));
+
+            evts.end.forEach(evt => document.addEventListener(evt, e => {
+                if (!isDragging) return;
+                isDragging = false;
+                if ((currY - startY) < -40) throwPokeball(currY - startY);
+                else resetPokeball();
+            }));
+        }
+
+        async function scanForPokemon() {
+            showNotification("Scanning area...");
+            activeMarkers.forEach(m => map.removeLayer(m)); activeMarkers = [];
+            for (let i = 0; i < Math.floor(Math.random() * 4) + 3; i++) {
+                let rarity = 'Common', acc = 0, roll = Math.random();
+                for (const [r, data] of Object.entries(POOLS)) { acc += data.prob; if (roll <= acc) { rarity = r; break; } }
+                const pokeObj = POOLS[rarity].list[Math.floor(Math.random() * POOLS[rarity].list.length)];
+                fetchAndSpawn(pokeObj.id, rarity, pokeObj.st, false);
+            }
+        }
+
+        function spawnPOIs() {
+            // Gyms
+            for(let i=0; i<2; i++) {
+                const icon = L.divIcon({ className: '', html: `<div class="gym-marker"><i class="ph-fill ph-crown text-white text-3xl"></i></div>`, iconSize: [60,80], iconAnchor: [30,80] });
+                const marker = L.marker([userLocation[0] + (Math.random()-0.5)*0.006, userLocation[1] + (Math.random()-0.5)*0.006], { icon }).addTo(map);
+                marker.on('click', () => startGymBattle()); gymMarkers.push(marker);
+            }
+            // Team Rocket
+            if(Math.random() > 0.3) {
+                const icon = L.divIcon({ className: '', html: `<div class="rocket-marker">R</div>`, iconSize: [50,50], iconAnchor: [25,25] });
+                const marker = L.marker([userLocation[0] + (Math.random()-0.5)*0.005, userLocation[1] + (Math.random()-0.5)*0.005], { icon }).addTo(map);
+                marker.on('click', () => { startRocketBattle(); map.removeLayer(marker); }); rocketMarkers.push(marker);
+            }
+        }
+
+        function generateMoves(types) {
+            let assigned = [];
+            // Basic normal
+            assigned.push(MOVES['normal'][Math.floor(Math.random() * MOVES['normal'].length)]);
+            // Type specifics
+            types.forEach(t => {
+                if(MOVES[t]) assigned.push(MOVES[t][Math.floor(Math.random() * MOVES[t].length)]);
+            });
+            // Ensure unique
+            assigned = assigned.filter((v,i,a)=>a.findIndex(t=>(t.name===v.name))===i);
+            // Ensure at least 2 moves
+            if(assigned.length < 2 && types[0] && MOVES[types[0]]) assigned.push(MOVES[types[0]][Math.floor(Math.random() * MOVES[types[0]].length)]);
+            return assigned;
+        }
+
+        async function fetchAndSpawn(dexId, rarity, stage, battleContext, callback) {
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${dexId}`); const data = await res.json();
+                const anims = data.sprites?.versions?.['generation-v']?.['black-white']?.animated;
+                
+                let isShiny = false;
+                let rData = POOLS[rarity] || POOLS['Common'];
+                
+                if(!battleContext) isShiny = (Math.random() < 0.05);
+                
+                const imgFront = isShiny ? (anims?.front_shiny || data.sprites?.front_shiny) : (anims?.front_default || data.sprites?.front_default);
+                const imgBack = isShiny ? (anims?.back_shiny || data.sprites?.back_shiny) : (anims?.back_default || data.sprites?.back_default);
+
+                let cp = rData.baseCp + Math.floor(Math.random() * (rData.baseCp * 0.8));
+                if(battleContext === 'Boss') cp = Math.floor(cp * 2.5);
+                if(battleContext === 'Rocket') cp = Math.floor(cp * 1.5);
+
+                const types = data.types.map(t => t.type.name);
+                const moves = generateMoves(types);
+
+                const pokemonData = {
+                    id: crypto.randomUUID(), dexId: data.id, name: data.name.charAt(0).toUpperCase() + data.name.slice(1),
+                    image: imgFront, imageBack: imgBack,
+                    rarity, stage, cp, hp: Math.floor(cp / 4) + 20, maxHp: Math.floor(cp / 4) + 20, isShiny,
+                    types: types, moves: moves, isBoss: battleContext === 'Boss', isRocket: battleContext === 'Rocket'
+                };
+
+                if (battleContext) { callback(pokemonData); return; }
+
+                const glowCls = isShiny ? 'glow-shiny' : rData.glow;
+                const icon = L.divIcon({ className: '', html: `<img src="${pokemonData.image}" class="w-16 h-16 pokemon-marker pixelated cursor-pointer ${glowCls}">`, iconSize: [64,64], iconAnchor: [32,64] });
+                const marker = L.marker([userLocation[0]+(Math.random()-0.5)*0.003, userLocation[1]+(Math.random()-0.5)*0.003], { icon }).addTo(map);
+                marker.on('click', () => startEncounter(pokemonData, marker)); activeMarkers.push(marker);
+            } catch(e) { console.error(e); }
+        }
+
+        function createTypeBadges(types) {
+            return types.map(t => `<span class="type-badge" style="background-color: ${TYPE_COLORS[t]||'#666'}">${t}</span>`).join('');
+        }
+
+        function startEncounter(pokemon, markerRef = null) {
+            if (isCatching) return;
+            currentEncounter = { ...pokemon, markerRef };
+            document.getElementById('enc-name').innerText = pokemon.name;
+            document.getElementById('enc-dex').innerText = `#${pokemon.dexId.toString().padStart(3,'0')}`;
+            document.getElementById('enc-cp').innerText = pokemon.cp;
+            document.getElementById('enc-types').innerHTML = createTypeBadges(pokemon.types);
+            document.getElementById('enc-rarity').innerText = pokemon.rarity;
+            document.getElementById('enc-rarity').className = `text-[9px] font-black px-2.5 py-0.5 rounded-full text-white tracking-widest uppercase shadow-sm ${POOLS[pokemon.rarity].color}`;
+            document.getElementById('enc-stage').innerText = typeof pokemon.stage === 'number' ? `Stage ${pokemon.stage}` : pokemon.stage;
+            
+            const img = document.getElementById('enc-image'); img.src = pokemon.image;
+            img.className = `w-64 h-64 object-contain pixelated pokemon-float z-10 relative drop-shadow-2xl ${pokemon.isShiny ? 'glow-shiny' : ''}`;
+            
+            if(pokemon.isShiny) { document.getElementById('shiny-overlay').classList.remove('hidden'); document.getElementById('enc-shiny-badge').classList.remove('hidden'); } 
+            else { document.getElementById('shiny-overlay').classList.add('hidden'); document.getElementById('enc-shiny-badge').classList.add('hidden'); }
+
+            renderBallSelector(); resetPokeball();
+            document.getElementById('enc-message').classList.add('hidden');
+            document.getElementById('encounter-screen').classList.remove('hidden');
+            document.getElementById('hud').classList.add('hidden');
+        }
+
+        function fleeEncounter() {
+            isCatching = false; currentEncounter = null; resetPokeball();
+            document.getElementById('encounter-screen').classList.add('hidden'); document.getElementById('hud').classList.remove('hidden');
+        }
+
+        function resetPokeball() {
+            const ballElem = document.getElementById('pokeball-btn');
+            if(!ballElem) return;
+            ballElem.style.transition = 'transform 0.4s ease-out'; ballElem.style.transform = 'translate(0, 0) scale(1) rotate(0deg)';
+            ballElem.classList.remove('pokeball-throw', 'pokeball-wiggle', 'golden-glow', 'ball-caught-success');
+            const gp = document.getElementById('golden-particles'); if(gp) gp.classList.add('hidden');
+            const img = document.getElementById('enc-image'); if(img) { img.style.opacity = '1'; img.style.transform = 'scale(1)'; }
+            const hint = document.getElementById('throw-hint'); if(hint) hint.classList.remove('hidden');
+            document.getElementById('catch-sparkles').innerHTML = ''; document.getElementById('catch-sparkles').classList.add('hidden');
+            isGoldenSpin = false;
+        }
+
+        function spawnCatchSparkles() {
+            const container = document.getElementById('catch-sparkles');
+            container.innerHTML = ''; container.classList.remove('hidden');
+            for(let i=0; i<15; i++) {
+                const s = document.createElement('i');
+                s.className = `ph-fill ph-sparkle text-yellow-300 sparkle-particle drop-shadow-[0_0_10px_white]`;
+                s.style.fontSize = `${Math.random()*30+10}px`;
+                s.style.left = `calc(50% + ${(Math.random()-0.5)*150}px)`;
+                s.style.top = `calc(50% + ${(Math.random()-0.5)*150}px)`;
+                s.style.animationDelay = `${Math.random()*0.5}s`;
+                container.appendChild(s);
+            }
+        }
+
+        async function throwPokeball(dy) {
+            if (isCatching || !currentEncounter) return;
+            if (player.inventory[activeBall].count <= 0) { setMsg("enc", "Out of this ball!", "text-red-500"); resetPokeball(); return; }
+
+            isCatching = true; player.inventory[activeBall].count--; renderBallSelector();
+            document.getElementById('throw-hint').classList.add('hidden'); document.getElementById('enc-message').classList.add('hidden');
+            
+            const ballElem = document.getElementById('pokeball-btn'); const pokeImg = document.getElementById('enc-image');
+            ballElem.style.transition = 'transform 0.6s cubic-bezier(0.2, 0.8, 0.3, 1)';
+            ballElem.style.transform = `translate(0, ${dy - 100}px) scale(0.4) rotate(720deg)`;
+            await sleep(600);
+
+            pokeImg.style.transition = "all 0.3s ease-in"; pokeImg.style.transform = "scale(0)"; pokeImg.style.opacity = "0";
+            const flash = document.getElementById('flash-effect'); flash.classList.remove('flash-overlay'); void flash.offsetWidth; flash.classList.add('flash-overlay');
+            await sleep(300);
+
+            ballElem.style.transition = "transform 0.4s ease-in"; ballElem.style.transform = 'translate(0, -30px) scale(0.4)';
+            await sleep(400); ballElem.style.transition = ""; ballElem.classList.add('pokeball-wiggle');
+
+            let base = 0.5;
+            if(currentEncounter.rarity === 'Uncommon') base = 0.35;
+            if(currentEncounter.rarity === 'Rare') base = 0.25;
+            if(currentEncounter.rarity === 'Epic') base = 0.15;
+            if(currentEncounter.rarity === 'Legendary') base = 0.05;
+
+            const finalRate = Math.min(0.99, base * player.inventory[activeBall].catchRate * (isGoldenSpin ? 2.5 : 1.0));
+            const caught = Math.random() <= finalRate;
+
+            await sleep(2400); ballElem.classList.remove('pokeball-wiggle');
+
+            if (caught) {
+                ballElem.classList.add('ball-caught-success');
+                spawnCatchSparkles();
+                const cGain = Math.floor(Math.random() * 3) + (isGoldenSpin ? 2 : 1) + (currentEncounter.isShiny ? 5 : 0);
+                player.candies += cGain; player.pokemon.push({ ...currentEncounter, date: new Date().toLocaleDateString() });
+                trackMission('caught', 1);
+                
+                setMsg("enc", isGoldenSpin ? `EXCELLENT! +${cGain} Candy` : `Caught! +${cGain} Candy`, "text-green-600");
+                updateHUD();
+                if (currentEncounter.markerRef) { map.removeLayer(currentEncounter.markerRef); activeMarkers = activeMarkers.filter(m => m !== currentEncounter.markerRef); }
+                await sleep(2500); fleeEncounter();
+            } else {
+                ballElem.style.transform = 'translate(0, 100px) scale(0)';
+                flash.classList.remove('flash-overlay'); void flash.offsetWidth; flash.classList.add('flash-overlay');
+                pokeImg.style.transform = "scale(1)"; pokeImg.style.opacity = "1";
+                setMsg("enc", "Oh no! It broke free!", "text-red-600"); await sleep(1500);
+                
+                if (Math.random() < (currentEncounter.rarity === 'Legendary' ? 0.4 : 0.15)) {
+                    setMsg("enc", "It fled!", "text-gray-500");
+                    if (currentEncounter.markerRef) map.removeLayer(currentEncounter.markerRef);
+                    await sleep(2000); fleeEncounter();
+                } else { resetPokeball(); isCatching = false; }
+            }
+        }
+
+        function renderBallSelector() {
+            const c = document.getElementById('ball-selector'); c.innerHTML = '';
+            ['pokeball', 'greatball', 'ultraball'].forEach(k => {
+                const i = player.inventory[k];
+                const active = activeBall === k ? 'border-blue-400 bg-white scale-110 shadow-lg' : 'border-transparent bg-transparent opacity-60';
+                c.innerHTML += `<button onclick="activeBall='${k}'; renderBallSelector();" class="p-1.5 rounded-full border-[3px] transition ${active} flex flex-col items-center"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${i.img}.png" class="w-8 h-8 pixelated"><span class="text-[9px] text-gray-800 font-black mt-1 tracking-widest">x${i.count}</span></button>`;
+            });
+            document.getElementById('active-ball-img').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${player.inventory[activeBall].img}.png`;
+        }
+
+        // --- BATTLE SYSTEM ---
+        function startGymBattle() {
+            if (player.pokemon.length === 0) return showNotification("You need to catch a Pokémon first!");
+            const bossDef = Math.random() > 0.5 ? POOLS.Epic.list[Math.floor(Math.random() * POOLS.Epic.list.length)] : POOLS.Legendary.list[Math.floor(Math.random() * POOLS.Legendary.list.length)];
+            fetchAndSpawn(bossDef.id, 'Epic', 'Boss', 'Boss', (bossData) => {
+                initBattleState('Gym Boss', bossData, 'arena');
+            });
+        }
+
+        function startArenaBattle() {
+            if (player.pokemon.length === 0) return showNotification("Catch a Pokémon first!");
+            const oppDef = POOLS.Rare.list[Math.floor(Math.random() * POOLS.Rare.list.length)];
+            fetchAndSpawn(oppDef.id, 'Rare', 'Trainer', 'Arena', (oppData) => {
+                oppData.cp = Math.floor(Math.max(...player.pokemon.map(p=>p.cp)) * (0.8 + Math.random()*0.4));
+                oppData.hp = oppData.maxHp = Math.floor(oppData.cp/4) + 20;
+                initBattleState('Arena Match', oppData, 'arena');
+            });
+        }
+
+        function startRocketBattle() {
+            if (player.pokemon.length === 0) return showNotification("Catch a Pokémon first!");
+            const oppId = ROCKET_POOL[Math.floor(Math.random() * ROCKET_POOL.length)];
+            fetchAndSpawn(oppId, 'Uncommon', 'Rocket', 'Rocket', (oppData) => {
+                oppData.name = "Shadow " + oppData.name;
+                initBattleState('Team Rocket', oppData, 'rocket');
+            });
+        }
+
+        function initBattleState(type, enemyData, bgTheme) {
+            battleState = { active: true, type, enemy: enemyData, playerPokeId: null, isEnemyTurn: false };
+            
+            document.getElementById('battle-bg-layer').className = `absolute inset-0 z-0 battle-bg-${bgTheme}`;
+            document.getElementById('battle-floor-layer').className = `absolute bottom-[-20%] left-[-50%] right-[-50%] h-[60%] battle-floor-${bgTheme}`;
+            
+            document.getElementById('battle-type-text').innerText = type;
+            document.getElementById('bat-enemy-name').innerText = enemyData.name;
+            document.getElementById('bat-enemy-types').innerHTML = createTypeBadges(enemyData.types);
+            document.getElementById('bat-enemy-img').src = enemyData.image;
+            document.getElementById('bat-enemy-img').className = `w-56 h-56 object-contain pixelated translate-y-2 ${enemyData.isRocket ? 'glow-rocket' : (enemyData.isBoss ? 'glow-boss' : 'drop-shadow-2xl')}`;
+            updateBatHP('enemy');
+
+            document.getElementById('hud').classList.add('hidden'); document.getElementById('menu-screen').classList.add('hidden'); document.getElementById('battle-screen').classList.remove('hidden');
+            hideBatMenu(); batPokemon(); 
+            
+            document.getElementById('bat-player-img').src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; 
+            document.getElementById('bat-player-name').innerText = "Waiting..."; document.getElementById('bat-player-hp-text').innerText = "-";
+            document.getElementById('bat-player-types').innerHTML = "";
+            document.getElementById('bat-player-lv').innerText = "-";
+        }
+
+        function selectFighter(id, isSwitch = false) {
+            battleState.playerPokeId = id;
+            const p = player.pokemon.find(x => x.id === id);
+            document.getElementById('bat-player-name').innerText = p.name;
+            document.getElementById('bat-player-types').innerHTML = createTypeBadges(p.types);
+            document.getElementById('bat-player-lv').innerText = Math.floor(p.cp / 100) + 1;
+            document.getElementById('bat-player-img').src = p.imageBack || p.image; 
+            updateBatHP('player');
+            document.getElementById('bat-selector').classList.add('hidden');
+            document.getElementById('bat-potion-cnt').innerText = player.inventory.potion.count;
+            
+            if(isSwitch && battleState.enemy) {
+                (async () => { await batLog(`Go! ${p.name}!`); await enemyTurn(); })();
+            } else {
+                (async () => { await batLog(`${battleState.enemy.name} appears!`); await batLog(`Go! ${p.name}!`); showBatMenu(); })();
+            }
+        }
+
+        function updateBatHP(target) {
+            const data = target === 'enemy' ? battleState.enemy : player.pokemon.find(x=>x.id===battleState.playerPokeId);
+            if(!data) return;
+            const pct = Math.max(0, (data.hp / data.maxHp) * 100);
+            const bar = document.getElementById(`bat-${target}-hp-bar`);
+            bar.style.width = `${pct}%`;
+            bar.className = `h-full rounded-full transition-all duration-300 ${pct > 50 ? 'bg-green-500' : (pct > 20 ? 'bg-yellow-500' : 'bg-red-500')}`;
+            if(target === 'player') document.getElementById('bat-player-hp-text').innerText = `${data.hp}/${data.maxHp}`;
+        }
+
+        function showBatMenu() { document.getElementById('bat-action-menu').classList.remove('hidden'); document.getElementById('bat-dialog').classList.add('hidden'); document.getElementById('bat-moves-menu').classList.add('hidden'); }
+        function hideBatMenu() { document.getElementById('bat-action-menu').classList.add('hidden'); }
+
+        async function batLog(msg) {
+            const dialog = document.getElementById('bat-dialog'); const text = document.getElementById('bat-dialog-text');
+            dialog.classList.remove('hidden'); text.innerText = msg;
+            await sleep(1500);
+        }
+
+        function showMovesMenu() {
+            hideBatMenu(); document.getElementById('bat-dialog').classList.add('hidden');
+            const p = player.pokemon.find(x=>x.id===battleState.playerPokeId);
+            const grid = document.getElementById('bat-moves-grid'); grid.innerHTML = '';
+            
+            p.moves.forEach((m, idx) => {
+                const typeColor = TYPE_COLORS[m.type] || '#666';
+                grid.innerHTML += `<button onclick="executePlayerAttack(${idx})" class="flex flex-col items-start justify-center p-2 rounded-xl border-b-4 hover:translate-y-1 active:translate-y-2 active:border-b-0 transition-all text-white shadow-inner" style="background-color: ${typeColor}; border-color: rgba(0,0,0,0.3)">
+                    <div class="font-black text-sm uppercase tracking-widest leading-none drop-shadow-md truncate w-full text-left">${m.name}</div>
+                    <div class="text-[10px] font-bold mt-1 opacity-80 uppercase tracking-widest">Pwr ${m.pwr} • ${m.type}</div>
+                </button>`;
+            });
+            document.getElementById('bat-moves-menu').classList.remove('hidden');
+        }
+
+        function hideMovesMenu() { document.getElementById('bat-moves-menu').classList.add('hidden'); showBatMenu(); }
+
+        function getTypeMultiplier(moveType, defTypes) {
+            if(!TYPE_CHART[moveType]) return 1.0;
+            let mult = 1.0;
+            defTypes.forEach(dt => { if(TYPE_CHART[moveType][dt] !== undefined) mult *= TYPE_CHART[moveType][dt]; });
+            return mult;
+        }
+
+        async function executePlayerAttack(moveIdx) {
+            document.getElementById('bat-moves-menu').classList.add('hidden');
+            if(battleState.isEnemyTurn) return;
+            battleState.isEnemyTurn = true; 
+            
+            const p = player.pokemon.find(x=>x.id===battleState.playerPokeId); const e = battleState.enemy;
+            const move = p.moves[moveIdx];
+            await batLog(`${p.name} used ${move.name.toUpperCase()}!`);
+            
+            const typeMult = getTypeMultiplier(move.type, e.types);
+            if(typeMult > 1.0) await batLog("It's super effective!");
+            else if(typeMult < 1.0) await batLog("It's not very effective...");
+
+            document.getElementById('bat-enemy-img').classList.add('hit-anim'); setTimeout(()=>document.getElementById('bat-enemy-img').classList.remove('hit-anim'), 500);
+            
+            // Damage calc
+            let dmg = Math.floor( ((p.cp / Math.max(e.cp, 1)) * (move.pwr / 4)) * typeMult * (0.85 + Math.random()*0.3) ) + 2;
+            e.hp = Math.max(0, e.hp - dmg); updateBatHP('enemy');
+            await sleep(800);
+
+            if(e.hp <= 0) { await batLog(`Enemy ${e.name} fainted!`); await winBattle(); return; }
+            await enemyTurn();
+        }
+
+        async function batBag() {
+            if(battleState.isEnemyTurn) return;
+            if (player.inventory.potion.count <= 0) { await batLog("No Potions left!"); showBatMenu(); return; }
+            const p = player.pokemon.find(x=>x.id===battleState.playerPokeId);
+            if(p.hp >= p.maxHp) { await batLog(`${p.name}'s HP is full!`); showBatMenu(); return; }
+
+            battleState.isEnemyTurn = true; hideBatMenu(); player.inventory.potion.count--;
+            p.hp = Math.min(p.maxHp, p.hp + player.inventory.potion.heal); updateBatHP('player'); document.getElementById('bat-potion-cnt').innerText = player.inventory.potion.count;
+            await batLog(`Used POTION! ${p.name}'s HP was restored.`);
+            await enemyTurn();
+        }
+
+        function batPokemon() {
+            hideBatMenu(); document.getElementById('bat-dialog').classList.add('hidden'); document.getElementById('bat-moves-menu').classList.add('hidden');
+            const roster = document.getElementById('bat-roster'); roster.innerHTML = '';
+            player.pokemon.filter(p => p.hp > 0).forEach(p => {
+                roster.innerHTML += `<div onclick="selectFighter('${p.id}', true)" class="bg-gray-800 p-2 rounded-xl border-4 border-gray-600 min-w-[90px] flex flex-col items-center cursor-pointer hover:bg-gray-700 active:scale-95 shadow-inner"><img src="${p.image}" class="w-12 h-12 pixelated mb-1"><div class="text-white text-[10px] font-black tracking-widest uppercase truncate w-full text-center">${p.name}</div><div class="text-green-400 text-[10px] font-bold">HP ${p.hp}</div></div>`;
+            });
+            if(roster.innerHTML==='') roster.innerHTML = '<div class="text-red-400 text-sm font-black">No other conscious Pokémon!</div>';
+            
+            if(battleState.playerPokeId && player.pokemon.find(x=>x.id===battleState.playerPokeId).hp > 0) {
+                roster.innerHTML += `<div onclick="document.getElementById('bat-selector').classList.add('hidden'); showBatMenu();" class="bg-red-700 p-2 rounded-xl border-4 border-red-500 min-w-[90px] flex items-center justify-center cursor-pointer hover:bg-red-600 active:scale-95 text-white font-black text-xs uppercase tracking-widest shadow-inner">Cancel</div>`;
+            }
+            document.getElementById('bat-selector').classList.remove('hidden');
+        }
+
+        async function batRun() {
+            if(battleState.isEnemyTurn) return;
+            hideBatMenu();
+            if(battleState.type === 'Gym Boss' || battleState.type === 'Team Rocket') { await batLog("You can't run from this battle!"); showBatMenu(); return; }
+            if(Math.random() < 0.6) { await batLog("Got away safely!"); fleeBattle(); } 
+            else { await batLog("Couldn't escape!"); battleState.isEnemyTurn = true; await enemyTurn(); }
+        }
+
+        async function enemyTurn() {
+            const p = player.pokemon.find(x=>x.id===battleState.playerPokeId); const e = battleState.enemy;
+            const move = e.moves[Math.floor(Math.random() * e.moves.length)];
+            await batLog(`Enemy ${e.name} used ${move.name.toUpperCase()}!`);
+            
+            const typeMult = getTypeMultiplier(move.type, p.types);
+            if(typeMult > 1.0) await batLog("It's super effective!");
+            else if(typeMult < 1.0) await batLog("It's not very effective...");
+
+            document.getElementById('bat-player-img').classList.add('hit-anim'); setTimeout(()=>document.getElementById('bat-player-img').classList.remove('hit-anim'), 500);
+            
+            let dmg = Math.floor( ((e.cp / Math.max(p.cp, 1)) * (move.pwr / 4)) * typeMult * (0.85 + Math.random()*0.3) ) + 2;
+            p.hp = Math.max(0, p.hp - dmg); updateBatHP('player');
+            await sleep(800);
+
+            if(p.hp <= 0) {
+                await batLog(`${p.name} fainted!`);
+                const alive = player.pokemon.filter(x=>x.hp>0);
+                if(alive.length > 0) { batPokemon(); } 
+                else { await batLog("You blacked out!"); fleeBattle(); }
+            } else { battleState.isEnemyTurn = false; showBatMenu(); }
+        }
+
+        async function winBattle() {
+            await batLog("You won the battle!");
+            trackMission('battles', 1);
+            if(battleState.type === 'Team Rocket') trackMission('rocket', 1);
+
+            if (battleState.type === 'Gym Boss') {
+                battleState.enemy.hp = battleState.enemy.maxHp; fleeBattle(); startEncounter(battleState.enemy);
+            } else if (battleState.type === 'Team Rocket') {
+                player.candies += 10; player.inventory.ultraball.count += 2;
+                showNotification("Rocket Defeated! +10 Candies, +2 Ultra Balls");
+                fleeBattle();
+                // Optionally catch shadow pokemon
+                if(Math.random() > 0.3) { battleState.enemy.hp = battleState.enemy.maxHp; startEncounter(battleState.enemy); }
+            } else {
+                player.candies += 5; player.inventory.potion.count += 3;
+                showNotification("Arena Won! +5 Candies, +3 Potions");
+                fleeBattle();
+            }
+        }
+
+        function fleeBattle() {
+            document.getElementById('battle-screen').classList.add('hidden'); document.getElementById('hud').classList.remove('hidden');
+            battleState.active = false; updateHUD(); updateMissionsUI();
+        }
+
+        // --- MISSIONS ---
+        function trackMission(type, amt) {
+            player.stats[type] += amt;
+            player.missions.forEach(m => {
+                if(!m.claimed && m.type === type) { m.progress = Math.min(m.target, player.stats[type]); }
+            });
+            checkMissionsAlert();
+        }
+
+        function checkMissionsAlert() {
+            const hasComplete = player.missions.some(m => !m.claimed && m.progress >= m.target);
+            if(hasComplete) document.getElementById('mission-dot').classList.remove('hidden');
+            else document.getElementById('mission-dot').classList.add('hidden');
+        }
+
+        function updateMissionsUI() {
+            const list = document.getElementById('missions-list'); list.innerHTML = '';
+            player.missions.forEach(m => {
+                const complete = m.progress >= m.target;
+                const btnHtml = m.claimed ? `<button class="px-4 py-2 bg-gray-200 text-gray-500 rounded-xl font-black text-xs cursor-not-allowed tracking-widest uppercase">Claimed</button>` 
+                    : (complete ? `<button onclick="claimMission('${m.id}')" class="px-4 py-2 bg-green-500 hover:bg-green-400 text-white rounded-xl font-black text-xs shadow-md active:scale-95 transition tracking-widest uppercase animate-pulse">Claim</button>` 
+                    : `<div class="text-xs font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-lg">${m.progress} / ${m.target}</div>`);
+                
+                list.innerHTML += `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between opacity-${m.claimed? '50' : '100'}">
+                        <div>
+                            <div class="font-black text-gray-800 text-sm">${m.desc}</div>
+                            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Reward: ${m.rewardAmt} ${m.rewardType}</div>
+                        </div>
+                        <div>${btnHtml}</div>
+                    </div>`;
+            });
+            checkMissionsAlert();
+        }
+
+        function claimMission(id) {
+            const m = player.missions.find(x => x.id === id); if(!m || m.claimed || m.progress < m.target) return;
+            m.claimed = true;
+            if(m.rewardType === 'candies') player.candies += m.rewardAmt;
+            else if(player.inventory[m.rewardType]) player.inventory[m.rewardType].count += m.rewardAmt;
+            
+            showNotification(`Mission Complete! Got ${m.rewardAmt} ${m.rewardType}`);
+            updateHUD(); updateMissionsUI();
+        }
+
+        // --- MENU & UI ---
+        function updateHUD() {
+            document.getElementById('hud-candies').innerText = player.candies;
+            document.getElementById('trainer-level').innerText = player.level + Math.floor(player.pokemon.length / 3);
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu-screen');
+            if (menu.classList.contains('hidden')) { switchTab('pokemon'); menu.classList.remove('hidden'); document.getElementById('hud').classList.add('hidden'); updateMissionsUI(); }
+            else { menu.classList.add('hidden'); document.getElementById('hud').classList.remove('hidden'); updateHUD(); }
+        }
+
+        function switchTab(tab) {
+            ['pokemon', 'inventory', 'arena', 'missions'].forEach(t => { document.getElementById(`view-${t}`).classList.add('hidden'); document.getElementById(`tab-${t}`).className = "flex-1 py-3 text-gray-500 font-black rounded-xl transition hover:bg-gray-200/50 text-xs tracking-wider uppercase"; });
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).className = "flex-1 py-3 bg-white text-blue-600 font-black rounded-xl shadow-sm transition text-xs tracking-wider uppercase";
+            if (tab==='pokemon') renderPokemonGrid(); if (tab==='inventory') renderInventory();
+        }
+
+        function renderPokemonGrid() {
+            const grid = document.getElementById('view-pokemon'); grid.innerHTML = '';
+            if (!player.pokemon.length) { grid.innerHTML = `<div class="col-span-3 text-center text-gray-400 mt-10 font-bold">No Pokémon caught yet.</div>`; return; }
+
+            player.pokemon.sort((a, b) => b.cp - a.cp).forEach(poke => {
+                const hpPct = Math.max(0, (poke.hp / poke.maxHp) * 100);
+                const shinyStar = poke.isShiny ? `<i class="ph-fill ph-sparkle absolute top-2 right-2 text-yellow-400 drop-shadow text-lg"></i>` : '';
+                const shinyBorder = poke.isShiny ? 'border-yellow-400 border-2 shadow-[0_0_15px_rgba(250,204,21,0.3)]' : 'border-gray-100 border';
+
+                grid.innerHTML += `
+                    <div onclick="openDetails('${poke.id}')" class="bg-white rounded-[1.5rem] shadow-sm ${shinyBorder} p-3 flex flex-col items-center relative cursor-pointer hover:scale-105 active:scale-95 transition">
+                        ${shinyStar} <div class="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-gray-50 to-transparent rounded-bl-full z-0"></div>
+                        <img src="${poke.image}" class="w-16 h-16 object-contain pixelated z-10 drop-shadow-md mb-2">
+                        <div class="text-xs font-black text-gray-800 z-10 w-full text-center truncate mb-1 tracking-tight">${poke.name}</div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full mb-2"><div class="${hpPct>50?'bg-green-500':(hpPct>20?'bg-yellow-500':'bg-red-500')} h-1.5 rounded-full" style="width: ${hpPct}%"></div></div>
+                        <div class="text-[10px] font-black text-white bg-blue-500 rounded-full px-2.5 py-0.5 z-10 shadow-sm tracking-widest">CP ${poke.cp}</div>
+                    </div>`;
+            });
+        }
+
+        function renderInventory() {
+            const view = document.getElementById('view-inventory');
+            view.innerHTML = `<div class="bg-white rounded-3xl shadow-sm p-5 flex items-center border border-gray-100"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png" class="w-12 h-12 pixelated mr-5 bg-gradient-to-br from-gray-50 to-gray-200 rounded-full p-2 border border-gray-100"><div class="flex-1"><div class="font-black text-gray-800 text-lg tracking-tight">Rare Candies</div><div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Power Up & Evolve.</div></div><div class="text-2xl font-black text-blue-600">x${player.candies}</div></div>`;
+            Object.values(player.inventory).forEach(i => {
+                view.innerHTML += `<div class="bg-white rounded-3xl shadow-sm p-5 flex items-center border border-gray-100"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${i.img}.png" class="w-12 h-12 pixelated mr-5 drop-shadow"><div class="flex-1"><div class="font-black text-gray-800 text-lg tracking-tight">${i.name}</div><div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Item.</div></div><div class="text-2xl font-black text-gray-700">x${i.count}</div></div>`;
+            });
+        }
+
+        function openDetails(id) { inspectedPokemonId = id; updateDetailsModal(); document.getElementById('details-modal').classList.remove('hidden'); }
+        function closeDetails() { inspectedPokemonId = null; document.getElementById('details-modal').classList.add('hidden'); renderPokemonGrid(); }
+
+        function updateDetailsModal() {
+            const poke = player.pokemon.find(p => p.id === inspectedPokemonId); if (!poke) return closeDetails();
+
+            document.getElementById('detail-name').innerText = poke.name; document.getElementById('detail-dex').innerText = `#${poke.dexId.toString().padStart(3,'0')}`;
+            document.getElementById('detail-stage').innerText = typeof poke.stage === 'number' ? `Stage ${poke.stage}` : poke.stage;
+            document.getElementById('detail-rarity').innerText = poke.rarity; document.getElementById('detail-rarity').className = `text-[10px] font-black px-3 py-1.5 rounded-full text-white uppercase shadow-sm tracking-widest ${POOLS[poke.rarity]?.color || 'bg-gray-500'}`;
+            document.getElementById('detail-cp').innerText = `CP ${poke.cp}`;
+            document.getElementById('detail-img').src = poke.image; document.getElementById('detail-img').className = `w-40 h-40 pixelated pokemon-float drop-shadow-2xl z-10 ${poke.isShiny ? 'glow-shiny' : ''}`;
+            poke.isShiny ? document.getElementById('detail-shiny-tag').classList.remove('hidden') : document.getElementById('detail-shiny-tag').classList.add('hidden');
+            document.getElementById('detail-types').innerHTML = createTypeBadges(poke.types);
+
+            const hpPct = Math.max(0, (poke.hp / poke.maxHp) * 100);
+            document.getElementById('detail-hp-text').innerText = `${poke.hp} / ${poke.maxHp}`;
+            document.getElementById('detail-hp-bar').style.width = `${hpPct}%`; document.getElementById('detail-hp-bar').className = `h-full transition-all duration-500 ${hpPct>50?'bg-green-500':(hpPct>20?'bg-yellow-500':'bg-red-500')}`;
+            document.getElementById('detail-cost').innerText = Math.floor(poke.cp / 100) + 1;
+
+            const evData = EVOLUTIONS[poke.dexId]; const btnEv = document.getElementById('btn-evolve');
+            if(evData) { btnEv.classList.remove('hidden'); document.getElementById('detail-ev-cost').innerText = evData.cost; btnEv.disabled = player.candies < evData.cost; btnEv.style.opacity = btnEv.disabled ? 0.5 : 1; } 
+            else { btnEv.classList.add('hidden'); }
+        }
+
+        async function evolvePokemon() {
+            const poke = player.pokemon.find(p => p.id === inspectedPokemonId); const evData = EVOLUTIONS[poke.dexId];
+            if(!evData || player.candies < evData.cost) return;
+
+            player.candies -= evData.cost; showNotification(`Evolving ${poke.name}...`);
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${evData.to}`); const data = await res.json();
+                poke.dexId = data.id; poke.name = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+                const anims = data.sprites?.versions?.['generation-v']?.['black-white']?.animated;
+                poke.image = poke.isShiny ? (anims?.front_shiny || data.sprites?.front_shiny) : (anims?.front_default || data.sprites?.front_default);
+                poke.imageBack = poke.isShiny ? (anims?.back_shiny || data.sprites?.back_shiny) : (anims?.back_default || data.sprites?.back_default);
+                poke.cp = Math.floor(poke.cp * 1.8); poke.maxHp = Math.floor(poke.maxHp * 1.5); poke.hp = poke.maxHp; 
+                if(typeof poke.stage === 'number') poke.stage += 1;
+                
+                poke.types = data.types.map(t => t.type.name);
+                poke.moves = generateMoves(poke.types);
+
+                showNotification(`Evolved into ${poke.name}!`); updateDetailsModal(); updateHUD();
+            } catch(e) { console.error(e); showNotification("Evolution failed. Connection error."); player.candies += evData.cost; }
+        }
+
+        function powerUpPokemon() {
+            const p = player.pokemon.find(x => x.id === inspectedPokemonId); const cost = Math.floor(p.cp / 100) + 1;
+            if (player.candies < cost) return showNotification("Need more Candies!");
+            player.candies -= cost; const cpB = Math.floor(Math.random() * 20) + 20; const hpB = Math.floor(cpB / 4);
+            p.cp += cpB; p.maxHp += hpB; p.hp += hpB; showNotification(`${p.name} Powered Up! CP +${cpB}`); updateDetailsModal(); updateHUD();
+        }
+
+        function healPokemon() {
+            const p = player.pokemon.find(x => x.id === inspectedPokemonId);
+            if (p.hp >= p.maxHp) return showNotification("HP already full!");
+            if (player.inventory.potion.count <= 0) return showNotification("No Potions left!");
+            player.inventory.potion.count--; p.hp = Math.min(p.maxHp, p.hp + player.inventory.potion.heal);
+            showNotification(`${p.name} healed!`); updateDetailsModal();
+        }
+
+        function setMsg(prefix, text, colorClass="text-gray-800") {
+            const container = document.getElementById(`${prefix}-message`);
+            if(!container) return;
+            container.innerHTML = `<span class="bg-white ${colorClass} px-6 py-3 rounded-full font-black text-sm tracking-widest uppercase shadow-2xl border-2 border-gray-100 inline-block">${text}</span>`;
+            container.classList.remove('hidden');
+        }
+
+        function showNotification(msg) {
+            const n = document.getElementById('notification'); document.getElementById('notif-text').innerText = msg;
+            n.classList.replace('-translate-y-40', 'translate-y-0'); n.classList.replace('opacity-0', 'opacity-100');
+            setTimeout(() => { n.classList.replace('translate-y-0', '-translate-y-40'); n.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+        }
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    </script>
+</body>
+</html>
