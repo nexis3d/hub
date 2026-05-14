@@ -17,7 +17,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
   <link rel="manifest" href="/assets/site.webmanifest" />
 
-  <meta name="description" content="Welcome to Nexis Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
+  <meta name="description" content="Welcome to  Games! Part of the Nexis GD (Game Development) family, we want to make browser games incredibly fun and push what you can do on the web.">
   <meta name="keywords" content="Nexis Games, Nexisgames, Nexus games, Nexusgames, Nexis Game, Nexus Game, Nexes games, Nexesgames, Nextis games, Nextisgames, NexisGD, Nexus GD, NexusGD, gaming, web games, browser games, free games, online games, unblocked games, play games online, no download games, 3D games, casual games, action games, racing games, io games, html5 games, offline games, arcade, multiplayer, minigames, best browser games, free to play, indie games, Nexis GD, unblocked games premium, play nexis games, nexis games hub, nexis game portal, nexus game portal, html5 unblocked, school unblocked games">
   <meta name="author" content="Nexis Games">
   <meta name="theme-color" content="#030008">
@@ -218,6 +218,7 @@
     const ShaddoCraftIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'15px', boxSizing:'border-box'}}><img src="assets/shado.png" alt="Cube Game" style={{width:'100%', height:'100%', objectFit:'contain', filter:'drop-shadow(0px 10px 10px rgba(0,0,0,0.5))'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/064e3b/ffffff?text=Cube+Game';}}/></div>));
     const VoidStalkerIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Spooky.png" alt="Shadows of the Labyrinth" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/312e81/ffffff?text=Spooky';}}/></div>));
     const MofuTestIcon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Favicon.png" alt="Top Secret" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/4c1d95/ffffff?text=SECRET';}}/></div>));
+    const Pokemon = memo(() => (<div style={{width:'100%', height:'100%', borderRadius:'20px', overflow:'hidden', backgroundColor:'#020617', padding:'0', boxSizing:'border-box'}}><img src="assets/Poke.png" alt="Pokemon" style={{width:'100%', height:'100%', objectFit:'cover'}} onError={e => {e.target.onerror=null; e.target.src='https://placehold.co/200x200/4c1d95/ffffff?text=Pokemon';}}/></div>));
 
     // --- GLOBAL LOADER COMPONENT ---
     const GlobalLoader = memo(({ isVisible }) => {
@@ -404,7 +405,7 @@
       { id: 'pigeon-rumble', title: 'Super Pigeon Rumble', developer: 'RiftExcel', src: 'https://pigeron.edgeone.app', icon: PigeonIcon, theme: 'from-fuchsia-600 to-purple-800', tags: ['Action', 'Multiplayer'] },
       { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', icon: ShaddoCraftIcon, theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'], isPublicBeta: true },
       { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', icon: RealmIcon, theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true },
-      { id: 'mofu-proto-1', title: 'Project: OVERDRIVE', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-rose-700 to-purple-950', tags: ['Action', 'Secret'], isMOFUOnly: true },
+      { id: 'mofu-proto-1', title: 'Pokemon', developer: 'CoolDude_10', src: 'games/Poke.html', icon: Pokemon, theme: 'from-rose-700 to-purple-950', tags: ['2D', 'Pokemon'] },
       { id: 'mofu-proto-2', title: 'Project: NEBULA', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-cyan-700 to-blue-950', tags: ['Adventure', 'Secret'], isMOFUOnly: true },
       { id: 'mofu-proto-3', title: 'Project: CHRONOS', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-amber-600 to-red-950', tags: ['RPG', 'Secret'], isMOFUOnly: true },
       { id: 'mofu-proto-4', title: 'Project: VORTEX', developer: 'Mofawo', src: 'about:blank', icon: MofuTestIcon, theme: 'from-fuchsia-600 to-indigo-950', tags: ['Puzzle', 'Secret'], isMOFUOnly: true },
