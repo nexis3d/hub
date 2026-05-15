@@ -7,7 +7,2252 @@
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Georgia', serif; user-select: none; }
         canvas { display: block; }
-       
+       <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ARCHITECT'S CURSE: DIRECTOR'S CUT</title>
+    <style>
+        :root {
+            --primary: #aa2222;
+            --primary-glow: rgba(170, 34, 34, 0.6);
+            --bg-dark: rgba(10, 10, 12, 0.95);
+        }
+
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none; }
+        canvas { display: block; }
+        
+        /* --- SLIDESHOW BACKGROUND FOR MENU --- */
+        #slideshow-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 15; pointer-events: none; background: #000; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 2s ease-in-out; }
+        .slide.active { opacity: 0.6; }
+        
+        .slide-1 { background: radial-gradient(circle at 50% 50%, #2a0a0a 0%, #000 70%); box-shadow: inset 0 0 150px #000; }
+        .slide-2 { background: linear-gradient(0deg, #000 0%, #111 40%, #050505 100%); background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,0,0,0.8) 50px, rgba(0,0,0,0.8) 100px); }
+        .slide-3 { background: radial-gradient(circle at 80% 20%, #334 0%, #000 60%); }
+
+        /* --- UI LAYERS --- */
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 30px; box-sizing: border-box; color: #fff; z-index: 10; text-shadow: 1px 1px 4px rgba(0,0,0,1); transition: filter 0.2s; }
+        #crosshair { position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.9); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 5px rgba(0,0,0,1); }
+        
+        .hud-top { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+        .hud-left { display: flex; flex-direction: column; gap: 12px; }
+        .hud-text { font-size: 1.2rem; letter-spacing: 3px; text-transform: uppercase; font-weight: bold;}
+        #timer-display { font-size: 3rem; color: #ff3333; font-weight: bold; letter-spacing: 4px; font-family: monospace; text-shadow: 0 0 15px rgba(255,0,0,0.6); }
+        
+        /* COIN COUNTER */
+        #coin-counter { font-size: 2rem; color: #ffd700; font-weight: bold; margin-top: 10px; display: flex; align-items: center; gap: 12px; text-shadow: 0 0 10px rgba(0,0,0,1); }
+        .coin-icon { width: 28px; height: 28px; background: radial-gradient(circle, #ffe066 30%, #b8860b 90%); border-radius: 50%; border: 2px solid #8b6508; display: inline-block; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+
+        /* MINIMAP */
+        #minimap-container { position: absolute; top: 30px; right: 30px; z-index: 10; display: flex; flex-direction: column; align-items: flex-end;}
+        #minimap { border: 2px solid #333; background: rgba(5,5,5,0.85); width: 160px; height: 160px; box-shadow: 0 0 20px rgba(0,0,0,0.9); border-radius: 50%; object-fit: cover; }
+        #room-name { margin-top: 12px; color: #ddd; font-family: 'Georgia', serif; font-size: 1.2rem; text-shadow: 2px 2px 4px #000; text-align: right; letter-spacing: 2px; font-style: italic;}
+        #safe-zone-warning { color: #5f5; font-weight: bold; display: none; margin-top: 5px; animation: pulse 2s infinite; font-family: monospace; letter-spacing: 1px;}
+
+        /* INVENTORY SYSTEM */
+        #inventory-container { display: flex; gap: 10px; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); pointer-events: none;}
+        .inv-slot { width: 55px; height: 55px; border: 2px solid #333; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #444; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; border-radius: 6px; box-shadow: inset 0 0 10px rgba(0,0,0,1);}
+        .inv-slot.active { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.4), inset 0 0 15px rgba(255,255,255,0.2); transform: scale(1.15) translateY(-5px); color: #fff;}
+        .inv-slot.filled { color: #ccc; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
+        .ammo-counter { position: absolute; bottom: -20px; font-size: 1rem; font-family: monospace; color: #00ffcc; width: 100%; text-align: center; font-weight: bold; text-shadow: 0 0 5px #000;}
+        
+        /* OVERLAYS & JUMPSCARE */
+        #jumpscare-flash { position: absolute; top:0; left:0; width: 100%; height: 100%; background: #ffffff; opacity: 0; pointer-events: none; z-index: 15; mix-blend-mode: overlay; transition: background 0.1s; }
+        #lightning-flash { position: absolute; top:0; left:0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 4; }
+        #fear-vignette { position: absolute; top:0; left:0; width: 100%; height: 100%; box-shadow: inset 0 0 200px rgba(0,0,0,0.9); transition: box-shadow 0.2s; z-index: 5; pointer-events: none; }
+        #interaction-prompt { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2rem; opacity: 0; transition: opacity 0.2s; font-family: Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px #000; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 4px; border: 1px solid #444;}
+        
+        /* CINEMATIC MENUS */
+        .overlay-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 20; transition: opacity 0.5s; pointer-events: auto; backdrop-filter: blur(8px);}
+        .hidden { display: none !important; opacity: 0; pointer-events: none !important; }
+        
+        .menu-layout { display: flex; width: 80%; max-width: 1200px; height: 70%; justify-content: space-between; align-items: center; z-index: 21;}
+        .menu-left { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+        .menu-right { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+        
+        h1 { font-size: 4.5rem; letter-spacing: 12px; font-weight: bold; margin: 0 0 10px 0; text-shadow: 0 0 40px var(--primary-glow); font-family: 'Georgia', serif; text-transform: uppercase;}
+        .subtitle { color: #aaa; font-family: sans-serif; letter-spacing: 6px; margin-bottom: 50px; font-size: 1.2rem; font-weight: bold;}
+        
+        .menu-btn { padding: 18px 40px; background: transparent; border: 1px solid #444; color: #ccc; cursor: pointer; font-family: 'Helvetica Neue', sans-serif; font-weight: bold; font-size: 1.2rem; transition: all 0.3s; text-transform: uppercase; letter-spacing: 3px; width: 350px; text-align: left; position: relative; overflow: hidden;}
+        .menu-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--primary); transition: left 0.3s ease; z-index: -1; }
+        .menu-btn:hover::before { left: 0; }
+        .menu-btn:hover { color: #fff; border-color: var(--primary); transform: translateX(10px); box-shadow: 0 0 20px var(--primary-glow);}
+        
+        .menu-panel { background: rgba(15,15,18,0.95); border: 1px solid #333; padding: 50px; border-radius: 8px; max-width: 700px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); z-index: 25;}
+        .menu-panel h2 { color: var(--primary); font-size: 2.5rem; margin-top: 0; margin-bottom: 25px; letter-spacing: 4px; border-bottom: 1px solid #333; padding-bottom: 15px; font-family: 'Georgia', serif;}
+        .menu-panel p, .menu-panel li { font-family: sans-serif; color: #ccc; line-height: 1.8; font-size: 1.1rem; text-align: left;}
+        
+        /* SETTINGS & SLIDER */
+        .slider-container { margin: 40px 0; text-align: left; }
+        .slider-container label { display: block; font-family: monospace; color: #aaa; margin-bottom: 15px; font-size: 1.2rem;}
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); }
+
+        /* SAFE KEYPAD */
+        #keypad-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; background: #1a1a1a; padding: 30px; border: 4px solid #000; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,1); }
+        .kp-btn { padding: 25px; font-size: 1.8rem; font-family: monospace; background: #2a2a2a; color: #fff; border: 2px solid #444; cursor: pointer; border-radius: 6px; transition: background 0.1s;}
+        .kp-btn:hover { background: #555; }
+        .kp-btn:active { background: #fff; color: #000;}
+        #kp-display { grid-column: span 3; background: #0a0a0a; color: #0f0; font-family: monospace; font-size: 2.5rem; padding: 15px; text-align: right; border: 3px inset #000; letter-spacing: 8px; margin-bottom: 15px; border-radius: 4px;}
+
+        /* LORE SCREEN */
+        #lore-screen { background: rgba(0,0,0,0.98); flex-direction: column; padding: 40px; }
+        #lore-text-container { max-width: 650px; text-align: center; }
+        #lore-title { font-size: 3rem; color: var(--primary); margin-bottom: 20px; font-style: italic; border-bottom: 1px solid #333; padding-bottom: 15px; font-family: 'Georgia', serif;}
+        #lore-body { font-size: 1.4rem; color: #ddd; line-height: 1.9; margin-bottom: 40px; white-space: pre-wrap; font-family: 'Georgia', serif;}
+
+        /* VENDING MACHINE SCREEN */
+        #vending-screen { background: rgba(10,5,5,0.98); flex-direction: column; padding: 40px; }
+        .vending-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; max-width: 800px;}
+        .vending-item { background: #1a1a1a; border: 2px solid #444; padding: 30px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; border-radius: 8px;}
+        .vending-item:hover { border-color: #ffd700; background: #2a2a2a; transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,215,0,0.15);}
+        .vending-item h3 { margin: 0 0 15px 0; color: #fff; font-size: 1.5rem;}
+        .vending-price { color: #ffd700; font-weight: bold; font-family: monospace; font-size: 1.3rem; background: rgba(255,215,0,0.1); padding: 5px 15px; border-radius: 20px;}
+        
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+
+    <!-- CSS BACKGROUND SLIDESHOW -->
+    <div id="slideshow-bg">
+        <div class="slide slide-1 active" id="slide1"></div>
+        <div class="slide slide-2" id="slide2"></div>
+        <div class="slide slide-3" id="slide3"></div>
+    </div>
+
+    <!-- MAIN MENU -->
+    <div id="main-menu" class="overlay-screen">
+        <div class="menu-layout">
+            <div class="menu-left">
+                <div>
+                    <h1>THE ARCHITECT'S CURSE</h1>
+                    <div class="subtitle">DIRECTOR'S CUT</div>
+                </div>
+                <button class="menu-btn" onclick="startGame()">ENTER MANOR</button>
+                <button class="menu-btn" onclick="showPanel('how-to-play')">HOW TO PLAY</button>
+                <button class="menu-btn" onclick="showPanel('settings')">SETTINGS</button>
+            </div>
+            <div class="menu-right">
+                <div class="stats-box" style="flex-direction: column; gap: 15px; align-items: flex-end; background: transparent; border: none; font-size: 1.3rem; text-shadow: 2px 2px 4px #000;">
+                    <div>Escapes: <span id="stat-played" style="color:var(--primary); font-size: 1.8rem;">0</span></div>
+                    <div>Max Keys: <span id="stat-keys" style="color:var(--primary); font-size: 1.8rem;">0</span></div>
+                    <div>Items Found: <span id="stat-items" style="color:var(--primary); font-size: 1.8rem;">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW TO PLAY PANEL -->
+    <div id="how-to-play" class="overlay-screen hidden">
+        <div class="menu-panel">
+            <h2>SURVIVAL GUIDE</h2>
+            <p style="margin-bottom: 20px;">
+                <b>Objective:</b> Deduce the 5-digit safe code by reading Architect's Journals scattered across the estate. Find Keys in cabinets to unlock the Attic. Escape the front door. Break open locked doors with a Crowbar.
+            </p>
+            <ul style="list-style-type: none; padding: 0; margin-bottom: 30px;">
+                <li style="margin-bottom: 10px;"><b style="color:#fff;">[ W A S D ]</b> - Move & Navigate</li>
+                <li style="margin-bottom: 10px;"><b style="color:#fff;">[ C ]</b> - Toggle Crouch (Crawl under beds to hide)</li>
+                <li style="margin-bottom: 10px;"><b style="color:#fff;">[ E ]</b> - Interact / Open Cabinets</li>
+                <li style="margin-bottom: 10px;"><b style="color:#fff;">[ SPACE ]</b> - Jump</li>
+                <li style="margin-bottom: 10px;"><b style="color:#fff;">[ 1 - 8 ]</b> - Select Inventory</li>
+                <li style="margin-bottom: 10px;"><b style="color:#fff;">[ LEFT CLICK ]</b> - Use Item (Swing Crowbar/Bat)</li>
+            </ul>
+            <p style="font-size: 1rem; color: #ffaa00; border-left: 3px solid #ffaa00; padding-left: 15px;">
+                <b>The East Lounge is the Safe Zone.</b> Find coins to buy defenses there. If you hide in closets or under beds for too long outside the safe zone, the Director will alert the Automaton.
+            </p>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="menu-btn" style="width: auto;" onclick="returnToMenu()">BACK TO MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div id="settings" class="overlay-screen hidden">
+        <div class="menu-panel" style="width: 500px;">
+            <h2>SETTINGS</h2>
+            <div class="slider-container">
+                <label>Mouse Sensitivity: <span id="sens-val" style="color: #fff;">1.0</span></label>
+                <input type="range" id="sensitivity-slider" min="0.1" max="3.0" step="0.1" value="1.0" oninput="updateSettings()">
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="menu-btn" style="width: auto;" onclick="returnToMenu()">BACK TO MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EFFECTS OVERLAYS -->
+    <div id="lightning-flash"></div>
+    <div id="fear-vignette"></div>
+    <div id="jumpscare-flash"></div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="game-over-screen" class="overlay-screen hidden" style="background: rgba(5,0,0,0.95); z-index: 50;">
+        <h1 id="go-title" style="color:#f00; font-size:6rem; margin-bottom: 20px;">YOU WERE CAUGHT</h1>
+        <p id="go-desc" style="font-size:1.8rem; color:#aaa; font-family:sans-serif; margin-bottom:50px; letter-spacing: 2px;">The Automaton caught you before you could escape.</p>
+        <div style="display:flex; gap:30px;">
+            <button class="menu-btn" style="width: 250px; text-align: center;" onclick="returnToMenu()">Main Menu</button>
+            <button class="menu-btn" style="width: 250px; text-align: center; border-color: var(--primary);" onclick="startGame()">Try Again</button>
+        </div>
+    </div>
+
+    <!-- SAFE KEYPAD -->
+    <div id="keypad-screen" class="overlay-screen hidden" style="background: rgba(0,0,0,0.85);">
+        <div id="keypad-container">
+            <div id="kp-display">-----</div>
+            <button class="kp-btn" onclick="kpPress(1)">1</button><button class="kp-btn" onclick="kpPress(2)">2</button><button class="kp-btn" onclick="kpPress(3)">3</button>
+            <button class="kp-btn" onclick="kpPress(4)">4</button><button class="kp-btn" onclick="kpPress(5)">5</button><button class="kp-btn" onclick="kpPress(6)">6</button>
+            <button class="kp-btn" onclick="kpPress(7)">7</button><button class="kp-btn" onclick="kpPress(8)">8</button><button class="kp-btn" onclick="kpPress(9)">9</button>
+            <button class="kp-btn" onclick="kpPress('C')" style="color:#f55;">C</button><button class="kp-btn" onclick="kpPress(0)">0</button><button class="kp-btn" onclick="kpPress('E')" style="color:#5f5;">E</button>
+        </div>
+    </div>
+
+    <!-- LORE SCREEN -->
+    <div id="lore-screen" class="overlay-screen hidden" style="z-index: 30;">
+        <div id="lore-text-container">
+            <div id="lore-title">Architect's Journal</div>
+            <div id="lore-body">Text goes here.</div>
+            <button class="menu-btn" style="width:auto; text-align:center;" onclick="closeLore()">Internalize</button>
+        </div>
+    </div>
+
+    <!-- VENDING MACHINE SCREEN -->
+    <div id="vending-screen" class="overlay-screen hidden" style="z-index: 30;">
+        <h2 style="color: #ffd700; font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,215,0,0.5); font-family: 'Georgia', serif;">TRADING STATION</h2>
+        <p style="font-size: 1.5rem; font-family: monospace;">Current Coins: <span id="vending-coin-display" style="font-weight: bold; color:#fff; font-size: 2rem;">0</span></p>
+        <div class="vending-grid">
+            <div class="vending-item" onclick="buyItem('battery', 2)">
+                <h3>Battery (x2 Ammo)</h3><span class="vending-price">Cost: 2 Coins</span>
+            </div>
+            <div class="vending-item" onclick="buyItem('stun', 5)">
+                <h3>Stun Gun</h3><span class="vending-price">Cost: 5 Coins</span>
+            </div>
+            <div class="vending-item" onclick="buyItem('melee', 3)">
+                <h3>Baseball Bat</h3><span class="vending-price">Cost: 3 Coins</span>
+            </div>
+            <div class="vending-item" onclick="closeVending()" style="border-color: #555;">
+                <h3 style="color:#aaa;">Leave</h3><span class="vending-price" style="background: transparent; color: #555;">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI -->
+    <div id="ui-layer">
+        <div class="hud-top">
+            <div class="hud-left">
+                <div class="hud-text" id="obj-tracker" style="color: #aaa;">State: CALM</div>
+                <div id="coin-counter"><div class="coin-icon"></div> <span id="coin-amt">0</span></div>
+            </div>
+            <div id="timer-display">10:00</div>
+        </div>
+
+        <div id="minimap-container">
+            <canvas id="minimap" width="160" height="160"></canvas>
+            <div id="room-name">Grand Foyer</div>
+            <div id="safe-zone-warning">SAFE ZONE ACTIVE</div>
+        </div>
+
+        <div id="crosshair"></div>
+        <div id="interaction-prompt">[ E ] Interact</div>
+        
+        <div id="inventory-container">
+            <div class="inv-slot active" id="inv-0">1</div><div class="inv-slot" id="inv-1">2</div>
+            <div class="inv-slot" id="inv-2">3</div><div class="inv-slot" id="inv-3">4</div>
+            <div class="inv-slot" id="inv-4">5</div><div class="inv-slot" id="inv-5">6</div>
+            <div class="inv-slot" id="inv-6">7</div><div class="inv-slot" id="inv-7">8</div>
+        </div>
+    </div>
+
+    <script>
+        // --- BACKGROUND SLIDESHOW LOGIC ---
+        let currentSlide = 1;
+        setInterval(() => {
+            if(!gameState.inMenu) return;
+            const curSlideEl = document.getElementById(`slide${currentSlide}`);
+            if(curSlideEl) curSlideEl.classList.remove('active');
+            currentSlide = currentSlide >= 3 ? 1 : currentSlide + 1;
+            const nextSlideEl = document.getElementById(`slide${currentSlide}`);
+            if(nextSlideEl) nextSlideEl.classList.add('active');
+        }, 5000);
+
+        // --- SETTINGS & PERSISTENCE ---
+        let stats = { played: 0, maxKeys: 0, items: 0 };
+        try { if(localStorage.getItem('ac_stats_v7')) stats = JSON.parse(localStorage.getItem('ac_stats_v7')); } catch(e){}
+        const statPlayedEl = document.getElementById('stat-played');
+        if (statPlayedEl) statPlayedEl.innerText = stats.played;
+        const statKeysEl = document.getElementById('stat-keys');
+        if (statKeysEl) statKeysEl.innerText = stats.maxKeys;
+        const statItemsEl = document.getElementById('stat-items');
+        if (statItemsEl) statItemsEl.innerText = stats.items;
+
+        let mouseSensitivity = 1.0;
+        function updateSettings() {
+            const slider = document.getElementById('sensitivity-slider');
+            if (slider) mouseSensitivity = parseFloat(slider.value);
+            const sensValEl = document.getElementById('sens-val');
+            if (sensValEl) sensValEl.innerText = mouseSensitivity.toFixed(1);
+        }
+
+        function saveStats() {
+            stats.maxKeys = Math.max(stats.maxKeys, gameState.keysCollected);
+            try { localStorage.setItem('ac_stats_v7', JSON.stringify(stats)); } catch(e){}
+            const spEl = document.getElementById('stat-played');
+            if (spEl) spEl.innerText = stats.played;
+            const skEl = document.getElementById('stat-keys');
+            if (skEl) skEl.innerText = stats.maxKeys;
+            const siEl = document.getElementById('stat-items');
+            if (siEl) siEl.innerText = stats.items;
+        }
+
+        function showPanel(panelId) {
+            document.getElementById('main-menu')?.classList.add('hidden');
+            document.getElementById('how-to-play')?.classList.add('hidden');
+            document.getElementById('settings')?.classList.add('hidden');
+            document.getElementById(panelId)?.classList.remove('hidden');
+        }
+
+        // --- GAME VARIABLES & RESET ---
+        const gameState = {
+            inMenu: true,
+            timeLeft: 600, keysCollected: 0, fear: 0.0,
+            isPaused: true, isDying: false,
+            stunCharges: 0, coins: 0,
+            isTrapped: false, trapTimer: 0,
+            isHidden: false, inSafeZone: false,
+            cameraShake: 0, activeSlot: 0,
+            inventory: [null, null, null, null, null, null, null, null],
+            safeCode: "00000", safeInput: "", safeUnlocked: false,
+            currentFloor: 0
+        };
+
+        const DirectorAI = {
+            hiddenTimer: 0, sprintTimer: 0,
+            update: function(delta, isHidden, isSprinting) {
+                if(gameState.isPaused || gameState.isDying || gameState.inMenu) return;
+
+                if(isHidden) {
+                    this.hiddenTimer += delta;
+                    if(this.hiddenTimer > 25) { 
+                        if(enemyMesh && !gameState.inSafeZone) {
+                            enemyState = 'chase';
+                            wanderTarget.copy(yawObj.position);
+                            enemyMesh.level = gameState.currentFloor;
+                            if(!enemyMesh.visible) {
+                                enemyMesh.position.copy(yawObj.position).add(new THREE.Vector3(8, 0, 8));
+                                enemyMesh.visible = true;
+                            }
+                        }
+                        this.hiddenTimer = 0; 
+                    }
+                } else { this.hiddenTimer = 0; }
+
+                if(isSprinting) {
+                    this.sprintTimer += delta;
+                    if(this.sprintTimer > 12) {
+                        this.sprintTimer = 0;
+                        playNoiseBurst(0.6, 0.8, 0.2); 
+                        ambientLight.intensity = 0.1; 
+                        setTimeout(() => ambientLight.intensity = 1.5, 800);
+                        gameState.fear += 0.3;
+                    }
+                } else {
+                    this.sprintTimer = Math.max(0, this.sprintTimer - delta);
+                }
+            }
+        };
+
+        function resetGameState() {
+            gameState.timeLeft = 600; gameState.keysCollected = 0; gameState.fear = 0.0;
+            gameState.isPaused = true; gameState.isDying = false; gameState.stunCharges = 0;
+            gameState.coins = 0; gameState.isTrapped = false; gameState.trapTimer = 0; 
+            gameState.isHidden = false; gameState.inSafeZone = false;
+            gameState.cameraShake = 0; gameState.activeSlot = 0;
+            gameState.inventory = [null, null, null, null, null, null, null, null];
+            gameState.safeInput = ""; gameState.safeUnlocked = false; gameState.currentFloor = 0;
+            DirectorAI.hiddenTimer = 0; DirectorAI.sprintTimer = 0;
+            
+            updateInventoryUI();
+            const coinAmtEl = document.getElementById('coin-amt');
+            if (coinAmtEl) coinAmtEl.innerText = "0";
+            
+            while(envGroup.children.length > 0) { envGroup.remove(envGroup.children[0]); }
+            walls = []; interactables = []; openables = [];
+            bearTraps = []; tripwires = []; lasers = []; beds = []; closets = []; cabinetList = []; coinMeshes = [];
+            
+            buildMap();
+            
+            yawObj.position.copy(spawnPoint);
+            yawObj.position.y = (gameState.currentFloor * 5) + baseHeight;
+            pitchObj.rotation.x = 0; yawObj.rotation.y = Math.PI;
+            
+            if(enemyMesh) {
+                enemyMesh.visible = false; isEnemyActive = false; enemyState = 'wander';
+                if(enemyMixer) { walkAction.stop(); idleAction.stop(); enemyMixer.timeScale = 1.0; }
+            }
+            
+            const jsFlash = document.getElementById('jumpscare-flash');
+            if(jsFlash) {
+                jsFlash.style.opacity = 0;
+                jsFlash.style.background = "#ffffff";
+                jsFlash.style.mixBlendMode = "overlay";
+            }
+            const uiLayer = document.getElementById('ui-layer');
+            if(uiLayer) uiLayer.style.filter = "none";
+            const objTrack = document.getElementById('obj-tracker');
+            if(objTrack) {
+                objTrack.innerText = "State: CALM";
+                objTrack.style.color = "#aaa";
+            }
+            const timeDisp = document.getElementById('timer-display');
+            if(timeDisp) timeDisp.innerText = "10:00";
+        }
+
+        function startGame() {
+            if (gameState.timeLeft <= 0 || gameState.isDying) return;
+
+            if (gameState.inMenu) {
+                resetGameState();
+                stats.played++; saveStats();
+                gameState.inMenu = false;
+                
+                yawObj.position.copy(spawnPoint);
+                yawObj.position.y = (gameState.currentFloor * 5) + baseHeight;
+                yawObj.rotation.y = Math.PI;
+                pitchObj.rotation.x = 0;
+                setTimeout(() => spawnEnemy(false), 2000); 
+            }
+            
+            document.getElementById('game-over-screen')?.classList.add('hidden');
+            document.getElementById('main-menu')?.classList.add('hidden');
+            document.getElementById('settings')?.classList.add('hidden');
+            document.getElementById('how-to-play')?.classList.add('hidden');
+            
+            const slideBg = document.getElementById('slideshow-bg');
+            if(slideBg) slideBg.style.display = 'none';
+            
+            gameState.isPaused = false;
+            document.body.requestPointerLock();
+        }
+
+        function returnToMenu() {
+            resetGameState();
+            gameState.inMenu = true;
+            document.getElementById('game-over-screen')?.classList.add('hidden');
+            
+            const slideBg = document.getElementById('slideshow-bg');
+            if(slideBg) slideBg.style.display = 'block';
+            
+            const btn = document.querySelector('#main-menu button');
+            if (btn) btn.innerText = "ENTER MANOR";
+            showPanel('main-menu');
+        }
+
+        // --- AUDIO ENGINE ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playNoiseBurst(duration, vol, pitch=1.0) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const bufferSize = audioCtx.sampleRate * duration; 
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer; noise.playbackRate.value = pitch;
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass'; filter.frequency.value = 1500 * pitch;
+            noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+            noise.start();
+        }
+        function playSynthTone(freq, type, duration, vol) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+        
+        let nextThunder = 5 + Math.random() * 15;
+        function updateAtmosphere(delta) {
+            if(gameState.inMenu) return; 
+            nextThunder -= delta;
+            if(nextThunder <= 0 && !gameState.isPaused) {
+                const flash = document.getElementById('lightning-flash');
+                if (flash) {
+                    flash.style.opacity = 0.8;
+                    setTimeout(() => flash.style.opacity = 0.2, 50);
+                    setTimeout(() => flash.style.opacity = 0.9, 100);
+                    setTimeout(() => flash.style.opacity = 0.0, 150);
+                }
+                setTimeout(() => { playNoiseBurst(3.0, 0.6, 0.1); }, 1000 + Math.random()*2000);
+                nextThunder = 15 + Math.random() * 20;
+            }
+            
+            if(gameState.fear > 0.2 && !gameState.isPaused && !gameState.isDying && !gameState.inSafeZone) {
+                if(Math.random() < 0.02) {
+                    playNoiseBurst(0.2, gameState.fear * 0.8, 0.4); 
+                    setTimeout(() => playNoiseBurst(0.2, gameState.fear * 0.5, 0.4), 200);
+                }
+            }
+        }
+
+        // --- HIGH FIDELITY PROCEDURAL TEXTURES ---
+        function generateTex(type, isBump = false) {
+            const cvs = document.createElement('canvas'); cvs.width = 1024; cvs.height = 1024;
+            const ctx = cvs.getContext('2d');
+            
+            if(type === 'wood') { 
+                ctx.fillStyle = isBump ? '#888' : '#1a0d05'; ctx.fillRect(0,0,1024,1024); 
+                ctx.fillStyle = isBump ? '#000' : '#080402'; 
+                for(let i=0; i<1024; i+=32) { ctx.fillRect(0, i, 1024, 4); } 
+                for(let i=0; i<8000; i++) { 
+                    ctx.globalAlpha=Math.random()*0.4; 
+                    ctx.fillStyle = isBump ? (Math.random()>0.5?'#fff':'#000') : '#000';
+                    ctx.fillRect(Math.random()*1024, Math.random()*1024, Math.random()*100+10, 2); 
+                }
+            } else if(type === 'marble') { 
+                ctx.fillStyle = isBump ? '#888' : '#111'; ctx.fillRect(0,0,1024,1024); 
+                ctx.fillStyle = isBump ? '#ccc' : '#aaa'; 
+                for(let x=0; x<1024; x+=256) { for(let y=0; y<1024; y+=256) { if((x+y)%512 === 0) ctx.fillRect(x,y,256,256); } }
+                for(let i=0; i<15000; i++) { 
+                    ctx.fillStyle = isBump ? '#000' : `rgba(0,0,0,0.4)`; 
+                    ctx.fillRect(Math.random()*1024, Math.random()*1024, 3, 3); 
+                } 
+            } else if(type === 'carpet') { 
+                ctx.fillStyle = isBump ? '#444' : '#5a0a1a'; ctx.fillRect(0,0,1024,1024); 
+                for(let i=0; i<50000; i++) { 
+                    ctx.fillStyle = isBump ? (Math.random() > 0.5 ? '#fff' : '#000') : (Math.random() > 0.5 ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.1)');
+                    ctx.fillRect(Math.random()*1024, Math.random()*1024, 2, 2); 
+                } 
+            } else if(type === 'wallpaper') { 
+                ctx.fillStyle = isBump ? '#888' : '#1e1b24'; ctx.fillRect(0,0,1024,1024); 
+                ctx.strokeStyle = isBump ? '#fff' : '#0f0e12'; ctx.lineWidth = 12;
+                for(let i=0; i<1024; i+=128) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1024); ctx.stroke(); }
+                ctx.fillStyle = isBump ? '#fff' : '#0f0e12';
+                for(let i=0; i<120; i++) { ctx.beginPath(); ctx.ellipse(Math.random()*1024, Math.random()*1024, 10+Math.random()*30, 20+Math.random()*60, Math.random()*Math.PI, 0, Math.PI*2); ctx.fill(); } 
+            } else if(type === 'door' || type === 'cabinet') {
+                ctx.fillStyle = isBump ? '#666' : '#22150d'; ctx.fillRect(0,0,1024,1024);
+                ctx.fillStyle = isBump ? '#000' : '#0f0805'; for(let i=0; i<1024; i+=64) ctx.fillRect(i, 0, 8, 1024);
+                if(type === 'door') {
+                    ctx.fillStyle = isBump ? '#fff' : '#444'; ctx.beginPath(); ctx.arc(900, 512, 30, 0, Math.PI*2); ctx.fill(); 
+                } else {
+                    ctx.strokeStyle = isBump ? '#000' : '#0f0805'; ctx.lineWidth=20; ctx.strokeRect(20,20,984,984);
+                    ctx.strokeRect(512,20, 10, 984); 
+                    ctx.fillStyle = isBump ? '#fff' : '#ccaa33'; ctx.fillRect(440, 500, 20, 80); ctx.fillRect(560, 500, 20, 80); 
+                }
+            } else if(type === 'metal') {
+                ctx.fillStyle = isBump ? '#888' : '#222'; ctx.fillRect(0,0,1024,1024);
+                for(let i=0; i<10000; i++) { 
+                    ctx.fillStyle= isBump ? '#fff' : `rgba(255,255,255,0.15)`; 
+                    ctx.fillRect(Math.random()*1024, Math.random()*1024, 2, 2); 
+                } 
+            } else if(type === 'safe' || type === 'vending') {
+                ctx.fillStyle = '#222'; ctx.fillRect(0,0,1024,1024);
+            }
+            
+            ctx.globalAlpha = 1.0;
+            const tex = new THREE.CanvasTexture(cvs);
+            tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(2, 2);
+            return tex;
+        }
+
+        const tWood = generateTex('wood'); const bWood = generateTex('wood', true);
+        const tMarble = generateTex('marble'); const bMarble = generateTex('marble', true);
+        const tCarpet = generateTex('carpet'); const bCarpet = generateTex('carpet', true);
+        const tWall = generateTex('wallpaper'); const bWall = generateTex('wallpaper', true);
+        const tDoor = generateTex('door'); const bDoor = generateTex('door', true);
+        const tCabinet = generateTex('cabinet'); const bCabinet = generateTex('cabinet', true);
+        const tMetal = generateTex('metal'); const bMetal = generateTex('metal', true);
+
+        // Animated TV Glitch Texture
+        const tvCvs = document.createElement('canvas'); tvCvs.width = 512; tvCvs.height = 512;
+        const tvCtx = tvCvs.getContext('2d');
+        const tTV = new THREE.CanvasTexture(tvCvs);
+        
+        let tvActive = false;
+        function updateTVTexture() {
+            if(gameState.isPaused && !gameState.inMenu) return;
+            const time = Date.now() * 0.005;
+            tvCtx.fillStyle = '#000'; tvCtx.fillRect(0,0,512,512);
+            
+            if(!tvActive) {
+                // TV is Off / Sleeping
+                for(let i=0; i<5000; i++) { 
+                    tvCtx.fillStyle = Math.random()>0.5?'#fff':'#222'; 
+                    tvCtx.fillRect(Math.random()*512, Math.random()*512, 4, 4); 
+                }
+                tvCtx.fillStyle = `rgba(10, 10, 10, 0.8)`;
+                tvCtx.fillRect(0, 0, 512, 512);
+            } else {
+                // TV is Aggressive / Glitching
+                for(let i=0; i<15000; i++) { 
+                    tvCtx.fillStyle = Math.random()>0.5?'#fff':'#000'; 
+                    tvCtx.fillRect(Math.random()*512, Math.random()*512, 6, 6); 
+                }
+                tvCtx.fillStyle = `rgba(150, 0, 0, ${Math.sin(time)*0.3 + 0.5})`;
+                tvCtx.fillRect(0, 0, 512, 512);
+                
+                // Giant Creepy Eye
+                tvCtx.fillStyle = '#fff';
+                tvCtx.beginPath(); tvCtx.ellipse(256 + Math.random()*10, 256 + Math.sin(time*0.8)*20, 150, 80, 0, 0, Math.PI*2); tvCtx.fill();
+                tvCtx.fillStyle = '#f00';
+                tvCtx.beginPath(); tvCtx.arc(256 + Math.cos(time)*30, 256 + Math.sin(time*0.8)*20, 40, 0, Math.PI*2); tvCtx.fill();
+                tvCtx.fillStyle = '#000';
+                tvCtx.beginPath(); tvCtx.arc(256 + Math.cos(time)*30, 256 + Math.sin(time*0.8)*20, 15, 0, Math.PI*2); tvCtx.fill();
+            }
+            tTV.needsUpdate = true;
+        }
+
+        const matWood = new THREE.MeshStandardMaterial({ map: tWood, bumpMap: bWood, bumpScale: 0.05, roughness: 0.7 });
+        const matMarble = new THREE.MeshStandardMaterial({ map: tMarble, bumpMap: bMarble, bumpScale: 0.02, roughness: 0.1 });
+        const matCarpet = new THREE.MeshStandardMaterial({ map: tCarpet, bumpMap: bCarpet, bumpScale: 0.1, roughness: 1.0 });
+        const matWall = new THREE.MeshStandardMaterial({ map: tWall, bumpMap: bWall, bumpScale: 0.05, roughness: 0.9 });
+        const matDoor = new THREE.MeshStandardMaterial({ map: tDoor, bumpMap: bDoor, bumpScale: 0.05, roughness: 0.8 });
+        const matCabinet = new THREE.MeshStandardMaterial({ map: tCabinet, bumpMap: bCabinet, bumpScale: 0.05, roughness: 0.8 });
+        const matMetal = new THREE.MeshStandardMaterial({ map: tMetal, bumpMap: bMetal, bumpScale: 0.02, roughness: 0.4, metalness: 0.8 });
+        const matTV = new THREE.MeshBasicMaterial({ map: tTV });
+        
+        const matProp = new THREE.MeshStandardMaterial({ color: 0x1a0f0a, roughness: 0.9 }); 
+        const matSafe = new THREE.MeshStandardMaterial({ color: 0x222, roughness: 0.3, metalness: 0.9 });
+        const matVending = new THREE.MeshStandardMaterial({ color: 0x881111, roughness: 0.4, metalness: 0.5 });
+
+        // --- 3D ITEM MODELS ---
+        function createItemMesh(type) {
+            const grp = new THREE.Group();
+            const hitBoxGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+            const hitBoxMat = new THREE.MeshBasicMaterial({transparent: true, opacity: 0});
+            const hitBox = new THREE.Mesh(hitBoxGeo, hitBoxMat);
+            grp.add(hitBox);
+
+            if(type === 'key') {
+                const ring = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.02, 8, 16), new THREE.MeshStandardMaterial({color: 0xaa8822, metalness:0.8}));
+                ring.position.set(0, 0, -0.15);
+                const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.3), new THREE.MeshStandardMaterial({color: 0xaa8822, metalness:0.8}));
+                shaft.rotation.x = Math.PI/2;
+                const tooth1 = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.08, 0.05), new THREE.MeshStandardMaterial({color: 0xaa8822, metalness:0.8}));
+                tooth1.position.set(0, -0.04, 0.1);
+                const tooth2 = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.06, 0.05), new THREE.MeshStandardMaterial({color: 0xaa8822, metalness:0.8}));
+                tooth2.position.set(0, -0.03, 0.15);
+                grp.add(ring, shaft, tooth1, tooth2);
+                grp.scale.set(1.5, 1.5, 1.5);
+            } else if(type === 'stun') {
+                const handle = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.25, 0.15), new THREE.MeshStandardMaterial({color: 0x111111}));
+                handle.position.set(0, -0.1, 0.05); handle.rotation.x = -Math.PI/8;
+                const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.3), new THREE.MeshStandardMaterial({color: 0x2222dd, metalness:0.6}));
+                const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.1), new THREE.MeshStandardMaterial({color: 0xdddddd, metalness:1.0}));
+                p1.rotation.x = Math.PI/2; p1.position.set(0.03, 0, -0.2);
+                const p2 = p1.clone(); p2.position.set(-0.03, 0, -0.2);
+                grp.add(handle, barrel, p1, p2);
+            } else if(type === 'battery') {
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.25, 16), new THREE.MeshStandardMaterial({color: 0x222222, metalness:0.5}));
+                const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.04, 8), new THREE.MeshStandardMaterial({color: 0xaaaaaa, metalness:0.9}));
+                tip.position.y = 0.14;
+                const wrap = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.062, 0.15, 16), new THREE.MeshStandardMaterial({color: 0x22ff22}));
+                grp.add(body, tip, wrap);
+                grp.scale.set(1.5, 1.5, 1.5);
+            } else if(type === 'melee') {
+                const batMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.02, 0.8, 16), new THREE.MeshStandardMaterial({color: 0x5c3a21}));
+                batMesh.rotation.x = Math.PI/2;
+                const handleGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.2, 16), new THREE.MeshStandardMaterial({color: 0x111111}));
+                handleGrip.rotation.x = Math.PI/2; handleGrip.position.set(0, 0, 0.3);
+                const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.02, 16), new THREE.MeshStandardMaterial({color: 0x5c3a21}));
+                knob.rotation.x = Math.PI/2; knob.position.set(0, 0, 0.4);
+                grp.add(batMesh, handleGrip, knob);
+            } else if(type === 'crowbar') {
+                const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.8), new THREE.MeshStandardMaterial({color: 0xaa2222, metalness: 0.8, roughness: 0.4}));
+                const hook = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.03, 8, 16, Math.PI), new THREE.MeshStandardMaterial({color: 0xaa2222, metalness: 0.8, roughness: 0.4}));
+                hook.position.set(0.1, 0.4, 0);
+                grp.add(bar, hook);
+                grp.scale.set(1.2, 1.2, 1.2);
+            } else if(type === 'clue') {
+                const paper = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.8), new THREE.MeshStandardMaterial({color: 0xffffee, roughness:1.0, side: THREE.DoubleSide}));
+                paper.rotation.x = -Math.PI/2;
+                grp.add(paper);
+            } else if(type === 'coin') {
+                const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.05, 16), new THREE.MeshStandardMaterial({color: 0xffd700, metalness: 1.0, roughness: 0.2}));
+                coin.rotation.x = Math.PI/2;
+                grp.add(coin);
+            }
+            return grp;
+        }
+
+        // --- THREE.JS SETUP ---
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050508, 0.025); 
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.5; 
+        document.body.appendChild(renderer.domElement);
+
+        const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+        const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const postScene = new THREE.Scene();
+        const postMaterial = new THREE.ShaderMaterial({
+            uniforms: { tDiffuse: { value: renderTarget.texture }, time: { value: 0.0 }, fear: { value: 0.0 } },
+            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 1.0); }`,
+            fragmentShader: `
+                uniform sampler2D tDiffuse; uniform float time; uniform float fear; varying vec2 vUv;
+                float rand(vec2 co){ return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453); }
+                void main() {
+                    vec2 uv = vUv;
+                    float wave = sin(uv.y * 15.0 + time * 3.0) * (fear * 0.015);
+                    uv.x += wave;
+                    vec3 col = texture2D(tDiffuse, uv).rgb;
+                    col -= rand(uv * time) * (0.05 + fear*0.15);
+                    float dist = distance(vUv, vec2(0.5));
+                    col *= smoothstep(1.2, 0.4 - fear*0.2, dist);
+                    gl_FragColor = vec4(col, 1.0);
+                }
+            `
+        });
+        postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial));
+
+        const hemiLight = new THREE.HemisphereLight(0x2a3a4c, 0x050505, 1.0); scene.add(hemiLight);
+        const ambientLight = new THREE.AmbientLight(0x111115, 1.5); scene.add(ambientLight);
+
+        // Particle System (Dust in the air)
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 5000;
+        const posArray = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particleMat = new THREE.PointsMaterial({color: 0x999999, size: 0.08, transparent: true, opacity: 0.4});
+        const particles = new THREE.Points(particleGeo, particleMat);
+        scene.add(particles);
+
+        // --- MAP ARCHITECTURE (3 FLOORS, 20x20 Grid) ---
+        const mapW = 20; const mapH = 20; const mapLevels = 3;
+        
+        let mapData = [
+            // LEVEL 0: Ground Floor (Solid Walls around outer edge)
+            [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,2,2,2,1,12,12,12,12,12,12,1,2,2,2,2,2,1,1,1],
+                [1,2,5,2,61,12,11,90,11,12,61,2,74,0,95,2,1,1,1],
+                [1,2,2,2,1,12,12,12,12,12,12,1,2,2,0,2,2,61,1,1],
+                [1,1,60,1,1,1,1,1,60,1,1,1,1,1,1,60,1,1,1,1],
+                [1,0,0,0,1,7,0,0,0,0,0,1,24,0,0,0,24,1,1,1],
+                [1,0,18,0,61,0,0,10,0,74,0,61,0,17,0,0,0,1,1,1],
+                [1,0,0,0,1,0,0,0,80,0,0,1,0,0,0,24,0,1,1,1],
+                [1,1,60,1,1,1,1,1,8,1,1,1,1,1,1,1,1,1,1,1],
+                [1,12,12,12,12,1,2,2,2,2,2,1,12,12,12,12,12,1,1,1],
+                [1,12,11,90,11,61,2,4,41,2,2,61,12,11,90,11,12,1,1,1],
+                [1,12,12,12,12,1,2,2,2,2,2,1,12,12,12,12,12,1,1,1],
+                [1,1,1,1,1,1,1,1,13,1,1,1,1,1,1,1,1,1,1,1],
+                [1,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                [1,0,17,0,0,0,0,0,0,0,0,0,0,18,0,24,0,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,60,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,50,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ],
+            // LEVEL 1: Second Floor
+            [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,7,0,7,1,12,12,12,12,12,12,1,12,12,12,12,12,1,1,1],
+                [1,7,91,7,62,12,6,12,6,12,63,12,6,12,6,12,1,1,1], // 62, 63 Locked Doors
+                [1,70,0,70,1,12,12,12,12,12,12,1,12,12,12,12,12,1,1,1],
+                [1,1,60,1,1,1,1,1,60,1,1,1,1,1,1,60,1,1,1,1],
+                [1,0,80,0,1,24,0,0,0,0,0,1,74,0,95,0,70,1,1,1],
+                [1,0,18,0,61,0,0,10,0,24,0,61,0,17,0,0,0,1,1,1],
+                [1,0,0,0,1,0,0,0,80,0,0,1,0,0,80,0,0,1,1,1],
+                [1,1,60,1,1,1,1,1,8,1,1,1,1,1,1,1,1,1,1,1],
+                [1,12,12,12,12,1,0,0,0,0,0,1,12,12,12,12,12,1,1,1],
+                [1,12,11,90,11,61,0,96,0,0,0,61,12,11,90,11,12,1,1,1], // 96 Vending
+                [1,12,12,12,12,1,0,0,0,0,0,1,12,12,12,12,12,1,1,1],
+                [1,1,1,1,1,1,1,1,8,1,1,1,1,1,1,1,1,1,1,1],
+                [1,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                [1,0,18,0,0,0,80,0,0,0,0,0,0,17,0,70,0,1,1,1],
+                [1,1,1,1,1,1,1,1,16,1,1,1,1,1,1,60,1,1,1,1], 
+                [1,1,1,1,1,1,1,1,50,1,1,1,1,1,1,0,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,51,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ],
+            // LEVEL 2: Attic (Parkour Wing - 3 denotes pit)
+            [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,1],
+                [1,3,20,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,1], 
+                [1,3,22,22,22,22,21,22,22,21,22,3,3,3,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,22,3,3,3,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,22,3,3,3,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,21,3,3,3,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,22,22,22,22,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,22,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,22,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,21,3,3,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,22,22,22,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,22,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,22,3,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,21,3,1,1,1],
+                [1,3,3,3,3,3,3,3,8,3,3,3,3,3,3,22,1,1,1,1],
+                [1,3,3,3,3,3,3,1,51,1,3,3,3,3,3,22,1,1,1,1],
+                [1,3,3,3,3,3,3,1,1,1,3,3,3,3,3,22,1,1,1,1],
+                [1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ]
+        ];
+
+        function isSafeZone(x, z, f) { return f === 1 && x >= 5 && x <= 10 && z >= 9 && z <= 12; } // East Lounge Area is now L1 center
+
+        const roomZones = [
+            [0, 1, 4, 1, 4, "Dining Hall"],
+            [0, 10, 18, 1, 4, "Kitchen"],
+            [0, 1, 4, 9, 12, "West Lounge"],
+            [0, 10, 18, 9, 12, "East Lounge"],
+            [0, 5, 9, 9, 12, "Grand Foyer"], 
+            [0, 1, 18, 13, 15, "Lower Hallway"],
+            [1, 1, 4, 1, 4, "Library"],
+            [1, 10, 18, 1, 4, "Master Bedroom"],
+            [1, 1, 4, 9, 12, "Guest Room"],
+            [1, 5, 10, 9, 12, "Safe Zone (Upper Lounge)"],
+            [1, 1, 18, 13, 15, "Upper Hallway"],
+            [2, 0, 19, 0, 19, "The Chasm (Attic)"]
+        ];
+
+        function getCurrentRoom(x, z, f) {
+            for(let r of roomZones) {
+                if(r[0] === f && x >= r[1] && x <= r[2] && z >= r[3] && z <= r[4]) return r[5];
+            }
+            return "Corridors";
+        }
+
+        const envGroup = new THREE.Group(); scene.add(envGroup);
+        
+        let walls = []; let interactables = []; let openables = [];
+        let bearTraps = []; let tripwires = []; let lasers = [];
+        let beds = []; let closets = [];
+        let cabinetList = []; let coinMeshes = [];
+        
+        let spawnPoint = new THREE.Vector3();
+        let parkourStart = new THREE.Vector3();
+
+        function alignToWall(x, z, level, mesh, offsetZ=0) {
+            if (mapData[level][z][x-1] === 1) { mesh.rotation.y = Math.PI/2; mesh.position.x -= offsetZ; }
+            else if (mapData[level][z][x+1] === 1) { mesh.rotation.y = -Math.PI/2; mesh.position.x += offsetZ; }
+            else if (mapData[level][z-1] && mapData[level][z-1][x] === 1) { mesh.rotation.y = 0; mesh.position.z -= offsetZ; }
+            else if (mapData[level][z+1] && mapData[level][z+1][x] === 1) { mesh.rotation.y = Math.PI; mesh.position.z += offsetZ; }
+            else { mesh.rotation.y = 0; mesh.position.z -= offsetZ; }
+            mesh.updateMatrixWorld(true);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function buildMap() {
+            cabinetList = []; coinMeshes = []; openables = []; walls = []; interactables = [];
+            for(let L=0; L<mapLevels; L++) {
+                const floorY = L * 5.0;
+                const floorGeo = new THREE.PlaneGeometry(mapW*4, mapH*4);
+                const floor = new THREE.Mesh(floorGeo, matWood); 
+                floor.rotation.x = -Math.PI/2; floor.position.set((mapW*4)/2 - 2, floorY, (mapH*4)/2 - 2);
+                floor.receiveShadow = true; envGroup.add(floor);
+                
+                const ceiling = new THREE.Mesh(floorGeo, new THREE.MeshBasicMaterial({color: 0x000})); 
+                ceiling.rotation.x = Math.PI/2; ceiling.position.set(floor.position.x, floorY + 4.98, floor.position.z);
+                envGroup.add(ceiling);
+
+                for(let z=0; z<mapH; z++) {
+                    for(let x=0; x<mapW; x++) {
+                        const t = mapData[L][z][x];
+                        const px = x*4; const pz = z*4;
+                        
+                        if(t === 2) { 
+                            const mFloor = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), matMarble);
+                            mFloor.rotation.x = -Math.PI/2; mFloor.position.set(px, floorY + 0.01, pz); mFloor.receiveShadow = true;
+                            envGroup.add(mFloor);
+                        } else if (t === 12) {
+                            const cFloor = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), matCarpet);
+                            cFloor.rotation.x = -Math.PI/2; cFloor.position.set(px, floorY + 0.01, pz); cFloor.receiveShadow = true;
+                            envGroup.add(cFloor);
+                        } else if (t === 3) { 
+                            const pitCover = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({color: 0x000000}));
+                            pitCover.rotation.x = -Math.PI/2; pitCover.position.set(px, floorY + 0.02, pz);
+                            envGroup.add(pitCover);
+                        }
+                        
+                        if(t === 1) { 
+                            const mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 5.0, 4), matWall);
+                            mesh.position.set(px, floorY + 2.5, pz); mesh.castShadow = true; mesh.receiveShadow = true; envGroup.add(mesh);
+                            mesh.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(mesh), isBed: false, level: L });
+                        } 
+                        else if (t === 5) { 
+                            const tableGroup = new THREE.Group(); tableGroup.position.set(px, floorY, pz);
+                            const tableTop = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.2, 2.4), matProp); tableTop.position.set(0, 1.2, 0); tableGroup.add(tableTop);
+                            const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.1), matProp); leg1.position.set(1.4, 0.55, 1.0); tableGroup.add(leg1);
+                            const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.1), matProp); leg2.position.set(-1.4, 0.55, 1.0); tableGroup.add(leg2);
+                            const leg3 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.1), matProp); leg3.position.set(1.4, 0.55, -1.0); tableGroup.add(leg3);
+                            const leg4 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.1), matProp); leg4.position.set(-1.4, 0.55, -1.0); tableGroup.add(leg4);
+                            
+                            const c1Base = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.6, 0.8), matProp); c1Base.position.set(0, 0.3, 1.6);
+                            const c1Back = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.2), matProp); c1Back.position.set(0, 1.0, 1.9);
+                            const c2Base = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.6, 0.8), matProp); c2Base.position.set(0, 0.3, -1.6);
+                            const c2Back = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.2), matProp); c2Back.position.set(0, 1.0, -1.9);
+                            tableGroup.add(c1Base, c1Back, c2Base, c2Back);
+
+                            envGroup.add(tableGroup); 
+                            tableGroup.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(tableGroup), isBed: false, level: L });
+                        }
+                        else if (t === 6) { 
+                            const bedGroup = new THREE.Group(); bedGroup.position.set(px, floorY, pz);
+                            const mattress = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.6, 3.6), new THREE.MeshStandardMaterial({color:0x331111, roughness:0.9}));
+                            mattress.position.set(0, 0.8, 0); mattress.castShadow = true; bedGroup.add(mattress); 
+                            const pillow = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.2, 0.8), new THREE.MeshStandardMaterial({color:0xffffff}));
+                            pillow.position.set(0, 1.2, -1.2); bedGroup.add(pillow);
+                            const headboard = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.0, 0.2), matProp);
+                            headboard.position.set(0, 1.0, -1.8); headboard.castShadow = true; bedGroup.add(headboard);
+                            const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,2.5), matProp); post1.position.set(1.4, 1.25, 1.7); bedGroup.add(post1);
+                            const post2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,2.5), matProp); post2.position.set(-1.4, 1.25, 1.7); bedGroup.add(post2);
+                            
+                            alignToWall(x, z, L, bedGroup, 0); envGroup.add(bedGroup); 
+                            beds.push({ pos: new THREE.Vector3(px, floorY, pz), level: L });
+                            
+                            mattress.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(mattress), isBed: true, level: L });
+                        }
+                        else if (t === 7) { 
+                            const shelf = new THREE.Mesh(new THREE.BoxGeometry(4, 4.0, 1.2), matProp);
+                            shelf.position.set(px, floorY + 2.0, pz); shelf.castShadow=true; 
+                            for(let i=0; i<15; i++) {
+                                const book = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.5, 0.6), new THREE.MeshStandardMaterial({color: Math.random()*0xffffff}));
+                                book.position.set((Math.random()-0.5)*3.5, 0, (Math.random()-0.5)*0.5);
+                                book.rotation.y = (Math.random()-0.5)*0.5;
+                                shelf.add(book);
+                            }
+                            alignToWall(x, z, L, shelf, 1.4); envGroup.add(shelf); 
+                            shelf.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(shelf), isBed: false, level: L });
+                        }
+                        else if (t === 8) { 
+                            const tBeam = new THREE.Mesh(new THREE.BoxGeometry(4, 0.8, 4), matWood);
+                            tBeam.position.set(px, floorY + 4.6, pz); envGroup.add(tBeam);
+                        }
+                        else if (t === 10) { 
+                            const clockGroup = new THREE.Group(); clockGroup.position.set(px, floorY, pz);
+                            const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 4.0, 0.8), matProp);
+                            base.position.y = 2.0; base.castShadow = true; clockGroup.add(base);
+                            alignToWall(x, z, L, clockGroup, 1.6); envGroup.add(clockGroup); 
+                            clockGroup.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(clockGroup), isBed: false, level: L });
+                        }
+                        else if (t === 11) { 
+                            const sofaGroup = new THREE.Group(); sofaGroup.position.set(px, floorY, pz);
+                            const matVelvet = new THREE.MeshStandardMaterial({color: 0x441111, roughness: 1.0});
+                            const seat = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.6, 1.2), matVelvet); seat.position.y = 0.3; seat.castShadow = true; sofaGroup.add(seat);
+                            const back = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.2, 0.4), matVelvet); back.position.set(0, 0.9, -0.4); back.castShadow = true; sofaGroup.add(back);
+                            const arm1 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 1.2), matVelvet); arm1.position.set(1.4, 0.4, 0); sofaGroup.add(arm1);
+                            const arm2 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 1.2), matVelvet); arm2.position.set(-1.4, 0.4, 0); sofaGroup.add(arm2);
+                            alignToWall(x, z, L, sofaGroup, 1.4);
+                            envGroup.add(sofaGroup); 
+                            sofaGroup.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(sofaGroup), isBed: false, level: L });
+                        }
+                        else if (t === 90) { 
+                            const fpGroup = new THREE.Group(); fpGroup.position.set(px, floorY, pz);
+                            const body = new THREE.Mesh(new THREE.BoxGeometry(3.0, 3.0, 1.0), matMarble); body.position.set(0, 1.5, 0); fpGroup.add(body);
+                            const hole = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.1), new THREE.MeshBasicMaterial({color: 0x000})); hole.position.set(0, 0.75, 0); fpGroup.add(hole);
+                            const fireLight = new THREE.PointLight(0xff5500, 1.5, 10); fireLight.position.set(0, 0.5, 0.5); fpGroup.add(fireLight);
+                            alignToWall(x, z, L, fpGroup, 1.5);
+                            envGroup.add(fpGroup); 
+                            fpGroup.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(fpGroup), isBed: false, level: L });
+                        }
+                        else if (t === 91) { 
+                            const deskGroup = new THREE.Group(); deskGroup.position.set(px, floorY, pz);
+                            const deskTop = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.2, 1.5), matProp); deskTop.position.set(0, 1.1, 0); deskGroup.add(deskTop);
+                            const draw1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 1.4), matProp); draw1.position.set(1.0, 0.5, 0); deskGroup.add(draw1);
+                            const draw2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 1.4), matProp); draw2.position.set(-1.0, 0.5, 0); deskGroup.add(draw2);
+                            alignToWall(x, z, L, deskGroup, 1.25); envGroup.add(deskGroup);
+                            deskGroup.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(deskGroup), isBed: false, level: L });
+                        }
+                        else if (t === 92) { 
+                            const armorGrp = new THREE.Group(); armorGrp.position.set(px, floorY, pz);
+                            const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.5, 1.0), matMarble); base.position.y = 0.25; armorGrp.add(base);
+                            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1.8), matMetal); body.position.y = 1.6; armorGrp.add(body);
+                            const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.4), matMetal); head.position.y = 2.7; armorGrp.add(head);
+                            envGroup.add(armorGrp);
+                            armorGrp.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(armorGrp), isBed: false, level: L });
+                        }
+                        else if (t === 93) { 
+                            const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 5.0, 16), matMarble);
+                            pillar.position.set(px, floorY + 2.5, pz); envGroup.add(pillar);
+                            pillar.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(pillar), isBed: false, level: L });
+                        }
+                        else if (t === 95) { 
+                            const tvGroup = new THREE.Group(); tvGroup.position.set(px, floorY, pz);
+                            const body = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.5, 1.0), matProp); body.position.y = 1.0; tvGroup.add(body);
+                            const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.3), matTV); screen.position.set(0, 1.0, 0.51); tvGroup.add(screen);
+                            const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.0), matMetal); ant.position.set(-0.5, 2.0, 0); ant.rotation.z = Math.PI/4; tvGroup.add(ant);
+                            const ant2 = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.0), matMetal); ant2.position.set(0.5, 2.0, 0); ant2.rotation.z = -Math.PI/4; tvGroup.add(ant2);
+                            const tvLight = new THREE.PointLight(0xff0000, 0.0, 10); tvLight.position.set(0, 1.0, 1.0); tvGroup.add(tvLight);
+                            
+                            alignToWall(x, z, L, tvGroup, 1.5);
+                            envGroup.add(tvGroup); 
+                            tvGroup.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(tvGroup), isBed: false, level: L });
+                            interactables.push({ type: 'tv', pos: new THREE.Vector3(px, floorY + 1.0, pz), active: true, level: L, mesh: tvGroup, light: tvLight });
+                        }
+                        else if (t === 96) { 
+                            const vm = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 1.5), matVending);
+                            vm.position.set(px, floorY + 2.0, pz);
+                            alignToWall(x, z, L, vm, 1.25); vm.castShadow = true; envGroup.add(vm);
+                            const vmLight = new THREE.PointLight(0xffddaa, 1.5, 8); vmLight.position.set(px, floorY + 2.0, pz); envGroup.add(vmLight);
+                            vm.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(vm), isBed: false, level: L });
+                            interactables.push({ type: 'vending', pos: new THREE.Vector3(px, floorY + 2.0, pz), active: true, level: L });
+                        }
+                        else if (t === 17) { 
+                            const trapGroup = new THREE.Group(); trapGroup.position.set(px, floorY + 0.05, pz);
+                            const base = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.1, 1.2), matMetal); base.castShadow=true; trapGroup.add(base);
+                            const jaw1 = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.2, 0.1), matMetal); jaw1.position.set(0, 0.1, 0.5); trapGroup.add(jaw1);
+                            const jaw2 = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.2, 0.1), matMetal); jaw2.position.set(0, 0.1, -0.5); trapGroup.add(jaw2);
+                            envGroup.add(trapGroup);
+                            bearTraps.push({ pos: new THREE.Vector3(px, floorY, pz), level: L, mesh: trapGroup, jaw1: jaw1, jaw2: jaw2, triggered: false });
+                        }
+                        else if (t === 18) { 
+                            const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 4.5), new THREE.MeshBasicMaterial({color: 0x555555}));
+                            wire.rotation.z = Math.PI/2; wire.position.set(px, floorY + 0.8, pz); 
+                            if(mapData[L][z][x-1]===1 || mapData[L][z][x+1]===1) wire.rotation.y = 0;
+                            else wire.rotation.y = Math.PI/2;
+                            envGroup.add(wire); tripwires.push({ pos: new THREE.Vector3(px, floorY + 0.8, pz), level: L, mesh: wire, triggered: false });
+                        }
+                        else if (t === 20) { 
+                            const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 2.0, 2.0), matSafe);
+                            mesh.position.set(px, floorY + 1.0, pz); mesh.castShadow = true; envGroup.add(mesh);
+                            mesh.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(mesh), isBed: false, level: L });
+                            interactables.push({ type: 'safe', pos: mesh.position.clone(), mesh: mesh, active: true, level: L });
+                        }
+                        else if (t === 21) { 
+                            const lGrp = new THREE.Group(); lGrp.position.set(px, floorY, pz);
+                            const lMat = new THREE.MeshBasicMaterial({color: 0xff0000, transparent: true, opacity: 0.7});
+                            const l1 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 4), lMat);
+                            l1.rotation.z = Math.PI/2; l1.position.y = 1.0 + Math.random()*1.5; 
+                            if(Math.random()>0.5) l1.rotation.y = Math.PI/2;
+                            lGrp.add(l1); envGroup.add(lGrp);
+                            lasers.push({ pos: new THREE.Vector3(px, floorY + l1.position.y, pz), yHeight: floorY + l1.position.y, level: L });
+                        }
+                        else if (t === 22) { 
+                            const plat = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.2, 3.6), matWood);
+                            plat.position.set(px, floorY + 0.5, pz); plat.receiveShadow = true; plat.castShadow = true; envGroup.add(plat);
+                            plat.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(plat), isBed: false, level: L });
+                        }
+                        else if (t === 24) { 
+                            const cGrp = new THREE.Group(); cGrp.position.set(px, floorY, pz);
+                            const cMesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.5, 1.5), matProp);
+                            cMesh.position.y = 2.25; cMesh.castShadow = true; cGrp.add(cMesh);
+                            alignToWall(x, z, L, cGrp, 1.2); envGroup.add(cGrp); 
+                            cGrp.updateMatrixWorld(true);
+                            walls.push({ box: new THREE.Box3().setFromObject(cGrp), isBed: false, level: L });
+                            interactables.push({ type: 'closet', pos: new THREE.Vector3(px, floorY + 1.0, pz), mesh: cMesh, active: true, level: L });
+                        }
+                        else if (t === 29) { 
+                            const cGrp = new THREE.Group(); cGrp.position.set(px, floorY + 4.8, pz);
+                            const base = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.2), matMetal); base.position.y = -1.5; cGrp.add(base);
+                            const clight = new THREE.PointLight(0xffddaa, 1.0, 15); clight.position.y = -1.8; cGrp.add(clight);
+                            envGroup.add(cGrp);
+                        }
+                        else if (t === 50 || t === 51) { 
+                            // Very flat trigger area to avoid blocking movement
+                            const stairGeo = new THREE.BoxGeometry(2, 0.1, 2);
+                            const stairMesh = new THREE.Mesh(stairGeo, matWood);
+                            stairMesh.position.set(px, floorY + 0.05, pz); envGroup.add(stairMesh);
+                            interactables.push({ type: 'stairs', direction: t===50?'up':'down', pos: stairMesh.position.clone(), mesh: stairMesh, active: true, level: L, x: x, z: z });
+                        }
+                        else if (t === 13 || t === 16 || t === 60 || t === 61 || t === 62 || t === 63) { 
+                            const doorIdx = openables.length;
+                            const pivot = new THREE.Group();
+                            if(t === 60 || t === 16 || t === 13 || t === 62) pivot.position.set(px - 1.0, floorY, pz); 
+                            else pivot.position.set(px, floorY, pz - 1.0); 
+                            
+                            const door = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 0.2), matDoor);
+                            if(t === 60 || t === 16 || t === 13 || t === 62) { door.position.set(1.0, 2.0, 0); }
+                            else { door.rotation.y = Math.PI/2; door.position.set(0, 2.0, 1.0); }
+                            
+                            if(t === 62 || t === 63) {
+                                const plank1 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.2, 0.3), matWood); plank1.rotation.z = 0.2; plank1.position.set(0, 0.5, 0); door.add(plank1);
+                                const plank2 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.2, 0.3), matWood); plank2.rotation.z = -0.3; plank2.position.set(0, -0.5, 0); door.add(plank2);
+                            }
+
+                            pivot.add(door); envGroup.add(pivot);
+                            
+                            // Separated frames so player can walk through exactly in the middle
+                            const fl = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4, 0.4), matWood); 
+                            const fr = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4, 0.4), matWood); 
+                            const ft = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 0.4), matWall); 
+                            
+                            if(t === 60 || t === 16 || t === 13 || t === 62) {
+                                fl.position.set(px - 1.1, floorY + 2, pz);
+                                fr.position.set(px + 1.1, floorY + 2, pz);
+                                ft.position.set(px, floorY + 4.6, pz);
+                            } else {
+                                fl.geometry = new THREE.BoxGeometry(0.4, 4, 0.2); fl.position.set(px, floorY + 2, pz - 1.1);
+                                fr.geometry = new THREE.BoxGeometry(0.4, 4, 0.2); fr.position.set(px, floorY + 2, pz + 1.1);
+                                ft.geometry = new THREE.BoxGeometry(0.4, 1.2, 2.4); ft.position.set(px, floorY + 4.6, pz);
+                            }
+                            envGroup.add(fl, fr, ft);
+                            
+                            door.updateMatrixWorld(true);
+                            fl.updateMatrixWorld(true); fr.updateMatrixWorld(true); ft.updateMatrixWorld(true);
+                            
+                            walls.push({ box: new THREE.Box3().setFromObject(door), isBed: false, level: L, isDoor: true, openableIdx: doorIdx });
+                            
+                            walls.push({ box: new THREE.Box3().setFromObject(fl), isBed: false, level: L });
+                            walls.push({ box: new THREE.Box3().setFromObject(fr), isBed: false, level: L });
+                            walls.push({ box: new THREE.Box3().setFromObject(ft), isBed: false, level: L });
+                            
+                            let interactPos = new THREE.Vector3(px, floorY + 1.5, pz);
+                            
+                            if (t === 16) {
+                                interactables.push({ type: '3keydoor', index: doorIdx, pos: interactPos, active: true, level: L, doorMesh: door });
+                            } else if (t === 13) {
+                                interactables.push({ type: 'exit', pos: interactPos, mesh: door, active: true, level: L });
+                            } else if (t === 62 || t === 63) {
+                                interactables.push({ type: 'locked_door', index: doorIdx, pos: interactPos, active: true, level: L });
+                            }
+                            
+                            openables.push({ type: 'door', mesh: door, pivot: pivot, state: 'closed', targetRot: 0, axis: (t===60||t===16||t===13||t===62)?'y':'x' });
+                            
+                            if (t !== 16 && t !== 13 && t !== 62 && t !== 63) {
+                                interactables.push({ type: 'openable', index: doorIdx, pos: interactPos, active: true, level: L });
+                            }
+                        }
+                        else if (t === 70 || t === 74) { 
+                            const cabIdx = openables.length;
+                            const cabGrp = new THREE.Group(); cabGrp.position.set(px, floorY, pz);
+                            
+                            if (t === 70) {
+                                const bodyGrp = new THREE.Group(); bodyGrp.position.y = 1.5;
+                                const back = new THREE.Mesh(new THREE.BoxGeometry(1.6, 3.0, 0.1), matCabinet); back.position.set(0, 0, -0.55); back.castShadow=true; bodyGrp.add(back);
+                                const left = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.0, 1.1), matCabinet); left.position.set(-0.75, 0, 0); left.castShadow=true; bodyGrp.add(left);
+                                const right = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.0, 1.1), matCabinet); right.position.set(0.75, 0, 0); right.castShadow=true; bodyGrp.add(right);
+                                const top = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.1, 1.1), matCabinet); top.position.set(0, 1.45, 0); top.castShadow=true; bodyGrp.add(top);
+                                const bottom = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.1, 1.1), matCabinet); bottom.position.set(0, -1.45, 0); bottom.castShadow=true; bodyGrp.add(bottom);
+                                const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.05, 1.0), matWood); shelf.position.set(0, -0.2, 0); shelf.castShadow=true; bodyGrp.add(shelf);
+                                cabGrp.add(bodyGrp);
+                                
+                                const leftDoorPivot = new THREE.Group(); leftDoorPivot.position.set(-0.75, 1.5, 0.55);
+                                const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2.9, 0.1), matWood); leftDoor.position.set(0.375, 0, 0); 
+                                const handleL = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02, 0.3), new THREE.MeshStandardMaterial({color:0xffaa00})); handleL.position.set(0.65, 0, 0.1); leftDoor.add(handleL);
+                                leftDoorPivot.add(leftDoor); cabGrp.add(leftDoorPivot);
+                                
+                                const rightDoorPivot = new THREE.Group(); rightDoorPivot.position.set(0.75, 1.5, 0.55);
+                                const rightDoor = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2.9, 0.1), matWood); rightDoor.position.set(-0.375, 0, 0); 
+                                const handleR = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02, 0.3), new THREE.MeshStandardMaterial({color:0xffaa00})); handleR.position.set(-0.65, 0, 0.1); rightDoor.add(handleR);
+                                rightDoorPivot.add(rightDoor); cabGrp.add(rightDoorPivot);
+                                
+                                alignToWall(x, z, L, cabGrp, 1.4); envGroup.add(cabGrp);
+                                
+                                cabGrp.updateMatrixWorld(true);
+                                walls.push({ box: new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(px, floorY+1.5, pz), new THREE.Vector3(1.6, 3.0, 1.2)), isBed: false, level: L });
+
+                                cabinetList.push({ cabGrp, px, py: floorY, pz, L, leftDoorPivot, rightDoorPivot, x, z, openableIdx: cabIdx });
+                            } else {
+                                // Dresser
+                                const body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.8, 1.2), matWood); body.position.y = 0.9; cabGrp.add(body);
+                                const d1 = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.4, 0.1), matWood); d1.position.set(0, 1.4, 0.6); cabGrp.add(d1);
+                                const d2 = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.4, 0.1), matWood); d2.position.set(0, 0.9, 0.6); cabGrp.add(d2);
+                                const d3 = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.4, 0.1), matWood); d3.position.set(0, 0.4, 0.6); cabGrp.add(d3);
+                                alignToWall(x, z, L, cabGrp, 1.4); envGroup.add(cabGrp);
+                                cabGrp.updateMatrixWorld(true);
+                                walls.push({ box: new THREE.Box3().setFromObject(body), isBed: false, level: L });
+                                cabinetList.push({ cabGrp, px, py: floorY, pz, L, isDresser: true, openableIdx: cabIdx });
+                            }
+                        }
+                        else if (t === 80) { 
+                            const coinMesh = createItemMesh('coin');
+                            coinMesh.position.set(px, floorY + 0.5, pz);
+                            const cLight = new THREE.PointLight(0xffd700, 1.0, 3); cLight.position.set(0,0,0); coinMesh.add(cLight);
+                            envGroup.add(coinMesh);
+                            coinMeshes.push(coinMesh);
+                            interactables.push({ type: 'coin', id: 'coin', pos: new THREE.Vector3(px, floorY + 0.5, pz), mesh: coinMesh, active: true, level: L });
+                        }
+                        else if(t === 4) { 
+                            spawnPoint.set(px, floorY + 1.7, pz);
+                            yawObj.position.copy(spawnPoint);
+                            gameState.currentFloor = L;
+                            
+                            const mesh = createItemMesh('clue');
+                            mesh.position.set(px + 1.0, floorY + 0.05, pz); 
+                            envGroup.add(mesh);
+                            const light = new THREE.PointLight(0xaaddff, 1.0, 3); light.position.set(px + 1.0, floorY + 1.0, pz); envGroup.add(light);
+                            interactables.push({ type: 'clue', id: 'floorClue', pos: mesh.position.clone(), mesh: mesh, light: light, active: true, level: L });
+                        }
+                        
+                        if (L === 1 && t === 50) parkourStart.set(px, 2*5.0 + 1.7, pz);
+                    }
+                }
+            }
+            
+            gameState.safeCode = Array.from({length:5}, () => Math.floor(Math.random() * 10)).join('');
+            shuffle(cabinetList);
+            
+            let cIdx = 0; const keyRooms = [];
+            
+            for(let i=0; i<3; i++) {
+                if(cIdx < cabinetList.length) {
+                    cabinetList[cIdx].assignedItem = { type: 'key', id: 31+i };
+                    keyRooms.push(getCurrentRoom(cabinetList[cIdx].px/4, cabinetList[cIdx].pz/4, cabinetList[cIdx].L));
+                    cIdx++;
+                }
+            }
+
+            const dynamicClues = {
+                'floorClue': { title: "A Father's Guilt", text: `The lock turns with a ${gameState.safeCode[0]}.\n\nI hear them whispering in the walls. I locked the first key in a wooden cabinet in the ${keyRooms[0] || 'mansion'}.` },
+                42: { title: "The Empty Chair", text: `The next digit is ${gameState.safeCode[1]}.\n\nShe never sleeps now. I hid another key where her dresses hang, inside a cabinet in the ${keyRooms[1] || 'mansion'}.` },
+                43: { title: "Buried Knowledge", text: `I recorded a ${gameState.safeCode[2]}.\n\nThe final key is buried inside a wooden vault in the ${keyRooms[2] || 'mansion'}.` },
+                44: { title: "The Gate", text: `I dial a ${gameState.safeCode[3]}.\n\nThe Automaton cannot climb past the reinforced door in the Upper Hallway... as long as you have the three keys to unlock it.` },
+                45: { title: "The Precipice", text: `The final spin is a ${gameState.safeCode[4]}.\n\nThe master safe lies beyond the void in the Attic. Don't fall.` }
+            };
+
+            for(let i=0; i<4; i++) {
+                if(cIdx < cabinetList.length) {
+                    cabinetList[cIdx].assignedItem = { type: 'clue', id: 42+i, data: dynamicClues[42+i] };
+                    cIdx++;
+                }
+            }
+
+            if(cIdx < cabinetList.length) cabinetList[cIdx++].assignedItem = { type: 'stun' };
+            if(cIdx < cabinetList.length) cabinetList[cIdx++].assignedItem = { type: 'melee' };
+            if(cIdx < cabinetList.length) cabinetList[cIdx++].assignedItem = { type: 'melee' };
+            if(cIdx < cabinetList.length) cabinetList[cIdx++].assignedItem = { type: 'battery' };
+            if(cIdx < cabinetList.length) cabinetList[cIdx++].assignedItem = { type: 'battery' };
+            if(cIdx < cabinetList.length) cabinetList[cIdx++].assignedItem = { type: 'crowbar' };
+
+            for(let cab of cabinetList) {
+                let itemMesh = null;
+                if(cab.assignedItem) {
+                    itemMesh = createItemMesh(cab.assignedItem.type);
+                    itemMesh.position.set(0, cab.isDresser ? 1.9 : 1.4, 0); 
+                    itemMesh.visible = false;
+                    cab.cabGrp.add(itemMesh);
+                }
+                if(cab.isDresser) {
+                    openables.push({ type: 'dresser', cabGrp: cab.cabGrp, mesh: cab.cabGrp, state: 'closed', item: cab.assignedItem, itemMesh: itemMesh, px: cab.px, py: cab.py, pz: cab.pz, level: cab.L });
+                } else {
+                    openables.push({ type: 'cabinet', cabGrp: cab.cabGrp, mesh: cab.cabGrp, pivotL: cab.leftDoorPivot, pivotR: cab.rightDoorPivot, state: 'closed', item: cab.assignedItem, itemMesh: itemMesh, px: cab.px, py: cab.py, pz: cab.pz, level: cab.L });
+                }
+                interactables.push({ type: 'openable', index: cab.openableIdx, pos: new THREE.Vector3(cab.px, cab.py + 1.5, cab.pz), active: true, level: cab.L });
+            }
+
+            window.dynamicClues = dynamicClues;
+            updateInventoryUI();
+        }
+
+        // --- PLAYER RIG & CONTROLS ---
+        const pitchObj = new THREE.Object3D(); pitchObj.add(camera);
+        const yawObj = new THREE.Object3D(); yawObj.position.y = 1.7; yawObj.add(pitchObj);
+        scene.add(yawObj);
+        
+        const armGroup = new THREE.Group();
+        const armMat = new THREE.MeshStandardMaterial({color: 0xc89880, roughness: 0.7});
+        const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.45), armMat); forearm.rotation.x = Math.PI/2; forearm.position.set(0.35, -0.4, -0.4); armGroup.add(forearm);
+        const hand = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.12), armMat); hand.position.set(0.35, -0.4, -0.65); armGroup.add(hand);
+        
+        const flashMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.25), new THREE.MeshStandardMaterial({color:0x111, metalness:0.9}));
+        flashMesh.rotation.x = Math.PI/2; flashMesh.position.set(0.35, -0.4, -0.7); armGroup.add(flashMesh);
+        pitchObj.add(armGroup);
+
+        const flashlight = new THREE.SpotLight(0xfff5e6, 4.0, 50, Math.PI/5, 0.4, 1.5); 
+        flashlight.position.set(0.35, -0.4, -0.7); flashlight.target.position.set(0.35, -0.4, -3);
+        flashlight.castShadow = true; flashlight.shadow.mapSize.width = 1024; flashlight.shadow.mapSize.height = 1024;
+        flashlight.shadow.bias = -0.001; pitchObj.add(flashlight); pitchObj.add(flashlight.target);
+
+        let isFlashlightOn = true; let isSprinting = false; let isCrouching = false;
+        let isJumping = false; let velocityY = 0; let baseHeight = 1.7;
+        let inCloset = false; let isUnderBed = false;
+        const moveState = { f:0, b:0, l:0, r:0 }; const velocity = new THREE.Vector3(); 
+
+        document.addEventListener('mousemove', (e) => {
+            if (document.pointerLockElement === document.body && !gameState.isPaused && !gameState.isDying) {
+                let swayX = (e.movementX || 0) * 0.002 * mouseSensitivity; let swayY = (e.movementY || 0) * 0.002 * mouseSensitivity;
+                yawObj.rotation.y -= swayX; pitchObj.rotation.x -= swayY;
+                pitchObj.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitchObj.rotation.x));
+                armGroup.position.x = THREE.MathUtils.lerp(armGroup.position.x, swayX*5, 0.15);
+                armGroup.position.y = THREE.MathUtils.lerp(armGroup.position.y, -swayY*5, 0.15);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if(gameState.isPaused || gameState.isDying || gameState.inMenu) return;
+            switch(e.code) {
+                case 'KeyW': moveState.f = 1; break; case 'KeyS': moveState.b = 1; break;
+                case 'KeyA': moveState.l = 1; break; case 'KeyD': moveState.r = 1; break;
+                case 'ShiftLeft': isSprinting = true; break;
+                case 'KeyC': 
+                    if(!inCloset) {
+                        if(isCrouching) {
+                            let canStand = true;
+                            for(let b of beds) {
+                                if(b.level !== gameState.currentFloor) continue;
+                                if(yawObj.position.x > b.pos.x - 1.5 && yawObj.position.x < b.pos.x + 1.5 && 
+                                   yawObj.position.z > b.pos.z - 1.9 && yawObj.position.z < b.pos.z + 1.9) {
+                                    canStand = false;
+                                }
+                            }
+                            if(canStand) { isCrouching = false; baseHeight = 1.7; }
+                            else {
+                                const intPrompt = document.getElementById('interaction-prompt');
+                                if(intPrompt) {
+                                    intPrompt.innerText = "CANNOT STAND HERE";
+                                    intPrompt.style.opacity = 1;
+                                    setTimeout(()=>intPrompt.style.opacity = 0, 1000);
+                                }
+                            }
+                        } else { 
+                            isCrouching = true; baseHeight = 0.5;
+                        }
+                    }
+                    break;
+                case 'Space': if(!isJumping && !gameState.isTrapped && !isCrouching && !isUnderBed && !inCloset) { velocityY = 12.0; isJumping = true; } break;
+                case 'KeyF': isFlashlightOn = !isFlashlightOn; flashlight.intensity = isFlashlightOn ? 4.0 : 0; playSynthTone(800, 'square', 0.1, 0.05); break;
+                case 'KeyE': 
+                    if(inCloset) {
+                        inCloset = false;
+                        yawObj.position.y = (gameState.currentFloor * 5.0) + baseHeight;
+                        playNoiseBurst(0.2, 0.3, 0.5);
+                    } else {
+                        tryInteract(); 
+                    }
+                    break;
+                case 'Digit1': selectSlot(0); break; case 'Digit2': selectSlot(1); break;
+                case 'Digit3': selectSlot(2); break; case 'Digit4': selectSlot(3); break;
+                case 'Digit5': selectSlot(4); break; case 'Digit6': selectSlot(5); break;
+                case 'Digit7': selectSlot(6); break; case 'Digit8': selectSlot(7); break;
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            switch(e.code) {
+                case 'KeyW': moveState.f = 0; break; case 'KeyS': moveState.b = 0; break;
+                case 'KeyA': moveState.l = 0; break; case 'KeyD': moveState.r = 0; break;
+                case 'ShiftLeft': isSprinting = false; break;
+            }
+        });
+
+        // --- INVENTORY & ITEMS ---
+        function selectSlot(idx) {
+            gameState.activeSlot = idx; updateInventoryUI();
+        }
+        function addToInventory(itemData) {
+            for(let i=0; i<8; i++) {
+                if(!gameState.inventory[i]) {
+                    gameState.inventory[i] = itemData; updateInventoryUI(); return true;
+                }
+            }
+            return false;
+        }
+        function updateInventoryUI() {
+            for(let i=0; i<8; i++) {
+                const el = document.getElementById(`inv-${i}`);
+                if(!el) continue;
+                el.className = 'inv-slot' + (i === gameState.activeSlot ? ' active' : '');
+                el.innerHTML = "";
+                const item = gameState.inventory[i];
+                if(item) {
+                    el.classList.add('filled');
+                    if (item.type === 'key') el.innerText = "🗝️";
+                    if (item.type === 'stun') { el.innerText = "🔫"; el.innerHTML += `<div class="ammo-counter">${gameState.stunCharges}</div>`; }
+                    if (item.type === 'melee') { el.innerText = "🏏"; el.innerHTML += `<div class="ammo-counter">${item.uses}</div>`; }
+                    if (item.type === 'crowbar') { el.innerText = "⛏️"; }
+                } else {
+                    el.innerText = (i+1).toString();
+                }
+            }
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if(document.pointerLockElement === document.body && !gameState.isPaused && !gameState.isDying && !gameState.inMenu && e.button === 0) {
+                const item = gameState.inventory[gameState.activeSlot];
+                if(item && item.type === 'stun' && gameState.stunCharges > 0) {
+                    gameState.stunCharges--; updateInventoryUI();
+                    playNoiseBurst(0.3, 1.5, 3.0); 
+                    const jsFlash = document.getElementById('jumpscare-flash');
+                    if(jsFlash) {
+                        jsFlash.style.background = "#00aaff"; jsFlash.style.opacity = 0.6;
+                        setTimeout(() => { jsFlash.style.background = "#ff0000"; jsFlash.style.opacity = 0; }, 100);
+                    }
+                    if (enemyMesh && enemyMesh.visible && enemyMesh.level === gameState.currentFloor) {
+                        const raycaster = new THREE.Raycaster(yawObj.position, new THREE.Vector3(0,0,-1).applyQuaternion(pitchObj.quaternion).applyQuaternion(yawObj.quaternion));
+                        const hit = raycaster.intersectObject(enemyMesh, true);
+                        if(hit.length > 0 && hit[0].distance < 20) {
+                            monsterStunTimer = 6.0; playSynthTone(200, 'sawtooth', 1.0, 1.0); 
+                        }
+                    }
+                } else if (item && item.type === 'melee' && item.uses > 0) {
+                    item.uses--; updateInventoryUI();
+                    armGroup.rotation.z = -Math.PI/2; setTimeout(()=>{ armGroup.rotation.z = 0; }, 200);
+                    playNoiseBurst(0.2, 0.5, 0.5); 
+                    if (enemyMesh && enemyMesh.visible && enemyMesh.level === gameState.currentFloor && enemyMesh.position.distanceTo(yawObj.position) < 4.0) {
+                        monsterStunTimer = 2.0; 
+                        enemyMesh.position.add(new THREE.Vector3(0,0,1).applyQuaternion(yawObj.quaternion).multiplyScalar(3.0)); 
+                        playNoiseBurst(0.2, 1.0, 0.2); 
+                    }
+                    if(item.uses <= 0) gameState.inventory[gameState.activeSlot] = null; updateInventoryUI();
+                }
+            }
+        });
+
+        // --- COLLISIONS ---
+        function checkCollision(px, py, pz, level = gameState.currentFloor, isMonster = false) {
+            const h = (isMonster || (!isCrouching && !isUnderBed)) ? 1.8 : 0.8; 
+            const radius = 0.3;
+            const yCenter = py - h/2; 
+            const pBox = new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(px, yCenter, pz), new THREE.Vector3(radius*2, h, radius*2));
+            
+            for(let w of walls) { 
+                if(w.level !== level) continue;
+                if(!isMonster && w.isBed) continue; 
+                
+                if(w.isDoor && w.openableIdx !== undefined) {
+                    const op = openables[w.openableIdx];
+                    if(op && (op.state === 'opening' || op.state === 'open')) continue; 
+                }
+                
+                if(w.box.intersectsBox(pBox)) return true; 
+            }
+            return false;
+        }
+        
+        function getFloorHeight(px, pz) {
+            let gridX = Math.floor((px+2) / 4); let gridZ = Math.floor((pz+2) / 4);
+            if(gridX<0 || gridX>=mapW || gridZ<0 || gridZ>=mapH) return gameState.currentFloor * 5.0;
+            const t = mapData[gameState.currentFloor][gridZ][gridX];
+            if(t === 3) return -10; 
+            if(t === 22) return (gameState.currentFloor * 5.0) + 0.6; 
+            return gameState.currentFloor * 5.0; 
+        }
+
+        // --- SAFE KEYPAD LOGIC ---
+        function kpPress(val) {
+            if(val === 'C') { gameState.safeInput = ""; }
+            else if (val === 'E') {
+                if(gameState.safeInput === gameState.safeCode) {
+                    document.getElementById('kp-display').innerText = "UNLOCKED";
+                    document.getElementById('kp-display').style.color = "#5f5";
+                    setTimeout(() => {
+                        document.getElementById('keypad-screen').classList.add('hidden');
+                        document.body.requestPointerLock();
+                        addToInventory({type: 'key', id: 99});
+                        const exit = interactables.find(i => i.type === 'exit'); if (exit) exit.active = true;
+                        document.getElementById('obj-tracker').innerText = "OBJECTIVE: ESCAPE THROUGH MAIN DOORS";
+                        document.getElementById('obj-tracker').style.color = "#ff3333";
+                        gameState.safeUnlocked = true;
+                        playNoiseBurst(0.5, 1.0, 0.2); 
+                    }, 1000);
+                } else {
+                    document.getElementById('kp-display').innerText = "ERROR";
+                    document.getElementById('kp-display').style.color = "#f55";
+                    playNoiseBurst(0.2, 0.5, 0.2); 
+                    setTimeout(() => { gameState.safeInput = ""; document.getElementById('kp-display').innerText = "-----"; document.getElementById('kp-display').style.color = "#0f0";}, 1000);
+                }
+                return;
+            } else {
+                if(gameState.safeInput.length < 5) gameState.safeInput += val;
+            }
+            document.getElementById('kp-display').innerText = gameState.safeInput.padEnd(5, "-");
+            playSynthTone(1000 + (val*100), 'sine', 0.1, 0.1);
+        }
+
+        // --- VENDING & TRADING ---
+        function buyItem(type, cost) {
+            if(gameState.coins >= cost) {
+                let success = false;
+                if(type === 'battery') success = addToInventory({type: 'battery'});
+                else if(type === 'stun') success = addToInventory({type: 'stun'});
+                else if(type === 'melee') success = addToInventory({type: 'melee', uses: 3});
+                
+                if(success) {
+                    gameState.coins -= cost;
+                    document.getElementById('coin-amt').innerText = gameState.coins;
+                    document.getElementById('vending-coin-display').innerText = gameState.coins;
+                    playSynthTone(800, 'square', 0.1, 0.1);
+                }
+            } else {
+                playNoiseBurst(0.2, 0.5, 0.2); 
+            }
+        }
+        function closeVending() {
+            document.getElementById('vending-screen').classList.add('hidden');
+            document.body.requestPointerLock();
+        }
+
+        // --- INTERACTION ---
+        let currentTarget = null;
+        function tryInteract() {
+            if(!currentTarget || !currentTarget.active) return;
+            
+            if(currentTarget.type === 'stairs') {
+                if(currentTarget.direction === 'up') gameState.currentFloor++;
+                else gameState.currentFloor--;
+                yawObj.position.y = (gameState.currentFloor * 5.0) + baseHeight;
+                yawObj.position.x = currentTarget.pos.x;
+                yawObj.position.z = currentTarget.pos.z;
+                
+                playNoiseBurst(0.2, 0.5, 0.5); 
+                return;
+            }
+
+            if(currentTarget.type === 'closet') {
+                inCloset = true;
+                yawObj.position.y = -50; 
+                yawObj.position.x = currentTarget.pos.x;
+                yawObj.position.z = currentTarget.pos.z;
+                playNoiseBurst(0.2, 0.3, 0.5); 
+                return;
+            }
+            
+            if(currentTarget.type === 'locked_door') {
+                let hasCrowbar = false; let crowbarIdx = -1;
+                for(let i=0; i<8; i++) {
+                    if(gameState.inventory[i] && gameState.inventory[i].type === 'crowbar') {
+                        hasCrowbar = true; crowbarIdx = i; break;
+                    }
+                }
+                if(hasCrowbar) {
+                    playNoiseBurst(0.8, 1.5, 0.5); // Wood breaking
+                    gameState.inventory[crowbarIdx] = null; updateInventoryUI();
+                    
+                    currentTarget.type = 'openable';
+                    
+                    const op = openables[currentTarget.index];
+                    op.state = 'opening';
+                    currentTarget.active = false;
+                    op.targetRot = Math.PI/2;
+                    
+                    // Hide the planks visually
+                    op.mesh.children.forEach(c => {
+                        if (c.geometry.type === 'BoxGeometry' && c.scale.x !== 1) c.visible = false;
+                    });
+                } else {
+                    const prmpt = document.getElementById('interaction-prompt');
+                    if(prmpt) {
+                        prmpt.innerText = "REQUIRES CROWBAR";
+                        prmpt.style.opacity = 1;
+                        setTimeout(()=>prmpt.style.opacity = 0, 2000);
+                    }
+                }
+                return;
+            }
+
+            if(currentTarget.type === 'openable') {
+                const op = openables[currentTarget.index];
+                if(op.state === 'closed') {
+                    op.state = 'opening';
+                    currentTarget.active = false;
+                    op.targetRot = Math.PI/2;
+                    
+                    if(op.itemMesh) {
+                        op.itemMesh.visible = true;
+                        const light = new THREE.PointLight(0xffffff, 0.5, 3);
+                        light.position.copy(op.itemMesh.position);
+                        op.cabGrp.add(light);
+                        
+                        let iType = 'item'; 
+                        if(op.item.type==='stun') iType='stun'; 
+                        else if(op.item.type==='battery') iType='battery'; 
+                        else if(op.item.type==='melee') iType='melee'; 
+                        else if(op.item.type==='key') iType='key';
+                        else if(op.item.type==='clue') iType='clue';
+                        else if(op.item.type==='crowbar') iType='crowbar';
+                        
+                        const wPos = new THREE.Vector3(); op.itemMesh.getWorldPosition(wPos);
+                        interactables.push({ type: iType, id: op.item.id, pos: wPos, mesh: op.itemMesh, active: true, level: op.level });
+                    }
+                    playNoiseBurst(0.4, 0.6, 0.5); 
+                }
+                return;
+            }
+
+            if(currentTarget.type === 'coin') {
+                currentTarget.active = false; currentTarget.mesh.visible = false;
+                gameState.coins++;
+                document.getElementById('coin-amt').innerText = gameState.coins;
+                playSynthTone(1200, 'sine', 0.1, 0.2); 
+            }
+            else if(currentTarget.type === 'tv') {
+                playNoiseBurst(1.0, 1.5, 0.2); 
+                if(currentTarget.light) {
+                    currentTarget.light.intensity = 5.0; 
+                    currentTarget.light.color.setHex(0xff0000);
+                    setTimeout(()=> currentTarget.light.intensity = 0.2, 1000);
+                }
+                tvActive = true;
+                
+                const prmpt = document.getElementById('interaction-prompt');
+                if(prmpt) {
+                    prmpt.innerText = "IT HEARD YOU";
+                    prmpt.style.opacity = 1;
+                    prmpt.style.color = "#f00";
+                }
+                
+                const uiLayer = document.getElementById('ui-layer');
+                if(uiLayer) {
+                    uiLayer.style.filter = "contrast(2) saturate(2) blur(1px) hue-rotate(180deg)";
+                    setTimeout(() => uiLayer.style.filter = "none", 1000);
+                }
+
+                gameState.fear += 0.4;
+                setTimeout(()=> { 
+                    if(prmpt) { prmpt.style.opacity = 0; prmpt.style.color = "#fff"; }
+                    tvActive = false;
+                }, 2000);
+                
+                if(enemyMesh && !gameState.inSafeZone && !isEnemyActive) spawnEnemy(true);
+            }
+            else if(currentTarget.type === 'vending') {
+                gameState.isPaused = true; document.exitPointerLock();
+                document.getElementById('vending-coin-display').innerText = gameState.coins;
+                document.getElementById('vending-screen').classList.remove('hidden');
+                playSynthTone(500, 'square', 0.2, 0.1);
+            }
+            else if(currentTarget.type === 'clue') {
+                currentTarget.active = false; 
+                if(currentTarget.mesh) currentTarget.mesh.visible = false; 
+                
+                const data = window.dynamicClues[currentTarget.id];
+                stats.items++; saveStats();
+
+                gameState.isPaused = true; document.exitPointerLock();
+                document.getElementById('lore-title').innerText = data.title;
+                document.getElementById('lore-body').innerText = data.text;
+                document.getElementById('lore-screen').classList.remove('hidden');
+                playSynthTone(400, 'sine', 2.0, 0.1);
+            }
+            else if(currentTarget.type === 'key') {
+                if(addToInventory({ type: 'key' })) {
+                    currentTarget.active = false; if(currentTarget.mesh) currentTarget.mesh.visible = false;
+                    gameState.keysCollected++;
+                    
+                    stats.items++; saveStats();
+
+                    playSynthTone(600, 'sine', 1.0, 0.1);
+                    const prmpt = document.getElementById('interaction-prompt');
+                    if(prmpt) {
+                        prmpt.innerText = "KEY COLLECTED";
+                        prmpt.style.opacity = 1;
+                        setTimeout(()=>prmpt.style.opacity = 0, 2000);
+                    }
+                }
+            }
+            else if(currentTarget.type === 'stun') {
+                if(addToInventory({type: 'stun'})) {
+                    currentTarget.active = false; if(currentTarget.mesh) currentTarget.mesh.visible = false;
+                    gameState.hasStunGun = true; gameState.stunCharges += 2; updateInventoryUI();
+                    stats.items++; saveStats();
+                    playSynthTone(600, 'square', 0.5, 0.2);
+                }
+            }
+            else if(currentTarget.type === 'battery') {
+                currentTarget.active = false; if(currentTarget.mesh) currentTarget.mesh.visible = false;
+                gameState.stunCharges += 2; updateInventoryUI();
+                stats.items++; saveStats();
+                playSynthTone(800, 'sine', 0.2, 0.1);
+            }
+            else if(currentTarget.type === 'melee') {
+                if(addToInventory({type:'melee', uses: 3})) {
+                    currentTarget.active = false; if(currentTarget.mesh) currentTarget.mesh.visible = false;
+                    stats.items++; saveStats();
+                    playNoiseBurst(0.2, 0.2, 0.8);
+                }
+            }
+            else if(currentTarget.type === 'crowbar') {
+                if(addToInventory({type:'crowbar'})) {
+                    currentTarget.active = false; if(currentTarget.mesh) currentTarget.mesh.visible = false;
+                    stats.items++; saveStats();
+                    playNoiseBurst(0.2, 0.2, 0.8);
+                }
+            }
+            else if(currentTarget.type === '3keydoor') {
+                if(gameState.keysCollected >= 3) {
+                    currentTarget.active = false;
+                    const op = openables[currentTarget.index];
+                    op.state = 'opening'; op.targetRot = Math.PI/2;
+                    playNoiseBurst(0.5, 1.0, 0.2);
+                    const prmpt = document.getElementById('interaction-prompt');
+                    if(prmpt) { prmpt.innerText = "ATTIC STAIRS OPEN"; }
+                } else {
+                    const prmpt = document.getElementById('interaction-prompt');
+                    if(prmpt) {
+                        prmpt.innerText = `REQUIRES 3 KEYS (${gameState.keysCollected}/3)`;
+                        prmpt.style.opacity = 1;
+                        setTimeout(()=>prmpt.style.opacity = 0, 2000);
+                    }
+                }
+            }
+            else if(currentTarget.type === 'safe' && !gameState.safeUnlocked) {
+                gameState.isPaused = true; document.exitPointerLock();
+                gameState.safeInput = ""; document.getElementById('kp-display').innerText = "-----";
+                document.getElementById('keypad-screen').classList.remove('hidden');
+            }
+            else if(currentTarget.type === 'exit') {
+                if(gameState.safeUnlocked) {
+                    document.exitPointerLock();
+                    saveStats();
+                    const go = document.getElementById('game-over-screen');
+                    if(go) {
+                        document.getElementById('go-title').innerText = "ESCAPED";
+                        document.getElementById('go-title').style.color = "#5f5";
+                        document.getElementById('go-desc').innerText = "You survived the Blackwood Estate.";
+                        go.classList.remove('hidden');
+                    }
+                } else {
+                    const prmpt = document.getElementById('interaction-prompt');
+                    if(prmpt) {
+                        prmpt.innerText = "REQUIRES MASTER KEY FROM SAFE";
+                        prmpt.style.opacity = 1;
+                        setTimeout(()=>prmpt.style.opacity = 0, 2000);
+                    }
+                }
+            }
+        }
+
+        window.closeLore = function() {
+            document.getElementById('lore-screen').classList.add('hidden'); document.body.requestPointerLock();
+            playNoiseBurst(0.5, 1.0, 0.2); 
+        }
+
+        // --- MENUS ---
+        const mainMenu = document.getElementById('main-menu');
+        
+        document.addEventListener('pointerlockchange', () => {
+            if (document.pointerLockElement === document.body) {
+                if(mainMenu) mainMenu.classList.add('hidden'); 
+                document.getElementById('keypad-screen')?.classList.add('hidden');
+                gameState.isPaused = false;
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+            } else if(!document.getElementById('lore-screen')?.classList.contains('hidden') || 
+                      !document.getElementById('vending-screen')?.classList.contains('hidden') ||
+                      gameState.isDying || gameState.inMenu) {
+                // Do nothing
+            } else if (!gameState.safeUnlocked && !document.getElementById('keypad-screen')?.classList.contains('hidden')) {
+                // Keypad Open
+            } else {
+                if(mainMenu) mainMenu.classList.remove('hidden');
+                const btn = document.querySelector('#main-menu button');
+                if (btn) btn.innerText = "RESUME";
+                gameState.isPaused = true;
+            }
+        });
+
+        // --- PROCEDURAL AI MONSTER (THE AUTOMATON) ---
+        let enemyMesh, enemyMixer, walkAction, idleAction;
+        let isEnemyActive = false; let monsterStunTimer = 0;
+        let enemyState = 'wander'; let wanderTarget = new THREE.Vector3();
+
+        const manager = new THREE.LoadingManager();
+        manager.onProgress = function(url, itemsLoaded, itemsTotal) {
+            const bar = document.getElementById('loader-bar');
+            if (bar) bar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
+        };
+        manager.onLoad = () => { 
+            setTimeout(() => {
+                document.getElementById('loading-screen')?.classList.add('hidden');
+                document.getElementById('main-menu')?.classList.remove('hidden');
+                buildMap(); 
+            }, 500); 
+        };
+        const loader = new THREE.GLTFLoader(manager);
+        
+        loader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Soldier.glb', (gltf) => {
+            enemyMesh = gltf.scene;
+            enemyMesh.traverse(c => { 
+                if(c.isMesh) { 
+                    c.material = new THREE.MeshStandardMaterial({color: 0x010101, roughness: 0.9, metalness: 0.5}); 
+                    c.castShadow = true;
+                }
+            });
+            const headBone = enemyMesh.getObjectByName('mixamorigHead');
+            if(headBone) {
+                const eyeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+                const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.05), eyeMat); eyeL.position.set(-0.08, 0.1, 0.16);
+                const eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.05), eyeMat); eyeR.position.set(0.08, 0.1, 0.16);
+                const light = new THREE.PointLight(0xff0000, 1.0, 5); light.position.set(0, 0, 0.2);
+                headBone.add(eyeL, eyeR, light);
+            }
+            
+            enemyMesh.scale.set(1.4, 1.4, 1.4); enemyMesh.visible = false; enemyMesh.level = 0; scene.add(enemyMesh);
+            enemyMixer = new THREE.AnimationMixer(enemyMesh);
+            
+            const walkClip = gltf.animations.find(a=>a.name==='Run') || gltf.animations[0];
+            const idleClip = gltf.animations.find(a=>a.name==='Idle') || gltf.animations[0];
+            walkAction = enemyMixer.clipAction(walkClip); idleAction = enemyMixer.clipAction(idleClip);
+        }, undefined, (err) => {
+            enemyMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.5, 1.2), new THREE.MeshStandardMaterial({color: 0x220000}));
+            const eyes = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.1), new THREE.MeshBasicMaterial({color: 0xffffff}));
+            eyes.position.set(0, 1.0, 0.6); enemyMesh.add(eyes);
+            enemyMesh.visible = false; scene.add(enemyMesh);
+            enemyMixer = null;
+            document.getElementById('loading-screen')?.classList.add('hidden');
+            document.getElementById('main-menu')?.classList.remove('hidden');
+            buildMap(); 
+        });
+
+        function spawnEnemy(aggressive = false) {
+            if(!enemyMesh) return;
+            const dist = aggressive ? 15 : 30;
+            const warpDir = new THREE.Vector3(0,0,-1).applyQuaternion(yawObj.quaternion).negate(); 
+            let spawnPos = yawObj.position.clone().add(warpDir.multiplyScalar(dist));
+            
+            spawnPos.x = Math.max(2, Math.min(mapW*4 - 2, spawnPos.x));
+            spawnPos.z = Math.max(2, Math.min(mapH*4 - 2, spawnPos.z));
+            spawnPos.y = gameState.currentFloor * 5.0;
+            
+            enemyMesh.position.copy(spawnPos);
+            enemyMesh.level = gameState.currentFloor;
+            enemyMesh.visible = true; isEnemyActive = true;
+            if(walkAction) walkAction.play();
+            enemyState = aggressive ? 'chase' : 'wander';
+            wanderTarget.copy(yawObj.position);
+        }
+
+        function triggerDeathSequence(reason) {
+            gameState.isDying = true; gameState.isPaused = true; document.exitPointerLock();
+            saveStats();
+
+            if(reason === "TIME") {
+                const go = document.getElementById('game-over-screen');
+                if(go) {
+                    document.getElementById('go-title').innerText = "TIME OUT";
+                    document.getElementById('go-desc').innerText = "The structural locks engaged. You are trapped forever.";
+                    go.classList.remove('hidden');
+                }
+                return;
+            }
+            
+            if (inCloset) yawObj.position.y = (gameState.currentFloor * 5.0) + 1.7;
+
+            const dir = new THREE.Vector3(0,0,-1).applyQuaternion(pitchObj.quaternion).applyQuaternion(yawObj.quaternion);
+            const scarePos = yawObj.position.clone().add(dir.normalize().multiplyScalar(1.5));
+            scarePos.y = gameState.currentFloor * 5.0; 
+            if(enemyMesh) {
+                enemyMesh.position.copy(scarePos); 
+                enemyMesh.lookAt(yawObj.position.x, enemyMesh.position.y, yawObj.position.z);
+            }
+            
+            if(idleAction && idleAction.isRunning()) idleAction.stop(); 
+            if(walkAction) walkAction.play();
+            if(enemyMixer) enemyMixer.timeScale = 4.0; 
+            
+            let scaleVal = 1.4;
+            const jsAnim = setInterval(() => {
+                scaleVal += 0.2;
+                if(enemyMesh) enemyMesh.scale.set(scaleVal, scaleVal, scaleVal);
+                if(scaleVal > 3.0) clearInterval(jsAnim);
+            }, 50);
+
+            const jsFlash = document.getElementById('jumpscare-flash');
+            if(jsFlash) jsFlash.style.opacity = 0.8;
+            playNoiseBurst(2.0, 4.0, 0.15); 
+            gameState.cameraShake = 3.5;
+
+            setTimeout(() => {
+                const go = document.getElementById('game-over-screen');
+                if(go) {
+                    document.getElementById('go-title').innerText = "YOU WERE CAUGHT";
+                    if(reason === "FOUND") document.getElementById('go-desc').innerText = "The Automaton found your hiding spot.";
+                    else document.getElementById('go-desc').innerText = "The Automaton caught you before you could escape.";
+                    go.classList.remove('hidden');
+                }
+                if(jsFlash) {
+                    jsFlash.style.background = "#ffffff"; 
+                    jsFlash.style.mixBlendMode = "normal";
+                    jsFlash.style.opacity = 1;
+                }
+            }, 1500);
+        }
+
+        // --- MAIN LOOP ---
+        const clock = new THREE.Clock();
+        let secTimer = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = Math.min(clock.getDelta(), 0.1);
+            const time = clock.getElapsedTime();
+
+            if (gameState.inMenu) {
+                yawObj.position.set(40, 5, 40); 
+                yawObj.rotation.y += delta * 0.1;
+                renderer.render(scene, camera);
+                return; 
+            }
+
+            updateAtmosphere(delta);
+            updateTVTexture();
+
+            for(let c of coinMeshes) {
+                if(c.visible) c.rotation.y += delta * 2.0;
+            }
+
+            const mmCtx = document.getElementById('minimap').getContext('2d');
+            if(mmCtx) {
+                mmCtx.clearRect(0,0,160,160);
+                const curFloor = gameState.currentFloor;
+                for(let z=0; z<mapH; z++){
+                    for(let x=0; x<mapW; x++){
+                        const t = mapData[curFloor][z][x];
+                        if(t===1 || t===13 || t===16 || t===60 || t===61 || t===62 || t===63) mmCtx.fillStyle = '#666'; 
+                        else if (t===3) mmCtx.fillStyle = '#050505'; 
+                        else mmCtx.fillStyle = '#222'; 
+                        mmCtx.fillRect(x*6, z*6, 6, 6);
+                    }
+                }
+                mmCtx.fillStyle = '#0f0';
+                mmCtx.beginPath(); mmCtx.arc((yawObj.position.x/4)*6, (yawObj.position.z/4)*6, 3, 0, Math.PI*2); mmCtx.fill();
+                const roomEl = document.getElementById('room-name');
+                if(roomEl) roomEl.innerText = getCurrentRoom(yawObj.position.x/4, yawObj.position.z/4, curFloor);
+            }
+
+            for(let op of openables) {
+                if(op.state === 'opening') {
+                    if(op.type === 'door') {
+                        if(op.axis === 'y') op.pivot.rotation.y = THREE.MathUtils.lerp(op.pivot.rotation.y, op.targetRot, delta * 5);
+                        else op.pivot.rotation.x = THREE.MathUtils.lerp(op.pivot.rotation.x, op.targetRot, delta * 5);
+                        
+                        if(Math.abs(op.pivot.rotation.y - op.targetRot) < 0.05 || Math.abs(op.pivot.rotation.x - op.targetRot) < 0.05) op.state = 'open';
+                    } else if (op.type === 'cabinet' || op.type === 'dresser') {
+                        if (op.pivotL) op.pivotL.rotation.y = THREE.MathUtils.lerp(op.pivotL.rotation.y, Math.PI/2, delta * 5);
+                        if (op.pivotR) op.pivotR.rotation.y = THREE.MathUtils.lerp(op.pivotR.rotation.y, -Math.PI/2, delta * 5);
+                    }
+                }
+            }
+
+            if(gameState.cameraShake > 0) {
+                yawObj.position.x += (Math.random()-0.5) * gameState.cameraShake;
+                yawObj.position.z += (Math.random()-0.5) * gameState.cameraShake;
+                gameState.cameraShake -= delta;
+            }
+
+            if(!gameState.isPaused && !gameState.isDying) {
+                secTimer += delta;
+                if(secTimer >= 1.0) {
+                    secTimer = 0; gameState.timeLeft--;
+                    const m = Math.floor(Math.max(0, gameState.timeLeft) / 60).toString().padStart(2, '0');
+                    const s = (Math.max(0, gameState.timeLeft) % 60).toString().padStart(2, '0');
+                    const timerDisplay = document.getElementById('timer-display');
+                    if(timerDisplay) timerDisplay.innerText = `${m}:${s}`;
+                    if(gameState.timeLeft <= 0) triggerDeathSequence("TIME");
+                }
+
+                gameState.inSafeZone = isSafeZone(yawObj.position.x/4, yawObj.position.z/4, gameState.currentFloor);
+                const safeWarning = document.getElementById('safe-zone-warning');
+                if(safeWarning) {
+                    if(gameState.inSafeZone) safeWarning.style.display = "block";
+                    else safeWarning.style.display = "none";
+                }
+
+                isUnderBed = false;
+                for(let b of beds) {
+                    if (b.level === gameState.currentFloor && Math.abs(yawObj.position.x - b.pos.x) < 1.4 && Math.abs(yawObj.position.z - b.pos.z) < 1.8) {
+                        isUnderBed = true; break;
+                    }
+                }
+                
+                gameState.isHidden = inCloset || isUnderBed;
+
+                DirectorAI.update(delta, gameState.isHidden, isSprinting && (moveState.f||moveState.b||moveState.l||moveState.r));
+                
+                let targetHeight = (isCrouching || isUnderBed) ? 0.5 : 1.7;
+                baseHeight = THREE.MathUtils.lerp(baseHeight, targetHeight, delta * 10);
+
+                const objTracker = document.getElementById('obj-tracker');
+                if(objTracker) {
+                    if (gameState.isHidden || gameState.inSafeZone) {
+                        objTracker.innerText = gameState.inSafeZone ? "State: SAFE ZONE" : "State: HIDDEN";
+                        objTracker.style.color = "#5555ff";
+                        gameState.fear = Math.max(0, gameState.fear - delta * 0.1);
+                    } else {
+                        objTracker.innerText = "State: CALM";
+                        objTracker.style.color = "#aaa";
+                    }
+                }
+
+                armGroup.position.lerp(new THREE.Vector3(0.0, 0.0, 0.0), delta * 6);
+                
+                if (inCloset) {
+                    yawObj.position.y = -50; 
+                    velocity.set(0,0,0);
+                } else {
+                    const floorY = getFloorHeight(yawObj.position.x, yawObj.position.z);
+                    
+                    if(!gameState.isTrapped) {
+                        velocityY -= 25.0 * delta; 
+                        yawObj.position.y += velocityY * delta;
+                        
+                        if(yawObj.position.y <= baseHeight + floorY) {
+                            yawObj.position.y = baseHeight + floorY;
+                            velocityY = 0; isJumping = false;
+                        }
+                        if(yawObj.position.y < (gameState.currentFloor*5.0) - 5) { 
+                            playNoiseBurst(0.5, 1.0, 0.5);
+                            yawObj.position.copy(parkourStart);
+                            gameState.timeLeft -= 30; 
+                        }
+                    }
+                    
+                    let targetVx = 0; let targetVz = 0;
+                    const isMovingInput = moveState.f || moveState.b || moveState.l || moveState.r;
+                    if (isMovingInput && !gameState.isTrapped) {
+                        const inputDir = new THREE.Vector3(moveState.r - moveState.l, 0, moveState.b - moveState.f).normalize();
+                        inputDir.applyEuler(new THREE.Euler(0, yawObj.rotation.y, 0));
+                        
+                        let speed = isSprinting ? 6.5 : 3.5;
+                        if(isCrouching || isUnderBed) speed = 2.0;
+                        
+                        targetVx = inputDir.x * speed; targetVz = inputDir.z * speed;
+                        
+                        if(!isJumping) {
+                            const bobSpeed = isSprinting ? 12 : 8; const bobAmt = (isCrouching||isUnderBed) ? 0.02 : (isSprinting ? 0.08 : 0.04);
+                            pitchObj.position.y = Math.sin(clock.getElapsedTime() * bobSpeed) * bobAmt;
+                        }
+                    } else {
+                        pitchObj.position.y = THREE.MathUtils.lerp(pitchObj.position.y, 0, delta*10);
+                    }
+
+                    velocity.x = THREE.MathUtils.lerp(velocity.x, targetVx, delta * 15.0);
+                    velocity.z = THREE.MathUtils.lerp(velocity.z, targetVz, delta * 15.0);
+
+                    let px = yawObj.position.x; let py = yawObj.position.y; let pz = yawObj.position.z;
+                    if(!checkCollision(px + velocity.x * delta, py, pz)) yawObj.position.x += velocity.x * delta;
+                    if(!checkCollision(yawObj.position.x, py, pz + velocity.z * delta)) yawObj.position.z += velocity.z * delta;
+                }
+
+                if(gameState.isTrapped) {
+                    gameState.trapTimer -= delta;
+                    if(gameState.trapTimer <= 0) { gameState.isTrapped = false; playNoiseBurst(0.1, 0.5, 0.8); }
+                } else if(!gameState.isHidden && !gameState.inSafeZone) {
+                    for(let bt of bearTraps) {
+                        if(bt.level !== gameState.currentFloor) continue;
+                        const dist2D = Math.hypot(yawObj.position.x - bt.pos.x, yawObj.position.z - bt.pos.z);
+                        if(!bt.triggered && dist2D < 0.8 && yawObj.position.y < baseHeight + (gameState.currentFloor*5.0) + 0.5) {
+                            bt.triggered = true; gameState.isTrapped = true; gameState.trapTimer = 3.0;
+                            playNoiseBurst(0.2, 1.5, 0.2); 
+                            bt.jaw1.position.z = 0; bt.jaw2.position.z = 0; 
+                            if(enemyMesh && isEnemyActive) spawnEnemy(true);
+                        }
+                    }
+                    for(let tw of tripwires) {
+                        if(tw.level !== gameState.currentFloor) continue;
+                        const dist2D = Math.hypot(yawObj.position.x - tw.pos.x, yawObj.position.z - tw.pos.z);
+                        if(!tw.triggered && dist2D < 0.8 && yawObj.position.y < (gameState.currentFloor*5.0) + 2.2) { 
+                            tw.triggered = true; tw.mesh.visible = false;
+                            playSynthTone(1200, 'square', 0.8, 0.5); 
+                            if(enemyMesh && isEnemyActive) spawnEnemy(true);
+                        }
+                    }
+                    for(let lz of lasers) {
+                        if(lz.level !== gameState.currentFloor) continue;
+                        const dist2D = Math.hypot(yawObj.position.x - lz.pos.x, yawObj.position.z - lz.pos.z);
+                        if(dist2D < 1.0 && Math.abs(yawObj.position.y - lz.yHeight) < 0.8) {
+                            playNoiseBurst(0.3, 1.0, 3.0);
+                            yawObj.position.copy(parkourStart);
+                            gameState.timeLeft -= 15;
+                        }
+                    }
+                }
+
+                const raycaster = new THREE.Raycaster();
+                raycaster.set(yawObj.position, new THREE.Vector3(0,0,-1).applyQuaternion(pitchObj.quaternion).applyQuaternion(yawObj.quaternion));
+                let found = null;
+                let closestDist = Infinity;
+                for(let i of interactables) {
+                    if(!i.active) continue;
+                    if(i.level !== undefined && i.level !== gameState.currentFloor) continue;
+                    
+                    if(yawObj.position.distanceTo(i.pos) < 4.5) {
+                        let hit;
+                        if(i.type === 'openable' || i.type === 'locked_door') {
+                            const op = openables[i.index];
+                            if(op) hit = raycaster.intersectObject(op.mesh, true);
+                        }
+                        else if(i.mesh) hit = raycaster.intersectObject(i.mesh, true);
+                        else if(i.type === 'tv') {
+                            const tvObj = envGroup.children.find(c => c.position.distanceTo(i.pos) < 1.0);
+                            if(tvObj) hit = raycaster.intersectObject(tvObj, true);
+                        }
+                        
+                        if(hit && hit.length > 0 && hit[0].distance < closestDist) { 
+                            found = i; 
+                            closestDist = hit[0].distance;
+                        }
+                    }
+                }
+                currentTarget = found;
+                const intPrompt = document.getElementById('interaction-prompt');
+                if(inCloset) {
+                    if(intPrompt) {
+                        intPrompt.innerText = "[ E ] Exit Closet";
+                        intPrompt.style.opacity = 1;
+                    }
+                }
+                else if(currentTarget) {
+                    let pText = "[ E ] Interact";
+                    if(currentTarget.type === 'openable') {
+                        const op = openables[currentTarget.index];
+                        pText = op.state === 'closed' ? (op.type==='door'?"[ E ] Open Door": (op.type === 'dresser' ? "[ E ] Search Drawers" : "[ E ] Open Cabinet")) : "";
+                    }
+                    if(currentTarget.type === 'stairs') pText = currentTarget.direction === 'up' ? "[ E ] Go Upstairs" : "[ E ] Go Downstairs";
+                    if(currentTarget.type === 'item' || currentTarget.type === 'clue') pText = "[ E ] Read Clue";
+                    if(currentTarget.type === 'stun') pText = "[ E ] Take Stun Gun";
+                    if(currentTarget.type === 'battery') pText = "[ E ] Take Battery";
+                    if(currentTarget.type === 'melee') pText = "[ E ] Take Bat";
+                    if(currentTarget.type === 'crowbar') pText = "[ E ] Take Crowbar";
+                    if(currentTarget.type === 'locked_door') pText = "[ E ] Open Door (Requires Crowbar)";
+                    if(currentTarget.type === 'safe') pText = "[ E ] Enter Code";
+                    if(currentTarget.type === 'exit') pText = "[ E ] Escape";
+                    if(currentTarget.type === 'key') pText = "[ E ] Take Key";
+                    if(currentTarget.type === '3keydoor') pText = "[ E ] Unlock Door to Attic";
+                    if(currentTarget.type === 'closet') pText = "[ E ] Hide in Closet";
+                    if(currentTarget.type === 'coin') pText = "[ E ] Take Coin";
+                    if(currentTarget.type === 'tv') pText = "[ E ] Look into TV";
+                    if(currentTarget.type === 'vending') pText = "[ E ] Use Trading Station";
+                    
+                    if(intPrompt) {
+                        if(pText !== "") {
+                            intPrompt.innerText = pText;
+                            intPrompt.style.opacity = 1;
+                        } else {
+                            intPrompt.style.opacity = 0;
+                        }
+                    }
+                } else {
+                    if(intPrompt) intPrompt.style.opacity = 0;
+                }
+
+                if(isEnemyActive && enemyMesh && enemyMesh.visible) {
+                    const dist2D = Math.hypot(enemyMesh.position.x - yawObj.position.x, enemyMesh.position.z - yawObj.position.z);
+                    
+                    if (enemyMesh.level !== gameState.currentFloor) {
+                        if(Math.random() > 0.995 && !gameState.inSafeZone) spawnEnemy();
+                    } else {
+                        if(enemyMixer) enemyMixer.update(delta);
+
+                        if(monsterStunTimer > 0) {
+                            monsterStunTimer -= delta;
+                            if(enemyMixer && walkAction && walkAction.isRunning()) { walkAction.stop(); idleAction.play(); }
+                            enemyMesh.position.x += (Math.random()-0.5)*0.05;
+                            enemyState = 'wander';
+                        } else if (gameState.isHidden || gameState.inSafeZone) {
+                            if(enemyMixer && idleAction && idleAction.isRunning()) { idleAction.stop(); walkAction.play(); }
+                            
+                            enemyState = 'wander';
+                            enemyMesh.rotation.y += (Math.random() - 0.5) * delta * 5;
+                            let aiSpeed = 2.0;
+                            let ex = enemyMesh.position.x + Math.sin(enemyMesh.rotation.y) * aiSpeed * delta;
+                            let ez = enemyMesh.position.z + Math.cos(enemyMesh.rotation.y) * aiSpeed * delta;
+                            
+                            if(isSafeZone(ex/4, ez/4, enemyMesh.level)) {
+                                enemyMesh.rotation.y += Math.PI; 
+                            } else {
+                                if(!checkCollision(ex, enemyMesh.position.y + 1.0, enemyMesh.position.z, enemyMesh.level, true)) enemyMesh.position.x = ex;
+                                else enemyMesh.rotation.y += Math.PI/2; 
+                                
+                                if(!checkCollision(enemyMesh.position.x, enemyMesh.position.y + 1.0, ez, enemyMesh.level, true)) enemyMesh.position.z = ez;
+                                else enemyMesh.rotation.y += Math.PI/2;
+                            }
+
+                            if(Math.random() > 0.98) playNoiseBurst(0.1, 0.15 / Math.max(1, dist2D*0.2), 0.4); 
+                            
+                            if(dist2D < 2.5 && Math.abs(yawObj.position.y - enemyMesh.position.y) < 3.0 && !gameState.inSafeZone) {
+                                triggerDeathSequence("FOUND");
+                            }
+
+                        } else {
+                            if(enemyMixer && idleAction && idleAction.isRunning()) { idleAction.stop(); walkAction.play(); }
+                            
+                            raycaster.set(enemyMesh.position, new THREE.Vector3(yawObj.position.x - enemyMesh.position.x, 0, yawObj.position.z - enemyMesh.position.z).normalize());
+                            const hit = raycaster.intersectObjects(walls.map(w => w.mesh).filter(m => m !== undefined), false);
+                            
+                            if (hit.length === 0 || hit[0].distance > dist2D) {
+                                enemyState = 'chase';
+                            } else {
+                                enemyState = 'wander';
+                            }
+
+                            let aiSpeed = enemyState === 'chase' ? 4.5 + (gameState.keysCollected * 0.3) : 2.5;
+                            if (enemyMixer) enemyMixer.timeScale = enemyState === 'chase' ? 1.5 : 1.0;
+
+                            const dirToPlayer = new THREE.Vector3(yawObj.position.x - enemyMesh.position.x, 0, yawObj.position.z - enemyMesh.position.z).normalize();
+                            
+                            if(enemyState === 'wander') {
+                                dirToPlayer.set(Math.sin(enemyMesh.rotation.y), 0, Math.cos(enemyMesh.rotation.y));
+                            } else {
+                                const targetRotation = Math.atan2(dirToPlayer.x, dirToPlayer.z);
+                                const diff = targetRotation - enemyMesh.rotation.y;
+                                const normalizedDiff = Math.atan2(Math.sin(diff), Math.cos(diff));
+                                enemyMesh.rotation.y += normalizedDiff * delta * 5;
+                            }
+
+                            let ex = enemyMesh.position.x + Math.sin(enemyMesh.rotation.y) * aiSpeed * delta;
+                            let ez = enemyMesh.position.z + Math.cos(enemyMesh.rotation.y) * aiSpeed * delta;
+                            
+                            if(!checkCollision(ex, enemyMesh.position.y + 1.0, enemyMesh.position.z, enemyMesh.level, true)) enemyMesh.position.x = ex;
+                            else if(enemyState === 'wander') enemyMesh.rotation.y += Math.PI/2;
+
+                            if(!checkCollision(enemyMesh.position.x, enemyMesh.position.y + 1.0, ez, enemyMesh.level, true)) enemyMesh.position.z = ez;
+                            else if(enemyState === 'wander') enemyMesh.rotation.y += Math.PI/2;
+
+                            if(Math.random() > 0.98) playNoiseBurst(0.1, 0.15 / Math.max(1, dist2D*0.2), 0.4); 
+
+                            if(dist2D < 1.5 && Math.abs(yawObj.position.y - enemyMesh.position.y) < 3.0) triggerDeathSequence("CAUGHT");
+                        }
+                    }
+                }
+
+                const fearVignette = document.getElementById('fear-vignette');
+                if(fearVignette) {
+                    if(gameState.inSafeZone) {
+                        fearVignette.style.boxShadow = `inset 0 0 100px rgba(0,255,0,0.1)`;
+                    } else if(!gameState.isHidden) {
+                        fearVignette.style.boxShadow = `inset 0 0 ${gameState.fear * 200}px rgba(150,0,0,${gameState.fear*0.8})`;
+                    } else {
+                        fearVignette.style.boxShadow = `inset 0 0 100px rgba(0,0,0,0.9)`;
+                    }
+                }
+            } else if (gameState.isDying) {
+                let t = clock.getElapsedTime() * 20;
+                if(enemyMesh && enemyMesh.userData.armL) {
+                    enemyMesh.userData.armL.rotation.x = Math.sin(t) * 0.5 - Math.PI/2;
+                    enemyMesh.userData.armR.rotation.x = -Math.sin(t) * 0.5 - Math.PI/2;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>
         /* UI LAYERS */
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; box-sizing: border-box; color: #fff; z-index: 10; text-shadow: 1px 1px 4px rgba(0,0,0,1); }
         #crosshair { position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.8); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 4px rgba(0,0,0,1); }
