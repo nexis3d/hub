@@ -1,0 +1,16 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Build artefacts
+*.bak
+__pycache__/
+*.pyc
+
+# Optional: hide the plaintext source from production checkouts.
+# Comment this line out if you want to keep /src/ in the repo
+# (recommended, so contributors can still edit the app).
+# /src/
