@@ -6,7 +6,7 @@
   <title>Nexis Games - Play the Best Web Games</title>
   
   <!-- FAVICON & ASSET LINKS -->
-  <link rel="preload" href="assets/Favicon.png" as="image">
+  <link rel="preload" href="assets/Tran.png" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -192,14 +192,15 @@
     const SendIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" fillOpacity="0.1"/></svg>);
     const EyeIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" fill="currentColor" fillOpacity="0.1"/><circle cx="12" cy="12" r="3"/></svg>);
     const EyeOffIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" fill="currentColor" fillOpacity="0.1"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" fill="currentColor" fillOpacity="0.1"/><line x1="2" y1="2" x2="22" y2="22"/></svg>);
-    const UsersIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>);
     const UploadIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="currentColor" fillOpacity="0.1"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>);
+    const TrashIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>);
+    const CheckCircleIcon = ({ size = 24, className = "" }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>);
 
-    // --- GAME ICON RENDERER (Fast & Lightweight Image Loader) ---
-    const GameIconRenderer = memo(({ title, isCommunity }) => (
+    // --- GAME ICON RENDERER ---
+    const GameIconRenderer = memo(({ iconUrl, title, isCommunity }) => (
       <div className="w-full h-full rounded-[20px] overflow-hidden bg-obsidian-950 p-0 box-border shadow-inner border border-white/5 relative group flex items-center justify-center">
         <img 
-          src={isCommunity ? `assets/Community.png` : `assets/${title}.png`} 
+          src={isCommunity ? `assets/Community.png` : (iconUrl || `assets/${title}.png`)} 
           alt={title} 
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 z-10" 
           onError={e => {
@@ -209,19 +210,62 @@
         />
         <div style={{display: 'none'}} className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950 to-violet-950 z-0 text-center p-2">
             <span className="text-3xl font-black text-violet-400 opacity-50 mb-1">{title.charAt(0)}</span>
-            <span className="text-[10px] font-bold text-violet-300 font-ui leading-tight">{title}</span>
+            <span className="text-[10px] font-bold text-violet-300 font-ui leading-tight line-clamp-2">{title}</span>
         </div>
       </div>
     ));
+
+    // --- ADMIN SUBMISSION COMPONENT ---
+    const AdminSubmissionCard = memo(({ sub, onUpdate, onDelete }) => {
+        const [status, setStatus] = useState(sub.status);
+        const [comment, setComment] = useState(sub.adminComment || '');
+
+        return (
+            <div className="bg-obsidian-950/80 p-5 sm:p-6 rounded-3xl border border-violet-500/20 shadow-lg relative group">
+                <div className="flex justify-between items-start mb-4 border-b border-white/5 pb-4">
+                    <div>
+                        <h4 className="text-xl font-bold font-heading text-white">{sub.title}</h4>
+                        <p className="text-sm text-slate-400 font-ui">By <span className="text-violet-300 font-bold">{sub.developer}</span></p>
+                    </div>
+                    <button onClick={() => onDelete(sub.id)} className="p-2 text-rose-500/50 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors" title="Permanently Delete">
+                        <TrashIcon size={18} />
+                    </button>
+                </div>
+                
+                <p className="text-slate-300 text-sm mb-4 leading-relaxed line-clamp-3">{sub.description}</p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {sub.tags && sub.tags.map(tag => <span key={tag} className="px-2 py-1 bg-obsidian-900 border border-white/10 text-xs font-bold text-slate-400 rounded-md">{tag}</span>)}
+                </div>
+
+                <div className="space-y-4 bg-obsidian-900/50 p-4 rounded-2xl border border-white/5">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex-1">
+                            <label className="block text-xs font-bold uppercase tracking-widest text-violet-400 mb-2">Status</label>
+                            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-obsidian-950 border border-violet-500/20 rounded-xl px-4 py-2.5 text-white font-ui text-sm focus:outline-none focus:border-violet-500/50">
+                                <option value="pending">🟡 Pending</option>
+                                <option value="accepted">🟢 Accepted</option>
+                                <option value="rejected">🔴 Rejected</option>
+                            </select>
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-xs font-bold uppercase tracking-widest text-violet-400 mb-2">Admin Comment to Developer</label>
+                            <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="e.g., Needs better icon" className="w-full bg-obsidian-950 border border-violet-500/20 rounded-xl px-4 py-2.5 text-white font-ui text-sm focus:outline-none focus:border-violet-500/50" />
+                        </div>
+                    </div>
+                    <div className="flex justify-end pt-2">
+                        <button onClick={() => onUpdate(sub.id, status, comment)} className="px-6 py-2 bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-95">Save Update</button>
+                    </div>
+                </div>
+            </div>
+        );
+    });
 
     // --- ADSENSE WIDGET COMPONENT ---
     const AdSenseWidget = memo(() => {
       useEffect(() => {
         try {
           (window.adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {
-          console.warn("AdSense push error:", e);
-        }
+        } catch (e) {}
       }, []);
       return (
         <div className="w-full flex justify-center mt-8 min-h-[100px] relative z-50 bg-obsidian-900/50 backdrop-blur-md rounded-2xl overflow-hidden border border-violet-500/10 shadow-inner">
@@ -254,25 +298,16 @@
       enableIndexedDbPersistence(db).catch(() => {}); 
     } catch (e) {}
 
-    // --- SECURITY & PROFANITY UTILITIES ---
+    // --- PROFANITY UTILITIES ---
     const matcher = new RegExpMatcher({ ...englishDataset.build(), ...englishRecommendedTransformers });
     const censor = new TextCensor();
-
     const isProfane = (str) => {
         const reserved = ['admin', 'mofu', 'nexis'];
         if (reserved.some(w => str.toLowerCase().includes(w))) return true;
         return matcher.hasMatch(str);
     };
-
-    const filterMessage = (text) => {
-        const matches = matcher.getAllMatches(text);
-        return censor.applyTo(text, matches);
-    };
-
-    const sanitizeUsername = (name) => {
-        const regex = /^[a-zA-Z0-9_]{3,16}$/;
-        return regex.test(name) && !isProfane(name);
-    };
+    const filterMessage = (text) => censor.applyTo(text, matcher.getAllMatches(text));
+    const sanitizeUsername = (name) => /^[a-zA-Z0-9_]{3,16}$/.test(name) && !isProfane(name);
 
     // --- UTILS ---
     const getStreakDateString = (dateObj = new Date()) => { 
@@ -281,12 +316,10 @@
       const rolloverShift = new Date(gmt7 - (3600000 * 8)); 
       return rolloverShift.getFullYear() + '-' + String(rolloverShift.getMonth() + 1).padStart(2, '0') + '-' + String(rolloverShift.getDate()).padStart(2, '0'); 
     };
-
     const getDaysDifference = (d1, d2) => { 
       if (!d1 || !d2) return 999; 
       return Math.floor((new Date(d1 + 'T00:00:00Z') - new Date(d2 + 'T00:00:00Z')) / 86400000); 
     };
-
     const getEffectiveStreak = (p) => { 
       if (!p.lastPlayedDate || !p.currentStreak) return 0; 
       return getDaysDifference(getStreakDateString(), p.lastPlayedDate) <= 1 ? p.currentStreak : 0; 
@@ -294,25 +327,24 @@
 
     // --- GAME DATA ---
     const GAMES = [
-      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', theme: 'from-amber-600 to-orange-900', tags: ['Cooking', 'Action'] },
-      { id: 'beauty-and-the-cheese', title: 'Beauty and the Cheese', developer: 'Jam', src: 'games/Che.html', theme: 'from-yellow-500 to-amber-700', tags: ['Adventure', 'Arcade'] },
-      { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: 'https://gswitch.io/g-switch-3.embed', theme: 'from-blue-700 to-indigo-950', tags: ['Action', 'Arcade'] },
-      { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', theme: 'from-teal-900 to-black', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
-      { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', theme: 'from-green-800 to-emerald-950', tags: ['Arcade', 'Table'] },
-      { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', theme: 'from-fuchsia-700 to-purple-950', tags: ['Action', 'Arcade'] },
-      { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', theme: 'from-red-950 to-black', tags: ['Spooky', 'Action'] },
-      { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Unknown', src: 'games/Spok.html', theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
-      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
-      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
-      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'], isPublicBeta: true },
-      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true },
+      { id: 'burger-chef', title: 'Burger Chef', developer: 'Mofawo', src: 'games/Burger.html', iconUrl: 'assets/Burger.png', theme: 'from-amber-600 to-orange-900', tags: ['Cooking', 'Action'] },
+      { id: 'beauty-and-the-cheese', title: 'Beauty and the Cheese', developer: 'Jam', src: 'games/Che.html', iconUrl: 'assets/Cheese.png', theme: 'from-yellow-500 to-amber-700', tags: ['Adventure', 'Arcade'] },
+      { id: 'g-switch-3', title: 'G-Switch 3', developer: 'Serius Games', src: 'https://gswitch.io/g-switch-3.embed', iconUrl: 'assets/Switch.png', theme: 'from-blue-700 to-indigo-950', tags: ['Action', 'Arcade'] },
+      { id: 'architects-curse', title: "THE ARCHITECT'S CURSE", developer: 'CoolDude_10', src: 'games/Arch.html', iconUrl: 'assets/Curse.png', theme: 'from-teal-900 to-black', tags: ['Spooky', 'Adventure'], isPublicBeta: true },
+      { id: 'casual-blackjack', title: 'Casual Blackjack', developer: 'DUMBGUY0.π', src: 'games/Black.html', iconUrl: 'assets/Black.png', theme: 'from-green-800 to-emerald-950', tags: ['Arcade', 'Table'] },
+      { id: 'polybit-destruction', title: 'PolyBit Destruction', developer: 'Jam', src: 'games/Poly.html', iconUrl: 'assets/Poly.png', theme: 'from-fuchsia-700 to-purple-950', tags: ['Action', 'Arcade'] },
+      { id: 'scary-maze', title: 'Scary Maze', developer: 'Mofawo', src: 'games/Maze.html', iconUrl: 'assets/Maze.png', theme: 'from-red-950 to-black', tags: ['Spooky', 'Action'] },
+      { id: 'the-spooky-maze', title: 'The Spooky Maze', developer: 'Unknown', src: 'games/Spok.html', iconUrl: 'assets/Soap.png', theme: 'from-indigo-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'vbrawl', title: 'VBrawl Ultimate', developer: 'Mofawo', src: 'games/Brawl.html', iconUrl: 'assets/VBrawl.png', theme: 'from-orange-600 to-rose-700', tags: ['3D', 'Action', 'Multiplayer'] },
+      { id: 'horrow', title: 'Shadows of the Labyrinth', developer: 'Mofawo', src: 'games/Horror.html', iconUrl: 'assets/Spooky.png', theme: 'from-violet-900 to-black', tags: ['Spooky', 'Adventure'] },
+      { id: 'shaddocraft', title: 'Cube Game', developer: 'shaddo24mc', src: 'https://shaddo24mc.github.io/3d-releases/', iconUrl: 'assets/shado.png', theme: 'from-emerald-700 to-green-900', tags: ['3D', 'Adventure'], isPublicBeta: true },
+      { id: 'ascension-realm', title: 'Ascension: Realm of Shards', developer: 'Nexis GD', src: 'games/Realm.html', iconUrl: 'assets/Realm.png', theme: 'from-sky-500 to-blue-800', tags: ['RPG', 'Adventure', '3D'], isBeta: true },
       
-      // 5 Secret MOFU Placeholder Games
-      { id: 'mofu-sec-1', title: 'Project Titan', developer: 'MOFU', src: 'about:blank', theme: 'from-slate-800 to-black', tags: ['Secret', 'Test'], isMOFUOnly: true },
-      { id: 'mofu-sec-2', title: 'Admin Sandbox', developer: 'MOFU', src: 'about:blank', theme: 'from-rose-900 to-black', tags: ['Admin', 'Sandbox'], isMOFUOnly: true },
-      { id: 'mofu-sec-3', title: 'Netcode v2.0', developer: 'MOFU', src: 'about:blank', theme: 'from-indigo-900 to-black', tags: ['Test', 'Multiplayer'], isMOFUOnly: true },
-      { id: 'mofu-sec-4', title: 'Physics Engine', developer: 'MOFU', src: 'about:blank', theme: 'from-emerald-900 to-black', tags: ['Test', '3D'], isMOFUOnly: true },
-      { id: 'mofu-sec-5', title: 'Database Sync', developer: 'MOFU', src: 'about:blank', theme: 'from-fuchsia-900 to-black', tags: ['Secret', 'Admin'], isMOFUOnly: true }
+      { id: 'mofu-sec-1', title: 'Project Titan', developer: 'MOFU', src: 'about:blank', iconUrl: 'assets/Placeholder.png', theme: 'from-slate-800 to-black', tags: ['Secret', 'Test'], isMOFUOnly: true },
+      { id: 'mofu-sec-2', title: 'Admin Sandbox', developer: 'MOFU', src: 'about:blank', iconUrl: 'assets/Placeholder.png', theme: 'from-rose-900 to-black', tags: ['Admin', 'Sandbox'], isMOFUOnly: true },
+      { id: 'mofu-sec-3', title: 'Netcode v2.0', developer: 'MOFU', src: 'about:blank', iconUrl: 'assets/Placeholder.png', theme: 'from-indigo-900 to-black', tags: ['Test', 'Multiplayer'], isMOFUOnly: true },
+      { id: 'mofu-sec-4', title: 'Physics Engine', developer: 'MOFU', src: 'about:blank', iconUrl: 'assets/Placeholder.png', theme: 'from-emerald-900 to-black', tags: ['Test', '3D'], isMOFUOnly: true },
+      { id: 'mofu-sec-5', title: 'Database Sync', developer: 'MOFU', src: 'about:blank', iconUrl: 'assets/Placeholder.png', theme: 'from-fuchsia-900 to-black', tags: ['Secret', 'Admin'], isMOFUOnly: true }
     ];
 
     const GAME_CATEGORIES = ['All', 'Favorites', '3D', 'Multiplayer', 'Action', 'Spooky', 'Adventure', 'Cooking', 'RPG', 'Arcade', 'Table', 'Strategy'];
@@ -334,7 +366,6 @@
 
     // --- MAIN REACT COMPONENT ---
     function App() {
-      
       // Basic States
       const [activeView, setActiveView] = useState(() => {
         const hash = window.location.hash.replace(/^#\/?/, '');
@@ -354,28 +385,18 @@
       const [isBlocked, setIsBlocked] = useState(false);
       
       // Global Data
-      const [announcements, setAnnouncements] = useState([]);
       const [globalChat, setGlobalChat] = useState([]);
-      const [privateChatMessages, setPrivateChatMessages] = useState([]);
-      const [activeChatTab, setActiveChatTab] = useState('global');
       const [showChatPanel, setShowChatPanel] = useState(false);
       const [chatMessage, setChatMessage] = useState('');
-      const [playerSearchQuery, setPlayerSearchQuery] = useState('');
       const [gameReviews, setGameReviews] = useState([]);
       const [reviewText, setReviewText] = useState('');
       const [reviewStars, setReviewStars] = useState(5);
+      const [reviewPageGame, setReviewPageGame] = useState(GAMES[0].id);
       const [communityGames, setCommunityGames] = useState([]);
+      const [allSubmissions, setAllSubmissions] = useState([]);
       
       const [editingMessageId, setEditingMessageId] = useState(null);
       const [editMessageText, setEditMessageText] = useState('');
-      
-      // Social Data
-      const [friendRequests, setFriendRequests] = useState([]);
-      const [friendships, setFriendships] = useState([]);
-      const [chatGroups, setChatGroups] = useState([]);
-      const [showCreateGroup, setShowCreateGroup] = useState(false);
-      const [newGroupName, setNewGroupName] = useState('');
-      const [newGroupIcon, setNewGroupIcon] = useState('');
       
       // Auth & Profile States
       const [user, setUser] = useState(null); 
@@ -416,13 +437,11 @@
       const [profileBio, setProfileBio] = useState(''); 
       const [isUpdatingProfile, setIsUpdatingProfile] = useState(false); 
       
-      // Leaderboard States
+      // Leaderboard & Admin States
       const [leaderboard, setLeaderboard] = useState([]); 
       const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true); 
       const [leaderboardError, setLeaderboardError] = useState(''); 
       const [viewingPlayer, setViewingPlayer] = useState(null); 
-      
-      // Admin States
       const [allUsers, setAllUsers] = useState([]); 
       const [adminEditingUser, setAdminEditingUser] = useState(null); 
       const [adminEditUsername, setAdminEditUsername] = useState(''); 
@@ -437,7 +456,6 @@
       const [newAdminBadgeCustom, setNewAdminBadgeCustom] = useState('');
       const [adminActionLoading, setAdminActionLoading] = useState(false); 
 
-      // Audio & Loading States
       const [masterVolume, setMasterVolume] = useState(100); 
       const [musicVolume, setMusicVolume] = useState(2); 
       const [sfxVolume, setSfxVolume] = useState(100); 
@@ -457,11 +475,6 @@
       const canChat = isRegistered && (badges.includes('Verified') || isModerator);
 
       const allGames = useMemo(() => [...GAMES, ...communityGames], [communityGames]);
-
-      const myFriendsList = useMemo(() => {
-         if (!user) return [];
-         return friendships.filter(f => f.u1 === user.uid || f.u2 === user.uid).map(f => f.u1 === user.uid ? f.u2 : f.u1);
-      }, [friendships, user]);
 
       const filteredGames = useMemo(() => {
         if (activeView !== 'discover') return [];
@@ -493,9 +506,6 @@
 
       const FeaturedGame = allGames[0]; 
       const FeaturedGridGames = allGames.slice(1, 3);
-      const myIncomingRequests = friendRequests.filter(r => r.to === user?.uid);
-      const myGroups = chatGroups.filter(g => g.members.includes(user?.uid));
-      const activeGroupObj = activeChatTab.startsWith('group_') ? chatGroups.find(g => g.id === activeChatTab.replace('group_', '')) : null;
 
       // --- UTILITIES & NAVIGATION ---
       const navigateTo = (view) => {
@@ -550,37 +560,28 @@
         else if (blockUntil) localStorage.removeItem('nexis_block_until');
       }, []);
 
-      // TURNSTILE FIX - Ensures safe rendering in restricted iframes
       useEffect(() => {
         if (showAuthModal && (authMode === 'login' || authMode === 'signup')) {
             const attemptRender = () => {
                 const el = document.getElementById('turnstile-container');
                 if (window.turnstile && el) {
                     let isIframeRestricted = false;
-                    try {
-                        // Check if we are in a cross-origin iframe that blocks Turnstile
-                        const testAccess = window.top.location.href;
-                    } catch (e) {
-                        isIframeRestricted = true;
-                    }
+                    try { const testAccess = window.top.location.href; } catch (e) { isIframeRestricted = true; }
 
                     if (isIframeRestricted) {
                         setCaptchaBypass(true);
-                        if (el) el.innerHTML = '<div class="text-xs text-emerald-400 font-bold p-3 text-center bg-emerald-500/10 rounded-xl border border-emerald-500/20 shadow-inner w-full">Security Auto-Bypassed<br/><span class="text-[10px] text-emerald-500/70 uppercase tracking-widest mt-1 block">Local Preview Mode</span></div>';
+                        if (el) el.innerHTML = '';
                         return;
                     }
 
                     try {
                         if (el.innerHTML === "") { 
-                          window.turnstile.render('#turnstile-container', { 
-                            sitekey: '0x4AAAAAADJvsIsXA6ZWtber', 
-                            theme: 'dark' 
-                          }); 
+                          window.turnstile.render('#turnstile-container', { sitekey: '0x4AAAAAADJvsIsXA6ZWtber', theme: 'dark' }); 
                         }
                         setCaptchaBypass(false);
                     } catch (e) {
                         setCaptchaBypass(true);
-                        if (el) el.innerHTML = '<div class="text-xs text-emerald-400 font-bold p-3 text-center bg-emerald-500/10 rounded-xl border border-emerald-500/20 shadow-inner w-full">Security Auto-Bypassed<br/><span class="text-[10px] text-emerald-500/70 uppercase tracking-widest mt-1 block">Local Preview Mode</span></div>';
+                        if (el) el.innerHTML = '';
                     }
                 } else {
                     setTimeout(attemptRender, 100);
@@ -696,44 +697,32 @@
            const arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); setGlobalChat(arr.sort((a,b) => a.timestamp - b.timestamp));
         }, err => {}));
         
-        unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'announcements'), snap => {
-           const arr = []; snap.forEach(d => arr.push(d.data())); setAnnouncements(arr.sort((a,b) => b.timestamp - a.timestamp));
-        }, err => {}));
-        
         unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews'), snap => {
            const arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); setGameReviews(arr);
         }, err => {}));
         
-        unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'friendRequests'), snap => {
-           const arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); setFriendRequests(arr);
-        }, err => {}));
-        
-        unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'friendships'), snap => {
-           const arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); setFriendships(arr);
-        }, err => {}));
-        
-        unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups'), snap => {
-           const arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); setChatGroups(arr);
-        }, err => {}));
-        
         // Dynamic Game Submissions Loader
         unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'gameSubmissions'), snap => {
-           const arr = []; 
+           const communityArr = []; 
+           const allArr = [];
            snap.forEach(d => {
              const data = d.data();
+             const subObj = { id: d.id, ...data };
+             allArr.push(subObj);
              if (data.status === 'accepted') {
-                 arr.push({
+                 communityArr.push({
                      id: d.id,
                      title: data.title,
                      developer: data.developer || 'Community',
-                     src: 'about:blank', // Placeholder until true hosting is provided
+                     src: data.src || 'about:blank', 
                      theme: 'from-violet-900 to-black',
                      tags: data.tags || ['Community'],
                      isCommunity: true
                  });
              }
            });
-           setCommunityGames(arr);
+           setCommunityGames(communityArr);
+           setAllSubmissions(allArr.sort((a,b) => b.timestamp - a.timestamp));
         }, err => {}));
 
         unsubs.push(onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'users'), snap => {
@@ -750,18 +739,7 @@
         return () => unsubs.forEach(unsub => unsub());
       }, [db]);
 
-      useEffect(() => {
-        if (!db || !user || activeChatTab === 'global' || activeChatTab === 'friends' || activeChatTab === 'groups') return;
-        let colRef;
-        if (activeChatTab.startsWith('group_')) colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups', activeChatTab.replace('group_', ''), 'messages');
-        else colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'privateChats', [user.uid, activeChatTab].sort().join('_'), 'messages');
-        const unsub = onSnapshot(colRef, snap => {
-            const arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); setPrivateChatMessages(arr.sort((a,b) => a.timestamp - b.timestamp));
-        }, err => {});
-        return () => unsub();
-      }, [db, user, activeChatTab]);
-
-      useEffect(() => { if (showChatPanel && chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' }); }, [globalChat, privateChatMessages, showChatPanel, activeChatTab]);
+      useEffect(() => { if (showChatPanel && chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' }); }, [globalChat, showChatPanel]);
       useEffect(() => { if (adCountdown > 0) { const timer = setTimeout(() => setAdCountdown(c => c - 1), 1000); return () => clearTimeout(timer); } }, [adCountdown]);
       useEffect(() => { const handleEsc = e => { if (e.key === 'Escape' && isCssFullscreen) setIsCssFullscreen(false); }; window.addEventListener('keydown', handleEsc); return () => window.removeEventListener('keydown', handleEsc); }, [isCssFullscreen]);
 
@@ -775,11 +753,7 @@
         try {
           if (!sanitizeUsername(username)) throw new Error("Validation Error: Username must be 3-16 characters and contain only letters, numbers, and underscores.");
           
-          if (!captchaBypass) {
-              const turnstileResponse = window.turnstile ? window.turnstile.getResponse() : '';
-              if (!turnstileResponse) throw new Error("Validation Error: Please complete the verification!");
-          } else {
-              // Fallback Math Check if Turnstile failed to load in the Canvas iframe
+          if (captchaBypass) {
               if (parseInt(botCheck.answer) !== (botCheck.num1 + botCheck.num2)) {
                  throw new Error("Validation Error: Incorrect math answer!");
               }
@@ -822,10 +796,6 @@
         setAuthError(''); setAuthLoading(true); setAuthCooldown(true);
 
         try { 
-          if (!captchaBypass) {
-              const turnstileResponse = window.turnstile ? window.turnstile.getResponse() : '';
-              if (!turnstileResponse) throw new Error("Validation Error: Please complete the verification!");
-          }
           const userCredential = await signInWithEmailAndPassword(auth, email, password); 
           if (!userCredential.user.emailVerified) {
             await sendEmailVerification(userCredential.user); await signOut(auth);
@@ -928,6 +898,24 @@
         } catch (err) { showToast(err.message, 'error'); } finally { setAdminActionLoading(false); }
       };
 
+      const handleDeleteSubmission = async (id) => {
+         if (!window.confirm("Are you sure you want to permanently delete this submission?")) return;
+         try {
+             await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'gameSubmissions', id));
+             showToast("Submission deleted");
+         } catch(e) { showToast("Failed to delete.", "error"); }
+      };
+
+      const handleAdminUpdate = async (id, newStatus, newComment) => {
+         try {
+             await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'gameSubmissions', id), {
+                 status: newStatus,
+                 adminComment: filterMessage(newComment.trim())
+             });
+             showToast("Submission successfully updated!");
+         } catch(e) { showToast("Failed to update.", "error"); }
+      };
+
       const deleteReview = async (revId) => {
          if(!isModerator || !window.confirm("Delete this review permanently?")) return;
          try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', revId)); showToast("Review deleted"); } 
@@ -938,11 +926,7 @@
          if(!isModerator && msgOwnerId !== user?.uid) return;
          if(!window.confirm("Delete this message?")) return;
          try {
-            let colRef;
-            if (activeChatTab === 'global') colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'globalChat');
-            else if (activeChatTab.startsWith('group_')) colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups', activeChatTab.replace('group_', ''), 'messages');
-            else colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'privateChats', [user.uid, activeChatTab].sort().join('_'), 'messages');
-            await deleteDoc(doc(colRef, msgId));
+            await deleteDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'globalChat'), msgId));
             showToast("Message deleted");
          } catch(e) { showToast("Failed to delete", "error"); }
       };
@@ -953,55 +937,9 @@
          e.preventDefault();
          if (!editMessageText.trim()) return;
          try {
-            let colRef;
-            if (activeChatTab === 'global') colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'globalChat');
-            else if (activeChatTab.startsWith('group_')) colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups', activeChatTab.replace('group_', ''), 'messages');
-            else colRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'privateChats', [user.uid, activeChatTab].sort().join('_'), 'messages');
-            await updateDoc(doc(colRef, msgId), { text: filterMessage(editMessageText.trim()), edited: true });
+            await updateDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'globalChat'), msgId), { text: filterMessage(editMessageText.trim()), edited: true });
             setEditingMessageId(null); setEditMessageText('');
          } catch(err) { showToast("Failed to edit", "error"); }
-      };
-
-      // --- SOCIAL EVENT HANDLERS ---
-      const sendFriendRequest = async (targetUid) => {
-        if (!user || !canChat) { showToast("You must be Verified to add friends.", "error"); return; }
-        const reqId = `${user.uid}_${targetUid}`;
-        try { await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'friendRequests', reqId), { from: user.uid, to: targetUid, fromUsername: user.displayName, fromPhoto: currentUserPhoto, timestamp: Date.now() }); showToast("Friend request sent!"); } 
-        catch(e) { showToast("Failed to send request", "error"); }
-      };
-
-      const acceptFriendRequest = async (req) => {
-        try { await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'friendships', `${req.from}_${req.to}`), { u1: req.from, u2: req.to, timestamp: Date.now() }); await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'friendRequests', req.id)); showToast("Friend added!"); } 
-        catch(e) { showToast("Failed to accept", "error"); }
-      };
-
-      const declineFriendRequest = async (reqId) => {
-         try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'friendRequests', reqId)); } catch(e) { showToast("Failed to decline", "error"); }
-      };
-
-      const removeFriendship = async (friendUid) => {
-         if(!window.confirm("Remove this friend?")) return;
-         const f = friendships.find(x => (x.u1 === user.uid && x.u2 === friendUid) || (x.u1 === friendUid && x.u2 === user.uid));
-         if(f) { try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'friendships', f.id)); showToast("Friend removed"); } catch(e) {} }
-      };
-
-      const createGroup = async (e) => {
-         e.preventDefault();
-         if (!user || !canChat || !newGroupName.trim()) return;
-         if (!sanitizeUsername(newGroupName.trim().replace(/\s/g, ''))) { showToast("Group name invalid.", "error"); return; }
-         try {
-            const newGroup = { name: newGroupName.trim(), icon: newGroupIcon || `https://placehold.co/100x100/6366f1/ffffff?text=${newGroupName.trim().charAt(0).toUpperCase()}`, owner: user.uid, members: [user.uid], timestamp: Date.now() };
-            await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups'), newGroup);
-            setNewGroupName(''); setNewGroupIcon(''); setShowCreateGroup(false); showToast("Group Created!");
-         } catch(e) { showToast("Failed to create group", "error"); }
-      };
-
-      const inviteToGroup = async (groupId, friendUid) => {
-         const group = chatGroups.find(g => g.id === groupId);
-         if (!group || !canChat) return;
-         if (group.members.includes(friendUid)) { showToast("Already in group", "error"); return; }
-         try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups', groupId), { members: [...group.members, friendUid] }); showToast("Added to group!"); } 
-         catch(e) { showToast("Failed to add", "error"); }
       };
 
       const sendChat = async (e) => {
@@ -1010,9 +948,7 @@
         if(!canChat) { showToast("You need the Verified badge to chat!", "error"); return; }
         try {
            const filteredText = filterMessage(chatMessage.trim());
-           if (activeChatTab === 'global') await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'globalChat'), { uid: user.uid, username: user.displayName, tag: currentUserTag, text: filteredText, timestamp: Date.now(), photoURL: currentUserPhoto, frame: userFrame });
-           else if (activeChatTab.startsWith('group_')) await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'chatGroups', activeChatTab.replace('group_', ''), 'messages'), { uid: user.uid, username: user.displayName, tag: currentUserTag, text: filteredText, timestamp: Date.now(), photoURL: currentUserPhoto, frame: userFrame });
-           else await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'privateChats', [user.uid, activeChatTab].sort().join('_'), 'messages'), { uid: user.uid, username: user.displayName, tag: currentUserTag, text: filteredText, timestamp: Date.now(), photoURL: currentUserPhoto, frame: userFrame });
+           await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'globalChat'), { uid: user.uid, username: user.displayName, tag: currentUserTag, text: filteredText, timestamp: Date.now(), photoURL: currentUserPhoto, frame: userFrame });
            setChatMessage(''); addXP(2);
         } catch(e) { showToast("Failed to send", "error"); }
       };
@@ -1118,7 +1054,7 @@
           >
             <div className="p-6 flex items-center justify-start h-24 border-b border-violet-500/10">
               <div className={`w-10 h-10 rounded-[12px] bg-gradient-to-br ${activeThemeColors.gradient} flex items-center justify-center flex-shrink-0 border border-violet-400/30 shadow-[0_0_15px_rgba(139,92,246,0.4)] relative z-10 overflow-hidden`}>
-                <img src="assets/Favicon.png" alt="NG" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                <img src="assets/Tran.png" alt="NG" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                 <span style={{display: 'none'}} className="font-heading font-black text-violet-100">NG</span>
               </div>
               <h1 className={`text-xl font-bold tracking-widest text-violet-200 font-heading transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>NEXIS GAMES</h1>
@@ -1137,10 +1073,12 @@
               )}
             </nav>
             <div className="p-4 border-t border-violet-500/10 space-y-2">
-              <button onClick={() => window.open('https://dev.nexisgd.com', '_blank')} className="w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200" title="Developer Hub">
-                <CodeIcon size={24} className="flex-shrink-0" />
-                <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Developer Hub</span>
-              </button>
+              {(badges.includes('Dev') || isModerator) && (
+                <button onClick={() => window.open('SubmitGame.html', '_blank')} className="w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200" title="Developer Hub">
+                  <CodeIcon size={24} className="flex-shrink-0" />
+                  <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Developer Hub</span>
+                </button>
+              )}
               <button onClick={() => navigateTo('settings')} className={`w-full flex items-center px-4 py-4 rounded-2xl transition-all duration-300 active:scale-95 border ${activeView === 'settings' ? 'bg-violet-500/10 border-violet-500/20 text-violet-300 shadow-[inset_4px_0_0_0_rgba(168,85,247,1)]' : 'border-transparent text-violet-400/70 hover:bg-violet-500/10 hover:text-violet-200'}`} title="Settings">
                 <SettingsIcon size={24} className="flex-shrink-0" />
                 <span className={`font-bold font-ui text-xl tracking-wide transition-all duration-300 ${isSidebarOpen ? 'opacity-100 ml-4 translate-x-0' : 'opacity-0 ml-0 -translate-x-4'}`}>Settings</span>
@@ -1182,7 +1120,6 @@
                   )}
                   <button onClick={() => setShowChatPanel(!showChatPanel)} className={`p-3 rounded-xl bg-obsidian-800 border ${showChatPanel ? activeThemeColors.border + ' ' + activeThemeColors.text : 'border-violet-500/10 text-violet-400/70 hover:text-violet-200 hover:bg-obsidian-800/80'} transition-all relative shadow-lg`}>
                      <MessageIcon size={24} />
-                     {myIncomingRequests.length > 0 && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 rounded-full border-2 border-obsidian-900 flex items-center justify-center text-[8px] font-black text-white shadow-[0_0_10px_rgba(244,63,94,0.6)] animate-bounce">{myIncomingRequests.length}</span>}
                   </button>
                 </div>
               </header>
@@ -1199,7 +1136,7 @@
                           <div className="absolute inset-0 bg-obsidian-900"></div>
                           <div className={`absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] ${FeaturedGame.theme} opacity-30`}></div>
                           <div className="absolute right-0 top-0 w-full md:w-1/2 h-full opacity-40 transform translate-x-10 md:translate-x-20 -translate-y-5 md:group-hover:scale-[1.03] transition-transform duration-700 ease-out drop-shadow-2xl">
-                            <GameIconRenderer title={FeaturedGame.title} isCommunity={FeaturedGame.isCommunity} />
+                            <GameIconRenderer iconUrl={FeaturedGame.iconUrl} title={FeaturedGame.title} isCommunity={FeaturedGame.isCommunity} />
                           </div>
                           <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/60 to-transparent"></div>
                           <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 transform md:group-hover:-translate-y-1 transition-transform duration-500 ease-out z-10">
@@ -1213,11 +1150,11 @@
                            {FeaturedGridGames.map(game => (
                              <div key={'feat-'+game.id} className={`group relative bg-gradient-to-br ${game.theme} border border-white/10 rounded-2xl overflow-hidden cursor-pointer flex flex-row items-center p-4 shadow-lg hover:border-white/30 hover:shadow-xl transition-all h-32`} onClick={() => handleLaunchGame(game)}>
                                 <div className="absolute right-0 top-0 w-1/2 h-full opacity-30 group-hover:scale-110 transition-transform duration-500 ease-out pointer-events-none">
-                                  <GameIconRenderer title={game.title} isCommunity={game.isCommunity} />
+                                  <GameIconRenderer iconUrl={game.iconUrl} title={game.title} isCommunity={game.isCommunity} />
                                 </div>
                                 <div className="absolute inset-0 bg-gradient-to-r from-obsidian-950 via-obsidian-950/80 to-transparent pointer-events-none"></div>
                                 <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg border border-white/10 flex-shrink-0 z-10 relative">
-                                  <GameIconRenderer title={game.title} isCommunity={game.isCommunity} />
+                                  <GameIconRenderer iconUrl={game.iconUrl} title={game.title} isCommunity={game.isCommunity} />
                                 </div>
                                 <div className="ml-4 flex flex-col z-10"><h4 className="text-xl font-bold font-heading text-white">{game.title}</h4><p className="text-xs text-white/70 uppercase tracking-widest font-bold mt-1">Featured Selection</p></div>
                              </div>
@@ -1235,7 +1172,7 @@
                               return (
                                 <button key={'recent'+g.id} onClick={() => handleLaunchGame(g)} className="flex-shrink-0 flex items-center gap-3 bg-obsidian-800/80 border border-white/5 pr-6 rounded-2xl hover:bg-obsidian-800 transition-colors">
                                    <div className={`w-16 h-16 rounded-l-2xl overflow-hidden bg-gradient-to-br ${g.theme} p-2 border-r border-white/5`}>
-                                     <GameIconRenderer title={g.title} isCommunity={g.isCommunity} />
+                                     <GameIconRenderer iconUrl={g.iconUrl} title={g.title} isCommunity={g.isCommunity} />
                                    </div>
                                    <span className="font-bold font-heading text-white">{g.title}</span>
                                 </button>
@@ -1265,7 +1202,7 @@
                               <div className={`w-full aspect-video bg-gradient-to-br ${game.theme} p-6 relative flex items-center justify-center overflow-hidden border-b border-violet-500/10`}>
                                 <div className="absolute inset-0 bg-black/30 md:group-hover:bg-transparent transition-colors duration-500"></div>
                                 <div className="w-28 h-28 transform md:group-hover:scale-[1.1] transition-transform duration-500 ease-out drop-shadow-xl">
-                                  <GameIconRenderer title={game.title} isCommunity={game.isCommunity} />
+                                  <GameIconRenderer iconUrl={game.iconUrl} title={game.title} isCommunity={game.isCommunity} />
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] bg-obsidian-900/40">
                                   <div className="w-14 h-14 bg-violet-600/90 border border-violet-400/50 rounded-full flex items-center justify-center transform scale-75 md:group-hover:scale-100 transition-transform duration-300 ease-out shadow-[0_0_20px_rgba(139,92,246,0.5)]"><PlayIcon size={24} className="ml-1 text-violet-100" fill="currentColor" /></div>
@@ -1524,7 +1461,7 @@
                                  <p className="text-right text-xs text-violet-500 font-ui mt-2 uppercase tracking-widest">{profileBio.length} / 160</p>
                                </div>
                                <div className="pt-6 flex justify-end border-t border-white/5">
-                                 <button type="submit" disabled={isUpdatingProfile} className={`px-10 py-4 font-bold font-ui tracking-widest text-xl uppercase rounded-2xl transition-all disabled:opacity-50 text-white bg-obsidian-800 border border-white/20 hover:bg-obsidian-700`}>{isUpdatingProfile ? 'Saving...' : 'Save Profile'}</button>
+                                 <button type="submit" disabled={isUpdatingProfile} className={`px-10 py-4 font-bold font-ui tracking-widest text-xl uppercase rounded-2xl transition-all disabled:opacity-50 text-white bg-obsidian-800 border border-white/20 hover:bg-obsidian-700 active:scale-95`}>{isUpdatingProfile ? 'Saving...' : 'Save Profile'}</button>
                                </div>
                              </form>
                            </div>
@@ -1553,7 +1490,7 @@
                               <h4 className="font-bold text-white text-lg">Background Audio</h4>
                               <p className="text-sm text-slate-400">Toggle music and game sounds.</p>
                             </div>
-                            <button onClick={() => setIsSoundEnabled(!isSoundEnabled)} className={`px-6 py-2.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all ${isSoundEnabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`}>
+                            <button onClick={() => setIsSoundEnabled(!isSoundEnabled)} className={`px-6 py-2.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all active:scale-95 ${isSoundEnabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`}>
                               {isSoundEnabled ? 'Enabled' : 'Disabled'}
                             </button>
                           </div>
@@ -1605,12 +1542,12 @@
                         <div><h2 className="text-4xl font-black font-heading text-white">Admin Portal</h2><p className="text-slate-400 font-ui text-lg">Manage users, custom tags, and database records.</p></div>
                       </div>
                       
-                      <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col flex-1">
+                      <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col">
                           <div className="p-6 sm:p-8 border-b border-violet-500/20 bg-obsidian-950/50 flex justify-between items-center">
                             <h3 className="text-2xl font-bold font-heading text-violet-100">Player Database</h3>
                             <span className="bg-violet-600/20 text-violet-300 font-bold px-4 py-1.5 rounded-full border border-violet-500/40 font-ui text-sm uppercase tracking-widest">{allUsers.length} Players</span>
                           </div>
-                          <div className="overflow-y-auto p-4 flex-1 scrollbar-hide">
+                          <div className="overflow-y-auto p-4 max-h-[600px] scrollbar-hide">
                              {allUsers.length === 0 ? (
                                 <div className="p-20 text-center text-violet-400/70 flex flex-col items-center"><div className="w-16 h-16 border-4 border-violet-600 border-t-transparent rounded-full animate-spin mb-6"></div></div>
                              ) : (
@@ -1672,6 +1609,23 @@
                              )}
                           </div>
                       </div>
+                      
+                      <div className="bg-obsidian-800/80 backdrop-blur-2xl border border-violet-500/20 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col mt-8">
+                        <div className="p-6 sm:p-8 border-b border-violet-500/20 bg-obsidian-950/50 flex justify-between items-center">
+                          <h3 className="text-2xl font-bold font-heading text-violet-100">Developer Submissions</h3>
+                          <span className="bg-fuchsia-600/20 text-fuchsia-300 font-bold px-4 py-1.5 rounded-full border border-fuchsia-500/40 font-ui text-sm uppercase tracking-widest">{allSubmissions.length} Games</span>
+                        </div>
+                        <div className="p-6 sm:p-8 space-y-6 max-h-[600px] overflow-y-auto scrollbar-hide">
+                           {allSubmissions.length === 0 ? (
+                              <div className="text-center py-10 text-slate-500"><CheckCircleIcon size={48} className="mx-auto mb-4 opacity-50" /><p>No games in the review queue.</p></div>
+                           ) : (
+                              allSubmissions.map(sub => (
+                                 <AdminSubmissionCard key={sub.id} sub={sub} onUpdate={handleAdminUpdate} onDelete={handleDeleteSubmission} />
+                              ))
+                           )}
+                        </div>
+                      </div>
+                      
                     </div>
                   </div>
                 )}
@@ -1679,265 +1633,66 @@
               </div>
             </div>
 
-            {/* --- GAME PLAYER VIEW --- */}
-            <div className={`absolute inset-0 flex flex-col bg-[#030008] transition-opacity duration-500 z-[85] ${activeGame ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-              {activeGame && (
-                <>
-                  <div className={`h-14 bg-obsidian-950 border-b border-violet-500/20 flex items-center justify-between px-4 flex-shrink-0 transition-all ${isCssFullscreen ? 'hidden' : 'flex'} z-[100]`}>
-                    <div className="flex items-center space-x-4">
-                      <button 
-                        onClick={handleCloseGame}
-                        className="flex items-center space-x-2 text-violet-400 hover:text-violet-200 bg-obsidian-900 hover:bg-obsidian-800 border border-violet-500/20 px-4 py-1.5 rounded-lg transition-colors active:scale-95"
-                      >
-                        <ChevronLeftIcon size={18} />
-                        <span className="font-bold font-ui uppercase tracking-widest text-xs">Main Menu</span>
-                      </button>
-                      <div className="h-6 w-px bg-violet-500/20"></div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-md overflow-hidden bg-obsidian-900 shadow-inner relative">
-                          <GameIconRenderer title={activeGame.title} isCommunity={activeGame.isCommunity} />
-                        </div>
-                        <span className="font-black font-heading text-violet-100 tracking-wide">{activeGame.title}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <button 
-                        onClick={executeFullscreen}
-                        className="flex items-center space-x-2 text-violet-400 hover:text-violet-200 px-3 py-1.5 rounded-lg hover:bg-obsidian-800 transition-colors"
-                        title="Full Screen"
-                      >
-                        <Maximize2Icon size={20} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 w-full relative bg-[#030008]" ref={playerContainerRef}>
-                    {isCssFullscreen && (
-                      <button 
-                        onClick={executeFullscreen}
-                        className="absolute top-4 right-4 z-[120] bg-black/60 hover:bg-violet-600 text-white p-3 rounded-full backdrop-blur-md transition-all border border-white/10 shadow-2xl flex items-center justify-center group"
-                        title="Exit Full Screen"
-                      >
-                        <Minimize2Icon size={20} className="group-hover:scale-110 transition-transform" />
-                      </button>
-                    )}
-
-                    {adCountdown > 0 && (
-                      <div className="absolute inset-0 z-[110] bg-[#030008]/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
-                        <div className={`absolute inset-0 bg-gradient-to-br ${activeGame.theme} opacity-10 pointer-events-none`}></div>
-                        <div className="relative max-w-4xl w-full flex flex-col items-center bg-obsidian-900/80 backdrop-blur-3xl border border-white/10 p-8 sm:p-12 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden">
-                          <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${activeGame.theme}`}></div>
-                          <div className="flex flex-col items-center mb-8">
-                            <div className="w-20 h-20 mb-4 rounded-2xl overflow-hidden shadow-2xl transform scale-110">
-                              <GameIconRenderer title={activeGame.title} isCommunity={activeGame.isCommunity} />
-                            </div>
-                            <h2 className="text-2xl sm:text-3xl font-black font-heading text-white drop-shadow-md">Preparing {activeGame.title}</h2>
-                          </div>
-                          
-                          <div className="w-full bg-obsidian-950/80 rounded-2xl border border-white/5 overflow-hidden flex items-center justify-center min-h-[120px] sm:min-h-[200px] shadow-inner p-2 relative">
-                             <AdSenseWidget />
-                          </div>
-                          
-                          <div className="mt-8 flex flex-col items-center w-full max-w-md">
-                             <div className="flex justify-between w-full text-sm font-bold font-ui text-slate-400 uppercase tracking-widest mb-2"><span>Loading Assets</span><span className="text-white">{Math.round(((5 - adCountdown) / 5) * 100)}%</span></div>
-                             <div className="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden shadow-inner border border-white/5"><div className="h-full bg-white transition-all duration-1000 ease-linear" style={{ width: `${((5 - adCountdown) / 5) * 100}%` }}></div></div>
-                             <p className="mt-4 text-slate-500 font-ui text-sm">Game will begin in {adCountdown} seconds...</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {iframeLoading && adCountdown === 0 && (
-                      <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-obsidian-950"><div className="w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div><p className="text-violet-300 font-bold font-heading text-xl animate-pulse">Connecting to server...</p></div>
-                    )}
-                    <iframe src={activeGame.src} className={`w-full h-full border-none transition-opacity duration-1000 ${iframeLoading || adCountdown > 0 ? 'opacity-0' : 'opacity-100'}`} onLoad={() => setIframeLoading(false)} allow="fullscreen; autoplay; gamepad; keyboard; pointer-lock"></iframe>
-                  </div>
-                </>
-              )}
-            </div>
-
             {/* --- SLIDING CHAT PANEL --- */}
             {showChatPanel && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[105]" onClick={() => setShowChatPanel(false)}></div>}
             <div className={`fixed top-0 right-0 h-screen w-80 sm:w-96 bg-obsidian-950/95 backdrop-blur-2xl border-l border-white/10 z-[110] transform transition-transform duration-300 shadow-2xl flex flex-col ${showChatPanel ? 'translate-x-0' : 'translate-x-full'}`}>
                <div className={`p-4 border-b border-white/10 bg-gradient-to-r ${activeThemeColors.gradient} flex justify-between items-center`}>
-                  {activeChatTab === 'global' || activeChatTab === 'friends' || activeChatTab === 'groups' ? (
-                      <div className="w-full">
-                         <div className="flex justify-between items-center mb-3">
-                             <h3 className="font-black font-heading text-white text-xl flex items-center gap-2">{activeChatTab === 'global' ? <MessageIcon size={20}/> : activeChatTab === 'friends' ? <UsersIcon size={20}/> : <ShieldIcon size={20}/>} {activeChatTab.charAt(0).toUpperCase() + activeChatTab.slice(1)} Chat</h3>
-                             <button onClick={()=>setShowChatPanel(false)} className="text-white/70 hover:text-white transition-colors"><XIcon size={24}/></button>
-                         </div>
-                         <div className="flex gap-2">
-                             <button onClick={()=>setActiveChatTab('global')} className={`flex-1 text-xs font-bold uppercase py-2 rounded-lg transition-all ${activeChatTab === 'global' ? 'bg-white/20 text-white shadow-inner' : 'bg-black/20 text-white/70 hover:text-white'}`}>Global</button>
-                             <button onClick={()=>setActiveChatTab('friends')} className={`flex-1 text-xs font-bold uppercase py-2 rounded-lg transition-all relative ${activeChatTab === 'friends' ? 'bg-white/20 text-white shadow-inner' : 'bg-black/20 text-white/70 hover:text-white'}`}>Friends {myIncomingRequests.length > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full animate-pulse"></span>}</button>
-                             <button onClick={()=>setActiveChatTab('groups')} className={`flex-1 text-xs font-bold uppercase py-2 rounded-lg transition-all ${activeChatTab === 'groups' ? 'bg-white/20 text-white shadow-inner' : 'bg-black/20 text-white/70 hover:text-white'}`}>Groups</button>
-                         </div>
-                      </div>
-                  ) : (
-                      <>
-                          <button onClick={()=>setActiveChatTab(activeChatTab.startsWith('group_') ? 'groups' : 'friends')} className="text-white/80 hover:text-white flex items-center gap-1 font-bold text-sm bg-black/20 px-3 py-1.5 rounded-lg transition-colors"><ChevronLeftIcon size={18}/> Back</button>
-                          <h3 className="font-black font-heading text-white text-lg truncate px-2 flex flex-col items-center">{activeGroupObj ? activeGroupObj.name : 'Private Chat'}</h3>
-                          <button onClick={()=>setShowChatPanel(false)} className="text-white/70 hover:text-white transition-colors"><XIcon size={24}/></button>
-                      </>
-                  )}
+                   <h3 className="font-black font-heading text-white text-xl flex items-center gap-2"><MessageIcon size={20}/> Global Chat</h3>
+                   <button onClick={()=>setShowChatPanel(false)} className="text-white/70 hover:text-white transition-colors"><XIcon size={24}/></button>
                </div>
                
-               {activeChatTab === 'groups' ? (
-                  <div className="flex flex-col h-full overflow-hidden">
-                     {showCreateGroup ? (
-                        <div className="p-4 bg-obsidian-900 border-b border-white/5 space-y-4 shadow-md z-10">
-                           <h4 className="text-sm font-bold text-white flex justify-between items-center">Create New Group<button onClick={() => setShowCreateGroup(false)} className="text-slate-400 hover:text-white"><XIcon size={16}/></button></h4>
-                           <input type="text" placeholder="Group Name" value={newGroupName} onChange={e=>setNewGroupName(e.target.value)} className="w-full bg-obsidian-950 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:outline-none" />
-                           <button onClick={createGroup} className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-2 rounded-lg transition-colors shadow-lg active:scale-95">Create Group</button>
-                        </div>
-                     ) : (
-                        <div className="p-3 border-b border-white/5"><button onClick={() => setShowCreateGroup(true)} className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-2 rounded-lg transition-colors text-sm flex items-center justify-center gap-2 border border-white/5"><span className="text-lg leading-none">+</span> Create Group</button></div>
-                     )}
-                     
-                     <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {myGroups.length === 0 ? (
-                            <div className="text-center mt-10"><UsersIcon size={40} className="text-slate-600 mx-auto mb-4" /><p className="text-slate-400 font-ui text-sm">You aren't in any groups.</p></div>
-                        ) : (
-                            myGroups.map(group => (
-                                <div key={group.id} onClick={() => setActiveChatTab(`group_${group.id}`)} className="flex items-center gap-3 p-3 bg-obsidian-800/50 rounded-xl hover:bg-obsidian-800 cursor-pointer border border-white/5 transition-colors shadow-sm">
-                                    <div className="w-10 h-10 rounded-lg bg-obsidian-900 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center"><span className="font-bold text-white text-lg font-heading">{group.name.charAt(0).toUpperCase()}</span></div>
-                                    <div className="flex-1 overflow-hidden"><h4 className="font-bold text-white truncate text-sm">{group.name}</h4><p className="text-xs text-slate-500 truncate">{group.members.length} members</p></div>
-                                </div>
-                            ))
-                        )}
-                     </div>
-                  </div>
-               ) : activeChatTab === 'friends' ? (
-                  <div className="flex flex-col h-full overflow-hidden">
-                     {myIncomingRequests.length > 0 && (
-                        <div className="p-3 border-b border-white/5 bg-violet-600/10 shadow-inner">
-                           <h4 className="text-xs font-bold text-violet-300 uppercase tracking-widest mb-2 flex items-center gap-2"><UserIcon size={14}/> Friend Requests</h4>
-                           <div className="space-y-2">
-                              {myIncomingRequests.map(req => (
-                                 <div key={req.id} className="flex items-center justify-between bg-obsidian-900 p-2 rounded-lg border border-violet-500/20 shadow-md">
-                                    <div className="flex items-center gap-2 overflow-hidden">
-                                       <div className="w-8 h-8 bg-obsidian-800 rounded-md overflow-hidden flex-shrink-0">{req.fromPhoto ? <img src={req.fromPhoto} className="w-full h-full object-cover"/> : <span className="w-full h-full flex items-center justify-center font-bold text-white text-xs">{req.fromUsername.charAt(0)}</span>}</div>
-                                       <span className="text-sm font-bold text-white truncate">{req.fromUsername}</span>
-                                    </div>
-                                    <div className="flex gap-1 flex-shrink-0">
-                                       <button onClick={() => acceptFriendRequest(req)} className="bg-emerald-500 hover:bg-emerald-400 text-white px-3 py-1 rounded text-xs font-bold transition-colors shadow">Accept</button>
-                                       <button onClick={() => declineFriendRequest(req.id)} className="bg-rose-500/20 hover:bg-rose-500 text-rose-400 hover:text-white px-2 py-1 rounded text-xs font-bold transition-colors">✕</button>
-                                    </div>
-                                 </div>
-                              ))}
+               <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {!isRegistered ? (
+                     <div className="h-full flex flex-col items-center justify-center text-center px-4"><MessageIcon size={48} className="text-slate-600 mb-4"/><p className="text-slate-400 font-ui mb-4">Sign in to join the conversation with other players!</p><button onClick={()=>{setShowChatPanel(false); setShowAuthModal(true)}} className="px-6 py-2 bg-obsidian-800 border border-white/20 rounded-lg text-white font-bold shadow-lg">Sign In</button></div>
+                  ) : !canChat ? (
+                     <div className="h-full flex flex-col items-center justify-center text-center px-4"><ShieldIcon size={48} className="text-rose-500 mb-4 opacity-50"/><p className="text-slate-300 font-bold font-ui mb-2">Restricted Access</p><p className="text-slate-500 font-ui text-sm">You need the <span className="text-white font-bold">Verified</span> badge to access chat. Please contact an Admin!</p></div>
+                  ) : (
+                     globalChat.map(msg => (
+                        <div key={msg.id} className={`flex gap-3 relative group ${msg.uid === user.uid ? 'flex-row-reverse' : ''}`} style={{ animation: 'slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards' }}>
+                           <div className={`w-8 h-8 rounded-lg bg-obsidian-800 flex-shrink-0 flex items-center justify-center border ${AVATAR_FRAMES.find(f=>f.id===msg.frame)?.style || 'border-white/10'} overflow-hidden shadow-sm`}>
+                              {msg.photoURL ? <img src={msg.photoURL} className="w-full h-full object-cover"/> : <span className="text-xs font-bold text-white">{msg.username.charAt(0).toUpperCase()}</span>}
                            </div>
-                        </div>
-                     )}
-                     
-                     <div className="p-3 border-b border-white/5">
-                        <div className="relative"><SearchIcon size={16} className="absolute left-3 top-2.5 text-slate-500" /><input type="text" placeholder="Search to add friends..." value={playerSearchQuery} onChange={e=>setPlayerSearchQuery(e.target.value)} className="w-full bg-obsidian-900 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-sm text-white focus:outline-none focus:border-violet-500/50 transition-colors shadow-inner" /></div>
-                     </div>
-                     <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {playerSearchQuery.trim() ? (
-                            allUsers.filter(u => u.uid !== user?.uid && (u.username.toLowerCase().includes(playerSearchQuery.toLowerCase()) || u.userTag.toLowerCase().includes(playerSearchQuery.toLowerCase()))).map(searchUser => {
-                                const isFriend = myFriendsList.includes(searchUser.uid);
-                                const hasSentReq = friendRequests.some(r => r.from === user?.uid && r.to === searchUser.uid);
-                                return (
-                                <div key={'search'+searchUser.uid} className="flex items-center gap-3 p-3 bg-obsidian-800/50 rounded-xl border border-white/5">
-                                    <div className={`w-10 h-10 rounded-lg bg-obsidian-900 border ${AVATAR_FRAMES.find(f=>f.id===searchUser.userFrame)?.style || 'border-white/10'} overflow-hidden flex-shrink-0 flex items-center justify-center shadow-md`}>
-                                        {searchUser.photoURL ? <img src={searchUser.photoURL} className="w-full h-full object-cover"/> : <span className="font-bold text-white">{searchUser.username.charAt(0).toUpperCase()}</span>}
-                                    </div>
-                                    <div className="flex-1 overflow-hidden">
-                                        <h4 className="font-bold text-white truncate text-sm flex items-center gap-1">{searchUser.username} {searchUser.badges?.includes('Verified') && <ShieldIcon size={12} className="text-emerald-400" title="Verified"/>}</h4>
-                                        <p className="text-xs text-slate-500 truncate">#{searchUser.userTag}</p>
-                                    </div>
-                                    {isFriend ? <button onClick={() => removeFriendship(searchUser.uid)} className="p-2 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 border border-rose-500/30 transition-colors"><XIcon size={16}/></button> : hasSentReq ? <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest bg-obsidian-900 px-2 py-1 rounded">Sent</span> : <button onClick={() => sendFriendRequest(searchUser.uid)} className="text-xs bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 px-3 rounded-lg transition-colors whitespace-nowrap shadow-md">Add</button>}
-                                </div>
-                            )})
-                        ) : myFriendsList.length === 0 ? (
-                            <div className="text-center mt-10"><UserIcon size={40} className="text-slate-600 mx-auto mb-4" /><p className="text-slate-400 font-ui">No friends yet.</p></div>
-                        ) : (
-                            allUsers.filter(u => myFriendsList.includes(u.uid)).map(friend => (
-                                <div key={'friend'+friend.uid} onClick={() => setActiveChatTab(friend.uid)} className="flex items-center gap-3 p-3 bg-obsidian-800/50 rounded-xl hover:bg-obsidian-800 cursor-pointer border border-white/5 transition-colors shadow-sm">
-                                    <div className={`w-10 h-10 rounded-lg bg-obsidian-900 border ${AVATAR_FRAMES.find(f=>f.id===friend.userFrame)?.style || 'border-white/10'} overflow-hidden flex-shrink-0 flex items-center justify-center shadow-md`}>
-                                        {friend.photoURL ? <img src={friend.photoURL} className="w-full h-full object-cover"/> : <span className="font-bold text-white">{friend.username.charAt(0).toUpperCase()}</span>}
-                                    </div>
-                                    <div className="flex-1 overflow-hidden">
-                                        <h4 className="font-bold text-white truncate text-sm flex items-center gap-1">{friend.username} {friend.badges?.includes('Verified') && <ShieldIcon size={12} className="text-emerald-400" title="Verified"/>}</h4>
-                                        <p className="text-xs text-slate-500 truncate">#{friend.userTag}</p>
-                                    </div>
-                                    <div className="p-2 bg-white/10 text-white rounded-lg shadow-inner"><MessageIcon size={16}/></div>
-                                </div>
-                            ))
-                        )}
-                     </div>
-                  </div>
-               ) : (
-                  <div className="flex flex-col h-full overflow-hidden">
-                     {activeChatTab.startsWith('group_') && activeGroupObj && (
-                        <div className="p-3 bg-obsidian-900 border-b border-white/5">
-                           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2 flex items-center gap-1"><UsersIcon size={12}/> Invite Friends</p>
-                           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                              {myFriendsList.filter(fid => !activeGroupObj.members.includes(fid)).length === 0 ? (
-                                 <span className="text-xs text-slate-600 italic font-ui">All friends are in this group.</span>
+                           <div className={`flex flex-col ${msg.uid === user.uid ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                              <span className="text-[10px] text-slate-500 font-bold mb-1">{msg.username} <span className="opacity-50">#{msg.tag}</span></span>
+                              
+                              {editingMessageId === msg.id ? (
+                                  <form onSubmit={(e) => saveEditMessage(e, msg.id)} className="flex flex-col gap-2 w-full mt-1">
+                                      <input type="text" autoFocus value={editMessageText} onChange={e=>setEditMessageText(e.target.value)} className="bg-obsidian-950 border border-violet-500/50 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none" />
+                                      <div className="flex gap-2 justify-end">
+                                          <button type="button" onClick={() => {setEditingMessageId(null); setEditMessageText('');}} className="text-[10px] text-slate-400 hover:text-white uppercase font-bold tracking-wider">Cancel</button>
+                                          <button type="submit" className="text-[10px] text-emerald-400 hover:text-white uppercase font-bold tracking-wider">Save</button>
+                                      </div>
+                                  </form>
                               ) : (
-                                 myFriendsList.filter(fid => !activeGroupObj.members.includes(fid)).map(fid => {
-                                    const f = allUsers.find(u => u.uid === fid); if(!f) return null;
-                                    return <button key={fid} onClick={() => inviteToGroup(activeGroupObj.id, fid)} className="text-[10px] font-bold whitespace-nowrap bg-violet-600/20 hover:bg-violet-600/40 text-violet-300 px-3 py-1.5 rounded-lg border border-violet-500/30 transition-colors shadow-sm">+ {f.username}</button>
-                                 })
+                                  <div className={`px-4 py-2 rounded-2xl text-sm font-ui break-words shadow-md flex flex-col gap-1 ${msg.uid === user.uid ? `bg-violet-600 border border-violet-500 text-white rounded-tr-sm` : 'bg-obsidian-800 text-slate-200 border border-white/5 rounded-tl-sm'}`}>
+                                     <span>{msg.text}</span>
+                                     {msg.edited && <span className="text-[8px] opacity-50 text-right italic leading-none">(edited)</span>}
+                                  </div>
                               )}
                            </div>
-                        </div>
-                     )}
-
-                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {!isRegistered ? (
-                           <div className="h-full flex flex-col items-center justify-center text-center px-4"><MessageIcon size={48} className="text-slate-600 mb-4"/><p className="text-slate-400 font-ui mb-4">Sign in to join the conversation with other players!</p><button onClick={()=>{setShowChatPanel(false); setShowAuthModal(true)}} className="px-6 py-2 bg-obsidian-800 border border-white/20 rounded-lg text-white font-bold shadow-lg">Sign In</button></div>
-                        ) : !canChat ? (
-                           <div className="h-full flex flex-col items-center justify-center text-center px-4"><ShieldIcon size={48} className="text-rose-500 mb-4 opacity-50"/><p className="text-slate-300 font-bold font-ui mb-2">Restricted Access</p><p className="text-slate-500 font-ui text-sm">You need the <span className="text-white font-bold">Verified</span> badge to access chat. Please contact an Admin!</p></div>
-                        ) : (
-                           (activeChatTab === 'global' ? globalChat : privateChatMessages).map(msg => (
-                              <div key={msg.id} className={`flex gap-3 relative group ${msg.uid === user.uid ? 'flex-row-reverse' : ''}`} style={{ animation: 'slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards' }}>
-                                 <div className={`w-8 h-8 rounded-lg bg-obsidian-800 flex-shrink-0 flex items-center justify-center border ${AVATAR_FRAMES.find(f=>f.id===msg.frame)?.style || 'border-white/10'} overflow-hidden shadow-sm`}>
-                                    {msg.photoURL ? <img src={msg.photoURL} className="w-full h-full object-cover"/> : <span className="text-xs font-bold text-white">{msg.username.charAt(0).toUpperCase()}</span>}
-                                 </div>
-                                 <div className={`flex flex-col ${msg.uid === user.uid ? 'items-end' : 'items-start'} max-w-[75%]`}>
-                                    <span className="text-[10px] text-slate-500 font-bold mb-1">{msg.username} <span className="opacity-50">#{msg.tag}</span></span>
-                                    
-                                    {editingMessageId === msg.id ? (
-                                        <form onSubmit={(e) => saveEditMessage(e, msg.id)} className="flex flex-col gap-2 w-full mt-1">
-                                            <input type="text" autoFocus value={editMessageText} onChange={e=>setEditMessageText(e.target.value)} className="bg-obsidian-950 border border-violet-500/50 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none" />
-                                            <div className="flex gap-2 justify-end">
-                                                <button type="button" onClick={() => {setEditingMessageId(null); setEditMessageText('');}} className="text-[10px] text-slate-400 hover:text-white uppercase font-bold tracking-wider">Cancel</button>
-                                                <button type="submit" className="text-[10px] text-emerald-400 hover:text-white uppercase font-bold tracking-wider">Save</button>
-                                            </div>
-                                        </form>
-                                    ) : (
-                                        <div className={`px-4 py-2 rounded-2xl text-sm font-ui break-words shadow-md flex flex-col gap-1 ${msg.uid === user.uid ? `bg-violet-600 border border-violet-500 text-white rounded-tr-sm` : 'bg-obsidian-800 text-slate-200 border border-white/5 rounded-tl-sm'}`}>
-                                           <span>{msg.text}</span>
-                                           {msg.edited && <span className="text-[8px] opacity-50 text-right italic leading-none">(edited)</span>}
-                                        </div>
-                                    )}
-                                 </div>
-                                 
-                                 {(isModerator || msg.uid === user.uid) && !editingMessageId && (
-                                    <div className="absolute -top-6 right-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity bg-obsidian-900 px-2 py-1 rounded-lg shadow-md border border-white/10 z-10">
-                                        {msg.uid === user.uid && <button onClick={() => startEditMessage(msg)} className="text-violet-400 hover:text-white text-[10px] uppercase font-bold tracking-wider">Edit</button>}
-                                        <button onClick={() => isModerator && msg.uid !== user.uid ? deleteMessage(msg.id, msg.uid) : deleteMessage(msg.id, msg.uid)} className="text-rose-400 hover:text-white text-[10px] uppercase font-bold tracking-wider">
-                                           {msg.uid === user.uid ? 'Unsend' : 'Delete'}
-                                        </button>
-                                    </div>
-                                 )}
+                           
+                           {(isModerator || msg.uid === user.uid) && !editingMessageId && (
+                              <div className="absolute -top-6 right-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity bg-obsidian-900 px-2 py-1 rounded-lg shadow-md border border-white/10 z-10">
+                                  {msg.uid === user.uid && <button onClick={() => startEditMessage(msg)} className="text-violet-400 hover:text-white text-[10px] uppercase font-bold tracking-wider">Edit</button>}
+                                  <button onClick={() => deleteMessage(msg.id, msg.uid)} className="text-rose-400 hover:text-white text-[10px] uppercase font-bold tracking-wider">
+                                     {msg.uid === user.uid ? 'Unsend' : 'Delete'}
+                                  </button>
                               </div>
-                           ))
-                        )}
-                        <div ref={chatEndRef}></div>
-                     </div>
-                  </div>
-               )}
+                           )}
+                        </div>
+                     ))
+                  )}
+                  <div ref={chatEndRef}></div>
+               </div>
                
-               {isRegistered && canChat && activeChatTab !== 'friends' && activeChatTab !== 'groups' ? (
+               {isRegistered && canChat ? (
                   <form onSubmit={sendChat} className="p-4 border-t border-white/10 bg-obsidian-900 z-10">
                      <div className="relative">
                         <input type="text" maxLength={150} value={chatMessage} onChange={e=>setChatMessage(e.target.value)} placeholder="Say something..." className="w-full bg-obsidian-950 border border-white/10 rounded-full py-3 pl-4 pr-12 text-white text-sm focus:outline-none focus:border-violet-500/50 shadow-inner" />
                         <button type="submit" disabled={!chatMessage.trim()} className={`absolute right-2 top-2 p-1.5 rounded-full ${chatMessage.trim() ? `bg-violet-600 hover:bg-violet-500 text-white shadow-md active:scale-95` : 'text-slate-600'} transition-all`}><SendIcon size={18}/></button>
                      </div>
                   </form>
-               ) : isRegistered && !canChat && activeChatTab !== 'friends' && activeChatTab !== 'groups' ? (
+               ) : isRegistered && !canChat ? (
                   <div className="p-4 border-t border-white/10 bg-obsidian-900 text-center z-10"><p className="text-rose-400 font-bold font-ui text-sm flex items-center justify-center gap-2"><ShieldIcon size={16}/> Chat requires Verified badge.</p></div>
                ) : null}
             </div>
@@ -2202,7 +1957,7 @@
                       {/* ANTI-BOT VERIFICATION */}
                       {(authMode === 'signup' || authMode === 'login') && (
                         <div className="bg-obsidian-950/80 p-3 rounded-xl border border-violet-500/10 mt-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex flex-col items-center w-full">
-                          <div id="turnstile-container" className="mb-2 w-full flex justify-center"></div>
+                          <div id="turnstile-container" className="w-full flex justify-center"></div>
                           {authMode === 'signup' && captchaBypass && (
                             <div className="flex items-center gap-4 w-full mt-2">
                               <span className="text-xl font-bold text-violet-200">{botCheck.num1} + {botCheck.num2} =</span>
